@@ -32,7 +32,7 @@ var BudgetLib = {
   FUND_DESCRIPTION_TABLE_ID: "1DVnzs1tOFrVxrf6_jRFeXUe7b6lDYd5jh309Up4",
   OFFICER_DESCRIPTION_TABLE_ID: "1uSDhUpVbk3c7m0E7iT87LP8GfPk6vnczh-y64sI",
   
-  title: "Cook County Budget",
+  title: "State of Washington Budget",
   startYear: 1993,
   endYear: 2012,
   loadYear: 2012, //viewing year
