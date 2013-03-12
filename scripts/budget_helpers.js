@@ -17,7 +17,7 @@ var BudgetHelpers = {
 
   query: function(sql, callback) {  
     var sql = encodeURIComponent(sql);
-    //console.log(queryStr.join(" "));
+    console.log(sql);
     $.ajax({
       url: "https://www.googleapis.com/fusiontables/v1/query?sql="+sql+"&callback="+callback+"&key="+BudgetLib.FusionTableApiKey, 
       dataType: "jsonp"
@@ -45,7 +45,7 @@ var BudgetHelpers = {
       lastItem = i;
     }
 
-    //For the most recent year, we usually don't have expenditures. 
+    //For the most recent year, we usually don't have Actual. 
     //By setting the last year to null when 0, Highcharts just truncates the line.
     if (dataArray[lastItem] == 0) dataArray[lastItem] = null;
     return dataArray;
@@ -77,9 +77,9 @@ var BudgetHelpers = {
     var breakdownLink;
     
     if (type == 'fund')
-      breakdownLink = BudgetHelpers.getAddressLink(BudgetLib.loadYear, BudgetHelpers.convertToQueryString(itemId), "", "Breakdown by department&nbsp;&raquo;");
+      breakdownLink = BudgetHelpers.getAddressLink(BudgetLib.loadYear, BudgetHelpers.convertToQueryString(itemId), "", "Breakdown by Agency&nbsp;&raquo;");
     else
-      breakdownLink = BudgetHelpers.getAddressLink(BudgetLib.loadYear, "", BudgetHelpers.convertToQueryString(itemId), "Breakdown by department&nbsp;&raquo;");
+      breakdownLink = BudgetHelpers.getAddressLink(BudgetLib.loadYear, "", BudgetHelpers.convertToQueryString(itemId), "Breakdown by Agency&nbsp;&raquo;");
       
     return "\
       <tr class='expanded-content' id='" + itemId + "-expanded'>\
@@ -102,7 +102,7 @@ var BudgetHelpers = {
       </tr>";
   },
   
-  generateExpandedDeptRow: function(departmentId, department, description, linkToWebsite, departmentFund, controlOfficer) {
+  generateExpandedDeptRow: function(AgencyId, Agency, description, linkToWebsite, AgencyFund, controlOfficer) {
     if (linkToWebsite != '')
       linkToWebsite = "<a href='" + linkToWebsite + "'>Official&nbsp;website&nbsp;&raquo;</a>";
       
@@ -110,13 +110,13 @@ var BudgetHelpers = {
       controlOfficer = "<br/>Control officer: " + BudgetHelpers.getAddressLink(BudgetLib.loadYear, "", BudgetHelpers.convertToQueryString(controlOfficer), controlOfficer + " &raquo;");
     
     return "\
-      <tr class='expanded-content' id='department-" + departmentId + "-expanded'>\
+      <tr class='expanded-content' id='Agency-" + AgencyId + "-expanded'>\
         <td colspan='5'>\
           <div class='expanded-primary'>\
-            <h2>" + department + "</h2>\
+            <h2>" + Agency + "</h2>\
             <p>" + description + " " + linkToWebsite + "</p>\
             <p>\
-              Fund: " + BudgetHelpers.getAddressLink(BudgetLib.loadYear, BudgetHelpers.convertToQueryString(departmentFund), "", departmentFund + " &raquo;") + "</a>\
+              Fund: " + BudgetHelpers.getAddressLink(BudgetLib.loadYear, BudgetHelpers.convertToQueryString(AgencyFund), "", AgencyFund + " &raquo;") + "</a>\
               " + controlOfficer + "\
             </p>\
           </div>\

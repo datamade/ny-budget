@@ -14,9 +14,9 @@
  * Data is stored in Google Fusion tables, and fetches it using the Google visualization API
  * 
  * For display, the data is passed to Highcharts, another javascript library that specializes 
- * in graphs, and an HTML table which displays the budget broken down by department.
+ * in graphs, and an HTML table which displays the budget broken down by Agency.
  * 
- * Every fund, control officer or department that is clicked updates the URL query string using 
+ * Every fund, control officer or Agency that is clicked updates the URL query string using 
  * jQuery Address and the page loads the data dynamically.
  * 
  * Storing all of our data in Google Fusion Tables. For this visualization, I split it up in to 
@@ -28,17 +28,17 @@ var BudgetLib = {
 
   //IDs used to reference Fusion Tables, where we store our data
   FusionTableApiKey: "AIzaSyDgYMq5VzeWQdYNpvYfP0W3NuCKYOAB5_Y",
-  BUDGET_TABLE_ID: "1ZJJvlYCYTC1DIgp_tkJKEAs9l0sdO7J4kF8Gv9Y", //main budget table with expenditures/appropriations per department per year
+  BUDGET_TABLE_ID: "1G9ykXghSuEkf4w4RciIC594sfDyykU-HHwoIecY", //main budget table with Actual/Nominal per Agency per year
   FUND_DESCRIPTION_TABLE_ID: "1DVnzs1tOFrVxrf6_jRFeXUe7b6lDYd5jh309Up4",
   OFFICER_DESCRIPTION_TABLE_ID: "1uSDhUpVbk3c7m0E7iT87LP8GfPk6vnczh-y64sI",
   
   title: "State of Washington Budget",
-  startYear: 1993,
-  endYear: 2012,
-  loadYear: 2012, //viewing year
+  startYear: 1990,
+  endYear: 2013,
+  loadYear: 2013, //viewing year
   fundView: "", //viewing fund
   officerView: "", //viewing control officer
-  viewByOfficer: false, //flag to switch between department and control officer view
+  viewByOfficer: false, //flag to switch between Agency and control officer view
   arraysLoaded: 0,
 
   //-------------front end display functions-------------------
@@ -69,8 +69,8 @@ var BudgetLib = {
         BudgetQueries.getTotalArray(BudgetLib.fundView, 'Fund', false, "BudgetLib.updateExpendTotal");
       }
       
-      BudgetQueries.getDepartments(BudgetLib.fundView, 'Fund', BudgetLib.loadYear, "BudgetLib.getDataAsBudgetTable");
-      BudgetLib.updateHeader(BudgetLib.fundView, 'Department');
+      BudgetQueries.getAgencies(BudgetLib.fundView, 'Fund', BudgetLib.loadYear, "BudgetLib.getDataAsBudgetTable");
+      BudgetLib.updateHeader(BudgetLib.fundView, 'Agency');
       BudgetQueries.getTotalsForYear(BudgetLib.fundView, 'Fund', BudgetLib.loadYear, "BudgetLib.updateScorecard");
       BudgetQueries.getFundDescription(BudgetLib.fundView, "BudgetLib.updateScorecardDescription");
     } 
@@ -81,8 +81,8 @@ var BudgetLib = {
         BudgetQueries.getTotalArray(BudgetLib.officerView, 'Control Officer', false, "BudgetLib.updateExpendTotal");
       }
       
-      BudgetQueries.getDepartments(BudgetLib.officerView, 'Control Officer', BudgetLib.loadYear, "BudgetLib.getDataAsBudgetTable");
-      BudgetLib.updateHeader(BudgetLib.officerView, 'Department');
+      BudgetQueries.getAgencies(BudgetLib.officerView, 'Control Officer', BudgetLib.loadYear, "BudgetLib.getDataAsBudgetTable");
+      BudgetLib.updateHeader(BudgetLib.officerView, 'Agency');
       BudgetQueries.getTotalsForYear(BudgetLib.officerView, 'Control Officer', BudgetLib.loadYear, "BudgetLib.updateScorecard");
       BudgetQueries.getControlOfficerDescription(BudgetLib.officerView, "BudgetLib.updateScorecardDescription");
     }
@@ -134,7 +134,7 @@ var BudgetLib = {
     $('#breakdown-item-title span').html(subtype);
   },
     
-  //displays secondary datatables fund/department listing
+  //displays secondary datatables fund/Agency listing
   updateTable: function() {
     $('#breakdown').fadeOut('fast', function(){
       if (BudgetLib.breakdownTable != null) BudgetLib.breakdownTable.fnDestroy();
@@ -301,9 +301,9 @@ var BudgetLib = {
 
     for(i = 0; i < rows.length; i++) {
       var rowName = rows[i][0];
-      var departmentId = 0;
+      var AgencyId = 0;
       if (cols.length > 4)
-        departmentId = rows[i][4];
+        AgencyId = rows[i][4];
       var year = cols[3];
       var budgeted = rows[i][1];
       var spent = rows[i][2];
@@ -312,8 +312,8 @@ var BudgetLib = {
       var detailLoadFunction = "BudgetLib.getFundDetails(\"" + BudgetHelpers.convertToSlug(rowName) + "\");";
       
       if ((BudgetLib.fundView != null && BudgetLib.fundView != "") || (BudgetLib.officerView != null && BudgetLib.officerView != "")) {
-        rowId = "department-" + departmentId;
-        detailLoadFunction = "BudgetLib.getDepartmentDetails(\"department-" + departmentId + "\");";
+        rowId = "Agency-" + AgencyId;
+        detailLoadFunction = "BudgetLib.getAgencyDetails(\"Agency-" + AgencyId + "\");";
       }
       else if (BudgetLib.viewByOfficer)
         detailLoadFunction = "BudgetLib.getControlOfficerDetails(\"" + BudgetHelpers.convertToSlug(rowName) + "\");";
@@ -358,29 +358,29 @@ var BudgetLib = {
     $('#expanded-description').hide().html(description).fadeIn();
   },
   
-  //requests department details from Fusion Tables when row is clicked
-  getDepartmentDetails: function(departmentId) {
-    departmentId = departmentId.replace('department-', '')
-    BudgetQueries.getDepartmentDescription(departmentId, "BudgetLib.updateDepartmentDetails");
+  //requests Agency details from Fusion Tables when row is clicked
+  getAgencyDetails: function(AgencyId) {
+    AgencyId = AgencyId.replace('Agency-', '')
+    BudgetQueries.getAgencyDescription(AgencyId, "BudgetLib.updateAgencyDetails");
   },
   
-  //shows department details when row is clicked
-  updateDepartmentDetails: function(json) {
+  //shows Agency details when row is clicked
+  updateAgencyDetails: function(json) {
     var rows = json["rows"];
 
-    var departmentId = rows[0][0];
-    var department = rows[0][1];
+    var AgencyId = rows[0][0];
+    var Agency = rows[0][1];
     var linkToWebsite = rows[0][2];
     var description = rows[0][3];
     var controlOfficer = rows[0][4];
-    var departmentFund = rows[0][5];
+    var AgencyFund = rows[0][5];
      
-    var fusiontabledata = BudgetHelpers.generateExpandedDeptRow(departmentId, department, description, linkToWebsite, departmentFund, controlOfficer);
-    BudgetLib.updateDetail('department-' + departmentId, fusiontabledata);
+    var fusiontabledata = BudgetHelpers.generateExpandedDeptRow(AgencyId, Agency, description, linkToWebsite, AgencyFund, controlOfficer);
+    BudgetLib.updateDetail('Agency-' + AgencyId, fusiontabledata);
     
-    BudgetQueries.getTotalArray(departmentId, 'Department ID', true, "BudgetLib.updateSparkAppropTotal");
-    BudgetQueries.getTotalArray(departmentId, 'Department ID', false, "BudgetLib.updateSparkExpendTotal");
-    BudgetQueries.getSparklinePercentages(departmentId, 'Department ID', BudgetLib.loadYear, "BudgetLib.updateSparklinePercentages"); 
+    BudgetQueries.getTotalArray(AgencyId, 'Agency ID', true, "BudgetLib.updateSparkAppropTotal");
+    BudgetQueries.getTotalArray(AgencyId, 'Agency ID', false, "BudgetLib.updateSparkExpendTotal");
+    BudgetQueries.getSparklinePercentages(AgencyId, 'Agency ID', BudgetLib.loadYear, "BudgetLib.updateSparklinePercentages"); 
   },
   
   //updates percentages that display below the expanded row sparkling

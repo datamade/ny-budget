@@ -15,11 +15,11 @@
 var BudgetQueries = BudgetQueries || {};  
 var BudgetQueries = {
 
-  //gets fund or department totals per year for highcharts  	
+  //gets fund or Agency totals per year for highcharts  	
 	getTotalArray: function(name, queryType, isAppropriation, callback) {
-		var typeStr = "Expenditures";
+		var typeStr = "Nominal";
 		if (isAppropriation == true) 
-			typeStr = "Appropriations";
+			typeStr = "Actual";
 
 		var myQuery = "SELECT ";
 		var year = BudgetLib.startYear;
@@ -44,28 +44,28 @@ var BudgetQueries = {
 		
 		var percentageQuery = "";	
 		if (year > BudgetLib.startYear) {
-			percentageQuery = ", SUM('Appropriations " + year + "') AS 'Appropriations Top', SUM('Expenditures " + year + "') AS 'Expenditures Top', SUM('Appropriations " + (year - 1) + "') AS 'Appropriations Bottom', SUM('Expenditures " + (year - 1) + "') AS 'Expenditures Bottom'";
+			percentageQuery = ", SUM('Nominal " + year + "') AS 'Nominal Top', SUM('Actual " + year + "') AS 'Actual Top', SUM('Nominal " + (year - 1) + "') AS 'Nominal Bottom', SUM('Actual " + (year - 1) + "') AS 'Actual Bottom'";
 		}
 			
-		var myQuery = "SELECT SUM('Appropriations " + year + "') AS 'Appropriations', SUM('Expenditures " + year + "') AS 'Expenditures' " + percentageQuery + " FROM " + BudgetLib.BUDGET_TABLE_ID + whereClause;			
+		var myQuery = "SELECT SUM('Nominal " + year + "') AS 'Nominal', SUM('Actual " + year + "') AS 'Actual' " + percentageQuery + " FROM " + BudgetLib.BUDGET_TABLE_ID + whereClause;			
 		BudgetHelpers.query(myQuery, callback);
 	},
 	
 	//returns all funds budgeted/spent totals for given year
 	getAllFundsForYear: function(year, callback) {		
-		var myQuery = "SELECT Fund, SUM('Appropriations " + year + "') AS 'Appropriations', SUM('Expenditures " + year + "') AS 'Expenditures', Fund AS '" + year + "' FROM " + BudgetLib.BUDGET_TABLE_ID + " GROUP BY Fund";			
+		var myQuery = "SELECT Fund, SUM('Nominal " + year + "') AS 'Nominal', SUM('Actual " + year + "') AS 'Actual', Fund AS '" + year + "' FROM " + BudgetLib.BUDGET_TABLE_ID + " GROUP BY Fund";			
 		BudgetHelpers.query(myQuery, callback);
 	},
 	
 	//returns all funds budgeted/spent totals for given year
-	getDepartments: function(name, queryType, year, callback) {		
-		var myQuery = "SELECT 'Short Title', SUM('Appropriations " + year + "') AS 'Appropriations', SUM('Expenditures " + year + "') AS 'Expenditures', 'Short Title' AS '" + year + "', 'Department ID' FROM " + BudgetLib.BUDGET_TABLE_ID + " WHERE '" + queryType + "' = '" + name + "' GROUP BY 'Department ID', 'Short Title'";			
+	getAgencies: function(name, queryType, year, callback) {		
+		var myQuery = "SELECT 'Agency', SUM('Nominal " + year + "') AS 'Nominal', SUM('Actual " + year + "') AS 'Actual', 'Agency' AS '" + year + "', 'Agency ID' FROM " + BudgetLib.BUDGET_TABLE_ID + " WHERE '" + queryType + "' = '" + name + "' GROUP BY 'Agency ID', 'Agency'";			
 		BudgetHelpers.query(myQuery, callback);
 	},
 	
 	//returns all control officers budgeted/spent totals for given year
 	getAllControlOfficersForYear: function (year, callback) {		
-		var myQuery = "SELECT 'Control Officer', SUM('Appropriations " + year + "') AS 'Appropriations', SUM('Expenditures " + year + "') AS 'Expenditures', 'Control Officer' AS '" + year + "' FROM " + BudgetLib.BUDGET_TABLE_ID + " GROUP BY 'Control Officer'";			
+		var myQuery = "SELECT 'Control Officer', SUM('Nominal " + year + "') AS 'Nominal', SUM('Actual " + year + "') AS 'Actual', 'Control Officer' AS '" + year + "' FROM " + BudgetLib.BUDGET_TABLE_ID + " GROUP BY 'Control Officer'";			
 		BudgetHelpers.query(myQuery, callback);
 	},
 	
@@ -81,9 +81,9 @@ var BudgetQueries = {
 		BudgetHelpers.query(myQuery, callback);
 	},
 	
-	//get a department description from a department ID
-	getDepartmentDescription: function(departmentId, callback) {
-		var myQuery = "SELECT 'Department ID', Department, 'Link to Website', 'Department Description', 'Control Officer', Fund FROM " + BudgetLib.BUDGET_TABLE_ID + " WHERE 'Department ID' = " + departmentId;			
+	//get a Agency description from a Agency ID
+	getAgencyDescription: function(AgencyId, callback) {
+		var myQuery = "SELECT 'Agency ID', Agency, 'Link to Website', 'Agency Description', 'Control Officer', Fund FROM " + BudgetLib.BUDGET_TABLE_ID + " WHERE 'Agency ID' = " + AgencyId;			
 		BudgetHelpers.query(myQuery, callback);
 	},
 	
@@ -94,7 +94,7 @@ var BudgetQueries = {
 			if (queryType != "")
 				whereClause += " WHERE '" + queryType + "' = '" + name + "'";
 				
-			var myQuery = "SELECT SUM('Appropriations " + year + "') AS 'Appropriations Top', SUM('Expenditures " + year + "') AS 'Expenditures Top', SUM('Appropriations " + (year - 1) + "') AS 'Appropriations Bottom', SUM('Expenditures " + (year - 1) + "') AS 'Expenditures Bottom' FROM " + BudgetLib.BUDGET_TABLE_ID + whereClause;			
+			var myQuery = "SELECT SUM('Nominal " + year + "') AS 'Nominal Top', SUM('Actual " + year + "') AS 'Actual Top', SUM('Nominal " + (year - 1) + "') AS 'Nominal Bottom', SUM('Actual " + (year - 1) + "') AS 'Actual Bottom' FROM " + BudgetLib.BUDGET_TABLE_ID + whereClause;			
 			BudgetHelpers.query(myQuery, callback);
 		}
 	}
