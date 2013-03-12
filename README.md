@@ -66,4 +66,4 @@ See LICENSE for details https://github.com/DataMade/look-at-washington/wiki/Lice
 
 Copyright (c) 2012 Derek Eder and Nick Rougeux. Released under the MIT License.
 
-See LICENSE for details https://github.com/DataMade/look-at-washington/wiki/License
+See LICENSE for details https://github.com/open-city/look-at-cook/wiki/License
