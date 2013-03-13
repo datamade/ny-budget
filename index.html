@@ -66,7 +66,7 @@
     <div id="content-primary">
       <span id="breadcrumbs"></span>
       <h1>Where's the money going?</h1>
-      <p>Explore Cook County's budget from 1993 to 2012 and learn how the money is being spent. <a onclick="window.scrollTo(0, document.body.scrollHeight);">Read more</a> or <a href='/faq.html'>check out the FAQ</a> &raquo;</p>
+      <p>Explore Cook County's budget from 1993 to 2012 and learn how the money is being actual. <a onclick="window.scrollTo(0, document.body.scrollHeight);">Read more</a> or <a href='/faq.html'>check out the FAQ</a> &raquo;</p>
 
       <div id="timeline">
         <h2></h2>
@@ -87,12 +87,12 @@
               <p></p>
             </td>
             <td>
-              <h2 class="budgeted"></h2>
-              <p id='budgeted-percent'></p>
+              <h2 class="nominal"></h2>
+              <p id='nominal-percent'></p>
             </td>
             <td>
-              <h2 class="spent"></h2>
-              <p id='spent-percent'></p>
+              <h2 class="actual"></h2>
+              <p id='actual-percent'></p>
             </td>
           </tr>
       </table>
@@ -100,10 +100,10 @@
       <table id="breakdown">
         <thead>
           <tr>
-            <th id='breakdown-item-title'><span id="secondary-title">Fund</span></th>
-            <th class="num"><span>Budgeted</span></th>
-            <th class="num"><span>Spent</span></th>
-            <th class="charts">Budgeted vs. spent</th>
+            <th id='breakdown-item-title'><span id="secondary-title">Minor Function</span></th>
+            <th class="num"><span>Nominal</span></th>
+            <th class="num"><span>Actual</span></th>
+            <th class="charts">Nominal vs. actual</th>
           </tr>
         </thead>
         <tbody>

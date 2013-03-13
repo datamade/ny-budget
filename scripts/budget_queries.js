@@ -16,9 +16,9 @@ var BudgetQueries = BudgetQueries || {};
 var BudgetQueries = {
 
   //gets fund or Agency totals per year for highcharts  	
-	getTotalArray: function(name, queryType, isAppropriation, callback) {
+	getTotalArray: function(name, queryType, isActual, callback) {
 		var typeStr = "Nominal";
-		if (isAppropriation == true) 
+		if (isActual == true) 
 			typeStr = "Actual";
 
 		var myQuery = "SELECT ";
@@ -51,19 +51,19 @@ var BudgetQueries = {
 		BudgetHelpers.query(myQuery, callback);
 	},
 	
-	//returns all funds budgeted/spent totals for given year
+	//returns all funds nominal/actual totals for given year
 	getAllFundsForYear: function(year, callback) {		
-		var myQuery = "SELECT Fund, SUM('Nominal " + year + "') AS 'Nominal', SUM('Actual " + year + "') AS 'Actual', Fund AS '" + year + "' FROM " + BudgetLib.BUDGET_TABLE_ID + " GROUP BY Fund";			
+		var myQuery = "SELECT 'Minor Function', SUM('Nominal " + year + "') AS 'Nominal', SUM('Actual " + year + "') AS 'Actual', 'Minor Function' AS '" + year + "' FROM " + BudgetLib.BUDGET_TABLE_ID + " GROUP BY 'Minor Function'";			
 		BudgetHelpers.query(myQuery, callback);
 	},
 	
-	//returns all funds budgeted/spent totals for given year
+	//returns all funds nominal/actual totals for given year
 	getAgencies: function(name, queryType, year, callback) {		
 		var myQuery = "SELECT 'Agency', SUM('Nominal " + year + "') AS 'Nominal', SUM('Actual " + year + "') AS 'Actual', 'Agency' AS '" + year + "', 'Agency ID' FROM " + BudgetLib.BUDGET_TABLE_ID + " WHERE '" + queryType + "' = '" + name + "' GROUP BY 'Agency ID', 'Agency'";			
 		BudgetHelpers.query(myQuery, callback);
 	},
 	
-	//returns all control officers budgeted/spent totals for given year
+	//returns all control officers nominal/actual totals for given year
 	getAllControlOfficersForYear: function (year, callback) {		
 		var myQuery = "SELECT 'Control Officer', SUM('Nominal " + year + "') AS 'Nominal', SUM('Actual " + year + "') AS 'Actual', 'Control Officer' AS '" + year + "' FROM " + BudgetLib.BUDGET_TABLE_ID + " GROUP BY 'Control Officer'";			
 		BudgetHelpers.query(myQuery, callback);

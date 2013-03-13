@@ -17,7 +17,7 @@ var BudgetHelpers = {
 
   query: function(sql, callback) {  
     var sql = encodeURIComponent(sql);
-    console.log(sql);
+    console.log("https://www.googleapis.com/fusiontables/v1/query?sql="+sql+"&key="+BudgetLib.FusionTableApiKey);
     $.ajax({
       url: "https://www.googleapis.com/fusiontables/v1/query?sql="+sql+"&callback="+callback+"&key="+BudgetLib.FusionTableApiKey, 
       dataType: "jsonp"
@@ -56,18 +56,18 @@ var BudgetHelpers = {
   	return ("<a class='adr' href='" + href + "' rel='address:" + href + "'>" + title + "</a>");
   },
   
-  generateTableRow: function(rowId, detailLoadFunction, rowName, budgeted, spent) {
+  generateTableRow: function(rowId, detailLoadFunction, rowName, nominal, actual) {
     return "\
       <tr id='" + rowId + "'>\
         <td>\
         <a onclick='" + detailLoadFunction + "'><img class='budget-expand-img' src='images/expand.png' /></a>&nbsp;<a onclick='" + detailLoadFunction + "'>" + rowName + "</a>\
         </td>\
-        <td class='num budgeted'>" + budgeted + "</td>\
-        <td class='num spent'>" + spent + "</td>\
+        <td class='num nominal'>" + nominal + "</td>\
+        <td class='num actual'>" + actual + "</td>\
         <td>\
           <div class='bars'>\
-            <span class='budgeted outer'></span>\
-            <span class='spent inner'></span>\
+            <span class='nominal outer'></span>\
+            <span class='actual inner'></span>\
           </div>\
         </td>\
       </tr>";
@@ -77,9 +77,9 @@ var BudgetHelpers = {
     var breakdownLink;
     
     if (type == 'fund')
-      breakdownLink = BudgetHelpers.getAddressLink(BudgetLib.loadYear, BudgetHelpers.convertToQueryString(itemId), "", "Breakdown by Agency&nbsp;&raquo;");
+      breakdownLink = BudgetHelpers.getAddressLink(BudgetLib.loadYear, BudgetHelpers.convertToQueryString(itemId), "", "Breakdown by department&nbsp;&raquo;");
     else
-      breakdownLink = BudgetHelpers.getAddressLink(BudgetLib.loadYear, "", BudgetHelpers.convertToQueryString(itemId), "Breakdown by Agency&nbsp;&raquo;");
+      breakdownLink = BudgetHelpers.getAddressLink(BudgetLib.loadYear, "", BudgetHelpers.convertToQueryString(itemId), "Breakdown by department&nbsp;&raquo;");
       
     return "\
       <tr class='expanded-content' id='" + itemId + "-expanded'>\
@@ -94,15 +94,15 @@ var BudgetHelpers = {
             <div class='expanded-secondary'>\
             <div class='sparkline' id='selected-chart'></div>\
             <ul class='stats'>\
-              <li id='sparkline-budgeted'></li>\
-              <li id='sparkline-spent'></li>\
+              <li id='sparkline-nominal'></li>\
+              <li id='sparkline-actual'></li>\
             </ul>\
           </div>\
         </td>\
       </tr>";
   },
   
-  generateExpandedDeptRow: function(AgencyId, Agency, description, linkToWebsite, AgencyFund, controlOfficer) {
+  generateExpandedDeptRow: function(departmentId, department, description, linkToWebsite, departmentFund, controlOfficer) {
     if (linkToWebsite != '')
       linkToWebsite = "<a href='" + linkToWebsite + "'>Official&nbsp;website&nbsp;&raquo;</a>";
       
@@ -110,21 +110,21 @@ var BudgetHelpers = {
       controlOfficer = "<br/>Control officer: " + BudgetHelpers.getAddressLink(BudgetLib.loadYear, "", BudgetHelpers.convertToQueryString(controlOfficer), controlOfficer + " &raquo;");
     
     return "\
-      <tr class='expanded-content' id='Agency-" + AgencyId + "-expanded'>\
+      <tr class='expanded-content' id='department-" + departmentId + "-expanded'>\
         <td colspan='5'>\
           <div class='expanded-primary'>\
-            <h2>" + Agency + "</h2>\
+            <h2>" + department + "</h2>\
             <p>" + description + " " + linkToWebsite + "</p>\
             <p>\
-              Fund: " + BudgetHelpers.getAddressLink(BudgetLib.loadYear, BudgetHelpers.convertToQueryString(AgencyFund), "", AgencyFund + " &raquo;") + "</a>\
+              Fund: " + BudgetHelpers.getAddressLink(BudgetLib.loadYear, BudgetHelpers.convertToQueryString(departmentFund), "", departmentFund + " &raquo;") + "</a>\
               " + controlOfficer + "\
             </p>\
           </div>\
           <div class='expanded-secondary'>\
             <div class='sparkline' id='selected-chart'></div>\
             <ul class='stats'>\
-              <li id='sparkline-budgeted'></li>\
-              <li id='sparkline-spent'></li>\
+              <li id='sparkline-nominal'></li>\
+              <li id='sparkline-actual'></li>\
             </ul>\
           </div>\
         </td>\

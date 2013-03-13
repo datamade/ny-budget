@@ -4,11 +4,11 @@ var BudgetHighcharts = {
   pointInterval: 365 * 24 * 3600 * 1000, //one year in ms
   apropColor:   '#264870',
   apropSymbol:  'circle',
-  apropTitle:   'Budgeted',
+  apropTitle:   'Nominal',
   
   expendColor:  '#7d9abb',
   expendSybmol: 'square',
-  expendTitle:  'Spent',
+  expendTitle:  'Actual',
   
   //displays main graph using highcharts (http://www.highcharts.com)
   updateMainChart: function() {

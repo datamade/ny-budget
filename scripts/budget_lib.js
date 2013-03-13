@@ -65,56 +65,27 @@ var BudgetLib = {
     if (BudgetLib.fundView != ""){
       if (viewChanged || externalLoad) {
         window.scrollTo(0, 0);
-        BudgetQueries.getTotalArray(BudgetLib.fundView, 'Fund', true, "BudgetLib.updateAppropTotal");
-        BudgetQueries.getTotalArray(BudgetLib.fundView, 'Fund', false, "BudgetLib.updateExpendTotal");
+        BudgetQueries.getTotalArray(BudgetLib.fundView, 'Minor Function', true, "BudgetLib.updateAppropTotal");
+        BudgetQueries.getTotalArray(BudgetLib.fundView, 'Minor Function', false, "BudgetLib.updateExpendTotal");
       }
       
-      BudgetQueries.getAgencies(BudgetLib.fundView, 'Fund', BudgetLib.loadYear, "BudgetLib.getDataAsBudgetTable");
+      BudgetQueries.getAgencies(BudgetLib.fundView, 'Minor Function', BudgetLib.loadYear, "BudgetLib.getDataAsBudgetTable");
       BudgetLib.updateHeader(BudgetLib.fundView, 'Agency');
-      BudgetQueries.getTotalsForYear(BudgetLib.fundView, 'Fund', BudgetLib.loadYear, "BudgetLib.updateScorecard");
+      BudgetQueries.getTotalsForYear(BudgetLib.fundView, 'Minor Function', BudgetLib.loadYear, "BudgetLib.updateScorecard");
       BudgetQueries.getFundDescription(BudgetLib.fundView, "BudgetLib.updateScorecardDescription");
-    } 
-    else if (BudgetLib.officerView != ""){ //show control officer view
-      if (viewChanged || externalLoad) {
-        window.scrollTo(0, 0);
-        BudgetQueries.getTotalArray(BudgetLib.officerView, 'Control Officer', true, "BudgetLib.updateAppropTotal");
-        BudgetQueries.getTotalArray(BudgetLib.officerView, 'Control Officer', false, "BudgetLib.updateExpendTotal");
-      }
-      
-      BudgetQueries.getAgencies(BudgetLib.officerView, 'Control Officer', BudgetLib.loadYear, "BudgetLib.getDataAsBudgetTable");
-      BudgetLib.updateHeader(BudgetLib.officerView, 'Agency');
-      BudgetQueries.getTotalsForYear(BudgetLib.officerView, 'Control Officer', BudgetLib.loadYear, "BudgetLib.updateScorecard");
-      BudgetQueries.getControlOfficerDescription(BudgetLib.officerView, "BudgetLib.updateScorecardDescription");
     }
     else { //load default view
       if (viewChanged || externalLoad) {
         BudgetQueries.getTotalArray('', '', true, "BudgetLib.updateAppropTotal");
         BudgetQueries.getTotalArray('', '', false, "BudgetLib.updateExpendTotal");
       }
-          
-      if (BudgetLib.viewByOfficer) {
-        BudgetQueries.getAllControlOfficersForYear(BudgetLib.loadYear, "BudgetLib.getDataAsBudgetTable");
-        $("#breakdown-nav").html("\
-          <ul>\
-            <li><a href='#' rel='address:/?year=" + BudgetLib.loadYear + "&viewMode=fund'>Where's it going?</a></li>\
-            <li class='current'>Who controls it?</li>\
-          </ul>\
-          <div class='clear'></div>");
-        $('#breakdown-item-title span').html('Control Officer');
-      }
-      else {
-        BudgetQueries.getAllFundsForYear(BudgetLib.loadYear, "BudgetLib.getDataAsBudgetTable");
-        $("#breakdown-nav").html("\
-          <ul>\
-            <li class='current'>Where's it going?</li>\
-            <li><a href='#' rel='address:/?year=" + BudgetLib.loadYear + "&viewMode=officer'>Who controls it?</a></li>\
-          </ul>\
-        <div class='clear'></div>");
-        $('#breakdown-item-title span').html('Fund');
-      }
+      
+      BudgetQueries.getAllFundsForYear(BudgetLib.loadYear, "BudgetLib.getDataAsBudgetTable");
+      $('#breakdown-item-title span').html('Minor Function');
+      
       $('#breakdown-nav a').address();
       
-      BudgetLib.updateHeader(BudgetLib.title, 'Fund');
+      BudgetLib.updateHeader(BudgetLib.title, 'Minor Function');
       BudgetQueries.getTotalsForYear('', '', BudgetLib.loadYear, "BudgetLib.updateScorecard");
       BudgetQueries.getFundDescription(BudgetLib.fundView, "BudgetLib.updateScorecardDescription");
     }
@@ -143,24 +114,24 @@ var BudgetLib = {
       $('#breakdown > tbody:last').append(BudgetLib.breakdownData);
       
       var maxArray = new Array();
-      $('.budgeted.num').each(function(){
+      $('.nominal.num').each(function(){
         maxArray.push(parseInt($(this).html()));
       });
-      $('.spent.num').each(function(){
+      $('.actual.num').each(function(){
         maxArray.push(parseInt($(this).html()));
       });
       
-      var maxBudgeted = Math.max.apply( Math, maxArray );
-      if (maxBudgeted > 0) {
-        $('.budgeted.num').each(function(){
-          $(this).siblings().children().children('.budgeted.outer').width((($(this).html()/maxBudgeted) * 100) + '%');
+      var maxNominal = Math.max.apply( Math, maxArray );
+      if (maxNominal > 0) {
+        $('.nominal.num').each(function(){
+          $(this).siblings().children().children('.nominal.outer').width((($(this).html()/maxNominal) * 100) + '%');
         });
-        $('.spent.num').each(function(){
-          $(this).siblings().children().children('.spent.inner').width((($(this).html()/maxBudgeted) * 100) + '%');
+        $('.actual.num').each(function(){
+          $(this).siblings().children().children('.actual.inner').width((($(this).html()/maxNominal) * 100) + '%');
         });
       }
-      $('.budgeted.num').formatCurrency();
-      $('.spent.num').formatCurrency();
+      $('.nominal.num').formatCurrency();
+      $('.actual.num').formatCurrency();
       
       $('.adr').address(); //after adding the table rows, initialize the address plugin on all the links
       
@@ -252,43 +223,43 @@ var BudgetLib = {
     var rows = json["rows"];
     var cols = json["columns"];
     if (rows.length > 0) {
-      $('#scorecard .budgeted').fadeOut('fast', function(){
-        $('#scorecard .budgeted').html(rows[0][0]);
-        $('#scorecard .budgeted').formatCurrency();
+      $('#scorecard .nominal').fadeOut('fast', function(){
+        $('#scorecard .nominal').html(rows[0][0]);
+        $('#scorecard .nominal').formatCurrency();
       }).fadeIn('fast');
       
-      $('#scorecard .spent').fadeOut('fast', function(){
-        $('#scorecard .spent').html(rows[0][1]);
-        $('#scorecard .spent').formatCurrency();
+      $('#scorecard .actual').fadeOut('fast', function(){
+        $('#scorecard .actual').html(rows[0][1]);
+        $('#scorecard .actual').formatCurrency();
         
         if (BudgetLib.loadYear == BudgetLib.endYear && rows[0][1] == 0) {
-          $('#scorecard .spent').append("<sup class='ref'>&dagger;</sup>");
+          $('#scorecard .actual').append("<sup class='ref'>&dagger;</sup>");
           $('#f-zero2011').show();
         } 
         else $('#f-zero2011').hide();
       }).fadeIn();
       
       if (cols.length > 2) {
-        var budgetedTop = rows[0][2];
-        var spentTop = rows[0][3];
-        var budgetedBottom = rows[0][4];
-        var spentBottom = rows[0][5];
+        var nominalTop = rows[0][2];
+        var actualTop = rows[0][3];
+        var nominalBottom = rows[0][4];
+        var actualBottom = rows[0][5];
         
-        if (budgetedTop > 0 && budgetedBottom > 0) {
-          var budgetedPercent = (((budgetedTop / budgetedBottom) - 1) * 100).toFixed(1);
-          if (budgetedPercent > -0.05) budgetedPercent = '+' + budgetedPercent;
+        if (nominalTop > 0 && nominalBottom > 0) {
+          var nominalPercent = (((nominalTop / nominalBottom) - 1) * 100).toFixed(1);
+          if (nominalPercent > -0.05) nominalPercent = '+' + nominalPercent;
           
-          $('#budgeted-percent').hide().html('<strong>' + budgetedPercent + '%</strong> budgeted from ' + (BudgetLib.loadYear - 1)).fadeIn();
+          $('#nominal-percent').hide().html('<strong>' + nominalPercent + '%</strong> nominal from ' + (BudgetLib.loadYear - 1)).fadeIn();
         }
-        else $('#budgeted-percent').fadeOut();
+        else $('#nominal-percent').fadeOut();
         
-        if (spentTop > 0 && spentBottom > 0) {
-          var spentPercent = (((spentTop / spentBottom) - 1) * 100).toFixed(1);
-          if (spentPercent > -0.05) spentPercent = '+' + spentPercent;
+        if (actualTop > 0 && actualBottom > 0) {
+          var actualPercent = (((actualTop / actualBottom) - 1) * 100).toFixed(1);
+          if (actualPercent > -0.05) actualPercent = '+' + actualPercent;
           
-          $('#spent-percent').hide().html('<strong>' + spentPercent + '%</strong> spent from ' + (BudgetLib.loadYear - 1)).fadeIn();
+          $('#actual-percent').hide().html('<strong>' + actualPercent + '%</strong> actual from ' + (BudgetLib.loadYear - 1)).fadeIn();
         }
-        else $('#spent-percent').fadeOut();
+        else $('#actual-percent').fadeOut();
       }
     }
   },
@@ -305,8 +276,8 @@ var BudgetLib = {
       if (cols.length > 4)
         AgencyId = rows[i][4];
       var year = cols[3];
-      var budgeted = rows[i][1];
-      var spent = rows[i][2];
+      var nominal = rows[i][1];
+      var actual = rows[i][2];
       
       var rowId = BudgetHelpers.convertToSlug(rowName);
       var detailLoadFunction = "BudgetLib.getFundDetails(\"" + BudgetHelpers.convertToSlug(rowName) + "\");";
@@ -318,8 +289,8 @@ var BudgetLib = {
       else if (BudgetLib.viewByOfficer)
         detailLoadFunction = "BudgetLib.getControlOfficerDetails(\"" + BudgetHelpers.convertToSlug(rowName) + "\");";
       
-      if (budgeted != 0 || spent != 0) {
-        fusiontabledata += BudgetHelpers.generateTableRow(rowId, detailLoadFunction, rowName, budgeted, spent);
+      if (nominal != 0 || actual != 0) {
+        fusiontabledata += BudgetHelpers.generateTableRow(rowId, detailLoadFunction, rowName, nominal, actual);
       }
     }
  
@@ -332,19 +303,9 @@ var BudgetLib = {
     var fusiontabledata = BudgetHelpers.generateExpandedRow(itemId, 'fund');
     BudgetLib.updateDetail(itemId, fusiontabledata);
     BudgetQueries.getFundDescription(BudgetHelpers.convertToPlainString(itemId), "BudgetLib.updateExpandedDescription");
-    BudgetQueries.getTotalArray(BudgetHelpers.convertToPlainString(itemId), 'Fund', true, "BudgetLib.updateSparkAppropTotal");
-    BudgetQueries.getTotalArray(BudgetHelpers.convertToPlainString(itemId), 'Fund', false, "BudgetLib.updateSparkExpendTotal");
-    BudgetQueries.getSparklinePercentages(BudgetHelpers.convertToPlainString(itemId), 'Fund', BudgetLib.loadYear, "BudgetLib.updateSparklinePercentages");
-  },
-  
-  //shows fund details when row is clicked
-  getControlOfficerDetails: function(itemId) {  
-    var fusiontabledata = BudgetHelpers.generateExpandedRow(itemId, 'controlOfficer');
-    BudgetLib.updateDetail(itemId, fusiontabledata);
-    BudgetQueries.getControlOfficerDescription(BudgetHelpers.convertToPlainString(itemId), "BudgetLib.updateExpandedDescription");
-    BudgetQueries.getTotalArray(BudgetHelpers.convertToPlainString(itemId), 'Control Officer', true, "BudgetLib.updateSparkAppropTotal");
-    BudgetQueries.getTotalArray(BudgetHelpers.convertToPlainString(itemId), 'Control Officer', false, "BudgetLib.updateSparkExpendTotal");
-    BudgetQueries.getSparklinePercentages(BudgetHelpers.convertToPlainString(itemId), 'Control Officer', BudgetLib.loadYear, "BudgetLib.updateSparklinePercentages");
+    BudgetQueries.getTotalArray(BudgetHelpers.convertToPlainString(itemId), 'Minor Function', true, "BudgetLib.updateSparkAppropTotal");
+    BudgetQueries.getTotalArray(BudgetHelpers.convertToPlainString(itemId), 'Minor Function', false, "BudgetLib.updateSparkExpendTotal");
+    BudgetQueries.getSparklinePercentages(BudgetHelpers.convertToPlainString(itemId), 'Minor Function', BudgetLib.loadYear, "BudgetLib.updateSparklinePercentages");
   },
   
   //shows description in expanded row when row is clicked
@@ -390,24 +351,24 @@ var BudgetLib = {
 
     if (rows.length > 0)
     {
-      var budgetedTop = rows[0][0];
-      var spentTop = rows[0][1];
-      var budgetedBottom = rows[0][2];
-      var spentBottom = rows[0][3];
+      var nominalTop = rows[0][0];
+      var actualTop = rows[0][1];
+      var nominalBottom = rows[0][2];
+      var actualBottom = rows[0][3];
       
-      if (budgetedTop > 0 && budgetedBottom > 0) {
-        var budgetedPercent = (((budgetedTop / budgetedBottom) - 1) * 100).toFixed(1);
-        if (budgetedPercent >= -0.05) budgetedPercent = '+' + budgetedPercent;
-        $('#sparkline-budgeted').hide().html('<strong>' + budgetedPercent + '%</strong> budgeted from ' + (BudgetLib.loadYear - 1)).fadeIn();
+      if (nominalTop > 0 && nominalBottom > 0) {
+        var nominalPercent = (((nominalTop / nominalBottom) - 1) * 100).toFixed(1);
+        if (nominalPercent >= -0.05) nominalPercent = '+' + nominalPercent;
+        $('#sparkline-nominal').hide().html('<strong>' + nominalPercent + '%</strong> nominal from ' + (BudgetLib.loadYear - 1)).fadeIn();
       }
-      else $('#sparkline-budgeted').fadeOut();
+      else $('#sparkline-nominal').fadeOut();
       
-      if (spentTop > 0 && spentBottom > 0) {
-        var spentPercent = (((spentTop / spentBottom) - 1) * 100).toFixed(1);
-        if (spentPercent >= -0.05) spentPercent = '+' + spentPercent;
-        $('#sparkline-spent').hide().html('<strong>' + spentPercent + '%</strong> spent from ' + (BudgetLib.loadYear - 1)).fadeIn();
+      if (actualTop > 0 && actualBottom > 0) {
+        var actualPercent = (((actualTop / actualBottom) - 1) * 100).toFixed(1);
+        if (actualPercent >= -0.05) actualPercent = '+' + actualPercent;
+        $('#sparkline-actual').hide().html('<strong>' + actualPercent + '%</strong> actual from ' + (BudgetLib.loadYear - 1)).fadeIn();
       }
-      else $('#sparkline-spent').fadeOut();
+      else $('#sparkline-actual').fadeOut();
     }
   }
 }
