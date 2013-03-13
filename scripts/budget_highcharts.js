@@ -162,11 +162,11 @@ var BudgetHighcharts = {
               events: {
                 click: function() {
                   var x = this.x;
-                  if (BudgetLib.fundView == '' && BudgetLib.officerView == '')
+                  if (BudgetLib.minorView == '')
                   {
                     var clickedYear = new Date(x).getFullYear();          
                     $.address.parameter('year',clickedYear)
-                    $.address.parameter('fund',BudgetHelpers.convertToQueryString($('.expanded-primary h2').html()));
+                    $.address.parameter('minor',BudgetHelpers.convertToQueryString($('.expanded-primary h2').html()));
                   }
                 }
               }

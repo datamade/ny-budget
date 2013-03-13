@@ -21,10 +21,10 @@
   <script src="scripts/jquery.cookie.js" type="text/javascript"></script>
 
   <!-- custom javascript -->
-  <script src="scripts/budget_helpers.js?2" type="text/javascript"></script>
-  <script src="scripts/budget_queries.js?2" type="text/javascript"></script>
-  <script src="scripts/budget_highcharts.js?2" type="text/javascript"></script>
-  <script src="scripts/budget_lib.js?4" type="text/javascript"></script>
+  <script src="scripts/budget_helpers.js?3" type="text/javascript"></script>
+  <script src="scripts/budget_queries.js?3" type="text/javascript"></script>
+  <script src="scripts/budget_highcharts.js?3" type="text/javascript"></script>
+  <script src="scripts/budget_lib.js?5" type="text/javascript"></script>
   <script src="scripts/analytics_lib.js" type="text/javascript"></script>
 
   <script type="text/javascript">
@@ -32,11 +32,11 @@
   $.address.crawlable(true);
 	//every action is handled by jQuery Address, which detects when the URL has changed
 	$.address.externalChange(function(event) {
-    BudgetLib.updateDisplay($.address.parameter('viewMode'), $.address.parameter('year'), $.address.parameter('fund'), $.address.parameter('controlOfficer'), true);
+    BudgetLib.updateDisplay($.address.parameter('viewMode'), $.address.parameter('year'), $.address.parameter('minor'), $.address.parameter('controlOfficer'), true);
 	});
 
 	$.address.internalChange(function(event) {
-    BudgetLib.updateDisplay($.address.parameter('viewMode'), $.address.parameter('year'), $.address.parameter('fund'), $.address.parameter('controlOfficer'), false);
+    BudgetLib.updateDisplay($.address.parameter('viewMode'), $.address.parameter('year'), $.address.parameter('minor'), $.address.parameter('controlOfficer'), false);
 	});
 
   //cookies for first time visitors
@@ -66,7 +66,7 @@
     <div id="content-primary">
       <span id="breadcrumbs"></span>
       <h1>Where's the money going?</h1>
-      <p>Explore Cook County's budget from 1993 to 2012 and learn how the money is being actual. <a onclick="window.scrollTo(0, document.body.scrollHeight);">Read more</a> or <a href='/faq.html'>check out the FAQ</a> &raquo;</p>
+      <p>Explore the State of Washington's budget from 1990 to 2013 and learn how the money is being spent. <a onclick="window.scrollTo(0, document.body.scrollHeight);">Read more</a> or <a href='/faq.html'>check out the FAQ</a> &raquo;</p>
 
       <div id="timeline">
         <h2></h2>

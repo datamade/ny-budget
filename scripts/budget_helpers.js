@@ -51,9 +51,9 @@ var BudgetHelpers = {
     return dataArray;
   },
 
-  getAddressLink: function(year, fund, controlOfficer, title) {
-    var href = "/?year=" + year + "&amp;fund=" + fund + "&amp;controlOfficer=" + controlOfficer;
-  	return ("<a class='adr' href='" + href + "' rel='address:" + href + "'>" + title + "</a>");
+  getAddressLink: function(year, type, handle, linkTitle) {
+    var href = "/?year=" + year + "&amp;" + type + "=" + handle;
+  	return ("<a class='adr' href='" + href + "' rel='address:" + href + "'>" + linkTitle + "</a>");
   },
   
   generateTableRow: function(rowId, detailLoadFunction, rowName, nominal, actual) {
@@ -74,13 +74,8 @@ var BudgetHelpers = {
   },
   
   generateExpandedRow: function(itemId, type) {
-    var breakdownLink;
-    
-    if (type == 'fund')
-      breakdownLink = BudgetHelpers.getAddressLink(BudgetLib.loadYear, BudgetHelpers.convertToQueryString(itemId), "", "Breakdown by department&nbsp;&raquo;");
-    else
-      breakdownLink = BudgetHelpers.getAddressLink(BudgetLib.loadYear, "", BudgetHelpers.convertToQueryString(itemId), "Breakdown by department&nbsp;&raquo;");
-      
+    var breakdownLink = BudgetHelpers.getAddressLink(BudgetLib.loadYear, type, BudgetHelpers.convertToQueryString(itemId), "Breakdown by agency&nbsp;&raquo;");
+
     return "\
       <tr class='expanded-content' id='" + itemId + "-expanded'>\
         <td colspan='5'>\
@@ -102,13 +97,10 @@ var BudgetHelpers = {
       </tr>";
   },
   
-  generateExpandedDeptRow: function(departmentId, department, description, linkToWebsite, departmentFund, controlOfficer) {
+  generateExpandedDeptRow: function(departmentId, department, description, linkToWebsite, majorFunction, minorFunction) {
     if (linkToWebsite != '')
       linkToWebsite = "<a href='" + linkToWebsite + "'>Official&nbsp;website&nbsp;&raquo;</a>";
       
-    if (controlOfficer != '')
-      controlOfficer = "<br/>Control officer: " + BudgetHelpers.getAddressLink(BudgetLib.loadYear, "", BudgetHelpers.convertToQueryString(controlOfficer), controlOfficer + " &raquo;");
-    
     return "\
       <tr class='expanded-content' id='department-" + departmentId + "-expanded'>\
         <td colspan='5'>\
@@ -116,8 +108,9 @@ var BudgetHelpers = {
             <h2>" + department + "</h2>\
             <p>" + description + " " + linkToWebsite + "</p>\
             <p>\
-              Fund: " + BudgetHelpers.getAddressLink(BudgetLib.loadYear, BudgetHelpers.convertToQueryString(departmentFund), "", departmentFund + " &raquo;") + "</a>\
-              " + controlOfficer + "\
+              Major Function: " + BudgetHelpers.getAddressLink(BudgetLib.loadYear, 'major', BudgetHelpers.convertToQueryString(majorFunction), majorFunction + " &raquo;") + "</a>\
+              <br />\
+              Minor Function: " + BudgetHelpers.getAddressLink(BudgetLib.loadYear, 'minor', BudgetHelpers.convertToQueryString(minorFunction), minorFunction + " &raquo;") + "</a>\
             </p>\
           </div>\
           <div class='expanded-secondary'>\

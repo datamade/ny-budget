@@ -16,7 +16,7 @@
  * For display, the data is passed to Highcharts, another javascript library that specializes 
  * in graphs, and an HTML table which displays the budget broken down by Agency.
  * 
- * Every fund, control officer or Agency that is clicked updates the URL query string using 
+ * Every major function, minor function or agency that is clicked updates the URL query string using 
  * jQuery Address and the page loads the data dynamically.
  * 
  * Storing all of our data in Google Fusion Tables. For this visualization, I split it up in to 
@@ -28,7 +28,7 @@ var BudgetLib = {
 
   //IDs used to reference Fusion Tables, where we store our data
   FusionTableApiKey: "AIzaSyDgYMq5VzeWQdYNpvYfP0W3NuCKYOAB5_Y",
-  BUDGET_TABLE_ID: "1G9ykXghSuEkf4w4RciIC594sfDyykU-HHwoIecY", //main budget table with Actual/Nominal per Agency per year
+  BUDGET_TABLE_ID: "1lkIgEa1qFZiBEdxFgwWdIdHMzJ9vQN1nJEK_jcY", //main budget table with Actual/Nominal per Agency per year
   FUND_DESCRIPTION_TABLE_ID: "1DVnzs1tOFrVxrf6_jRFeXUe7b6lDYd5jh309Up4",
   OFFICER_DESCRIPTION_TABLE_ID: "1uSDhUpVbk3c7m0E7iT87LP8GfPk6vnczh-y64sI",
   
@@ -36,9 +36,8 @@ var BudgetLib = {
   startYear: 1990,
   endYear: 2013,
   loadYear: 2013, //viewing year
-  fundView: "", //viewing fund
-  officerView: "", //viewing control officer
-  viewByOfficer: false, //flag to switch between Agency and control officer view
+  majorView: "", //viewing minor function
+  minorView: "", //viewing minor function
   arraysLoaded: 0,
 
   //-------------front end display functions-------------------
@@ -47,32 +46,26 @@ var BudgetLib = {
   updateDisplay: function(viewMode, year, fund, officer, externalLoad) {
     //load in values and update internal variables
     var viewChanged = false;
-    if (BudgetLib.fundView != BudgetHelpers.convertToPlainString(fund) || BudgetLib.officerView != BudgetHelpers.convertToPlainString(officer))
+    if (BudgetLib.minorView != BudgetHelpers.convertToPlainString(fund))
     viewChanged = true;
-        
-    if (viewMode != null && viewMode == "officer") BudgetLib.viewByOfficer = true;
-    else BudgetLib.viewByOfficer = false;
     
-    if (fund != null && fund != "") BudgetLib.fundView = BudgetHelpers.convertToPlainString(fund);
-    else BudgetLib.fundView = '';
-      
-    if (officer != null && officer != "") BudgetLib.officerView = BudgetHelpers.convertToPlainString(officer);
-    else BudgetLib.officerView = '';
+    if (fund != null && fund != "") BudgetLib.minorView = BudgetHelpers.convertToPlainString(fund);
+    else BudgetLib.minorView = '';
     
     if (year != null && year != "") BudgetLib.loadYear = year;
   
     //show fund view
-    if (BudgetLib.fundView != ""){
+    if (BudgetLib.minorView != ""){
       if (viewChanged || externalLoad) {
         window.scrollTo(0, 0);
-        BudgetQueries.getTotalArray(BudgetLib.fundView, 'Minor Function', true, "BudgetLib.updateAppropTotal");
-        BudgetQueries.getTotalArray(BudgetLib.fundView, 'Minor Function', false, "BudgetLib.updateExpendTotal");
+        BudgetQueries.getTotalArray(BudgetLib.minorView, 'Minor Function', true, "BudgetLib.updateAppropTotal");
+        BudgetQueries.getTotalArray(BudgetLib.minorView, 'Minor Function', false, "BudgetLib.updateExpendTotal");
       }
       
-      BudgetQueries.getAgencies(BudgetLib.fundView, 'Minor Function', BudgetLib.loadYear, "BudgetLib.getDataAsBudgetTable");
-      BudgetLib.updateHeader(BudgetLib.fundView, 'Agency');
-      BudgetQueries.getTotalsForYear(BudgetLib.fundView, 'Minor Function', BudgetLib.loadYear, "BudgetLib.updateScorecard");
-      BudgetQueries.getFundDescription(BudgetLib.fundView, "BudgetLib.updateScorecardDescription");
+      BudgetQueries.getAgencies(BudgetLib.minorView, 'Minor Function', BudgetLib.loadYear, "BudgetLib.getDataAsBudgetTable");
+      BudgetLib.updateHeader(BudgetLib.minorView, 'Agency');
+      BudgetQueries.getTotalsForYear(BudgetLib.minorView, 'Minor Function', BudgetLib.loadYear, "BudgetLib.updateScorecard");
+      BudgetQueries.getFundDescription(BudgetLib.minorView, "BudgetLib.updateScorecardDescription");
     }
     else { //load default view
       if (viewChanged || externalLoad) {
@@ -87,7 +80,7 @@ var BudgetLib = {
       
       BudgetLib.updateHeader(BudgetLib.title, 'Minor Function');
       BudgetQueries.getTotalsForYear('', '', BudgetLib.loadYear, "BudgetLib.updateScorecard");
-      BudgetQueries.getFundDescription(BudgetLib.fundView, "BudgetLib.updateScorecardDescription");
+      BudgetQueries.getFundDescription(BudgetLib.minorView, "BudgetLib.updateScorecardDescription");
     }
     $('#breadcrumbs a').address();
   },  
@@ -207,12 +200,8 @@ var BudgetLib = {
       if (rows.length > 0) {
         $('#scorecard-desc p').hide().html(rows[0][0]).fadeIn();
       }
-      else if (BudgetLib.viewByOfficer) {
-        $('#scorecard-desc p').hide().html('Breakdown by control officer*').fadeIn();
-        $("#f-officers").show();
-      }
-      else if (!BudgetLib.viewByOfficer && BudgetLib.fundView == '' && BudgetLib.officerView == '') {
-        $('#scorecard-desc p').hide().html('Breakdown by fund').fadeIn();
+      else if (BudgetLib.minorView == '') {
+        $('#scorecard-desc p').hide().html('Breakdown by minor function').fadeIn();
       }
       else $('#scorecard-desc p').html('');
     }
@@ -282,7 +271,7 @@ var BudgetLib = {
       var rowId = BudgetHelpers.convertToSlug(rowName);
       var detailLoadFunction = "BudgetLib.getFundDetails(\"" + BudgetHelpers.convertToSlug(rowName) + "\");";
       
-      if ((BudgetLib.fundView != null && BudgetLib.fundView != "") || (BudgetLib.officerView != null && BudgetLib.officerView != "")) {
+      if (BudgetLib.minorView != null && BudgetLib.minorView != "") {
         rowId = "Agency-" + AgencyId;
         detailLoadFunction = "BudgetLib.getAgencyDetails(\"Agency-" + AgencyId + "\");";
       }
@@ -300,7 +289,7 @@ var BudgetLib = {
   
   //shows fund details when row is clicked
   getFundDetails: function(itemId) {  
-    var fusiontabledata = BudgetHelpers.generateExpandedRow(itemId, 'fund');
+    var fusiontabledata = BudgetHelpers.generateExpandedRow(itemId, 'minor');
     BudgetLib.updateDetail(itemId, fusiontabledata);
     BudgetQueries.getFundDescription(BudgetHelpers.convertToPlainString(itemId), "BudgetLib.updateExpandedDescription");
     BudgetQueries.getTotalArray(BudgetHelpers.convertToPlainString(itemId), 'Minor Function', true, "BudgetLib.updateSparkAppropTotal");
@@ -329,19 +318,19 @@ var BudgetLib = {
   updateAgencyDetails: function(json) {
     var rows = json["rows"];
 
-    var AgencyId = rows[0][0];
-    var Agency = rows[0][1];
+    var agencyId = rows[0][0];
+    var agency = rows[0][1];
     var linkToWebsite = rows[0][2];
     var description = rows[0][3];
-    var controlOfficer = rows[0][4];
-    var AgencyFund = rows[0][5];
+    var majorFunction = rows[0][4];
+    var minorFunction = rows[0][5];
      
-    var fusiontabledata = BudgetHelpers.generateExpandedDeptRow(AgencyId, Agency, description, linkToWebsite, AgencyFund, controlOfficer);
-    BudgetLib.updateDetail('Agency-' + AgencyId, fusiontabledata);
+    var fusiontabledata = BudgetHelpers.generateExpandedDeptRow(agencyId, agency, description, linkToWebsite, majorFunction, minorFunction);
+    BudgetLib.updateDetail('Agency-' + agencyId, fusiontabledata);
     
-    BudgetQueries.getTotalArray(AgencyId, 'Agency ID', true, "BudgetLib.updateSparkAppropTotal");
-    BudgetQueries.getTotalArray(AgencyId, 'Agency ID', false, "BudgetLib.updateSparkExpendTotal");
-    BudgetQueries.getSparklinePercentages(AgencyId, 'Agency ID', BudgetLib.loadYear, "BudgetLib.updateSparklinePercentages"); 
+    BudgetQueries.getTotalArray(agencyId, 'Agency ID', true, "BudgetLib.updateSparkAppropTotal");
+    BudgetQueries.getTotalArray(agencyId, 'Agency ID', false, "BudgetLib.updateSparkExpendTotal");
+    BudgetQueries.getSparklinePercentages(agencyId, 'Agency ID', BudgetLib.loadYear, "BudgetLib.updateSparklinePercentages"); 
   },
   
   //updates percentages that display below the expanded row sparkling
