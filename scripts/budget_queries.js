@@ -76,13 +76,13 @@ var BudgetQueries = {
 	},
 	
 	//get percentage change per year for display below the sparkline in expanded row detail
-	getSparklinePercentages: function(name, queryType, year, callback) {	
-		if (year > BudgetLib.startYear) {
+	getSparklinePercentages: function(name, queryType, yearCurrent, yearCompare, callback) {	
+		if (yearCurrent > BudgetLib.startYear) {
 			var whereClause = "";
 			if (queryType != "")
 				whereClause += " WHERE '" + queryType + "' = '" + name + "'";
 				
-			var myQuery = "SELECT SUM('Nominal " + year + "') AS 'Nominal Top', SUM('Actual " + year + "') AS 'Actual Top', SUM('Nominal " + (year - 1) + "') AS 'Nominal Bottom', SUM('Actual " + (year - 1) + "') AS 'Actual Bottom' FROM " + BudgetLib.BUDGET_TABLE_ID + whereClause;			
+			var myQuery = "SELECT SUM('Nominal " + yearCurrent + "') AS 'Nominal Top', SUM('Actual " + yearCurrent + "') AS 'Actual Top', SUM('Nominal " + yearCompare + "') AS 'Nominal Bottom', SUM('Actual " + yearCompare + "') AS 'Actual Bottom' FROM " + BudgetLib.BUDGET_TABLE_ID + whereClause;			
 			BudgetHelpers.query(myQuery, callback);
 		}
 	}

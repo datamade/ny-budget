@@ -83,7 +83,6 @@ var BudgetHelpers = {
             <div class='expanded-secondary'>\
             <div class='sparkline' id='selected-chart'></div>\
             <ul class='stats'>\
-              <li id='sparkline-nominal'></li>\
               <li id='sparkline-actual'></li>\
             </ul>\
           </div>\
@@ -110,7 +109,6 @@ var BudgetHelpers = {
           <div class='expanded-secondary'>\
             <div class='sparkline' id='selected-chart'></div>\
             <ul class='stats'>\
-              <li id='sparkline-nominal'></li>\
               <li id='sparkline-actual'></li>\
             </ul>\
           </div>\

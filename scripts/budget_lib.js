@@ -283,7 +283,7 @@ var BudgetLib = {
     BudgetQueries.getFundDescription(BudgetHelpers.convertToPlainString(itemId), "BudgetLib.updateExpandedDescription");
     BudgetQueries.getTotalArray(BudgetHelpers.convertToPlainString(itemId), 'Minor Function', true, "BudgetLib.updateSparkAppropTotal");
     BudgetQueries.getTotalArray(BudgetHelpers.convertToPlainString(itemId), 'Minor Function', false, "BudgetLib.updateSparkExpendTotal");
-    BudgetQueries.getSparklinePercentages(BudgetHelpers.convertToPlainString(itemId), 'Minor Function', BudgetLib.loadYear, "BudgetLib.updateSparklinePercentages");
+    BudgetQueries.getSparklinePercentages(BudgetHelpers.convertToPlainString(itemId), 'Minor Function', BudgetLib.loadYear, BudgetLib.endYear, "BudgetLib.updateSparklinePercentages");
   },
   
   //shows description in expanded row when row is clicked
@@ -319,7 +319,7 @@ var BudgetLib = {
     
     BudgetQueries.getTotalArray(agencyId, 'Agency ID', true, "BudgetLib.updateSparkAppropTotal");
     BudgetQueries.getTotalArray(agencyId, 'Agency ID', false, "BudgetLib.updateSparkExpendTotal");
-    BudgetQueries.getSparklinePercentages(agencyId, 'Agency ID', BudgetLib.loadYear, "BudgetLib.updateSparklinePercentages"); 
+    BudgetQueries.getSparklinePercentages(agencyId, 'Agency ID', BudgetLib.loadYear, BudgetLib.endYear, "BudgetLib.updateSparklinePercentages"); 
   },
   
   //updates percentages that display below the expanded row sparkling
@@ -329,22 +329,13 @@ var BudgetLib = {
 
     if (rows.length > 0)
     {
-      var nominalTop = rows[0][0];
       var actualTop = rows[0][1];
-      var nominalBottom = rows[0][2];
       var actualBottom = rows[0][3];
-      
-      if (nominalTop > 0 && nominalBottom > 0) {
-        var nominalPercent = (((nominalTop / nominalBottom) - 1) * 100).toFixed(1);
-        if (nominalPercent >= -0.05) nominalPercent = '+' + nominalPercent;
-        $('#sparkline-nominal').hide().html('<strong>' + nominalPercent + '%</strong> nominal from ' + (BudgetLib.loadYear - 1)).fadeIn();
-      }
-      else $('#sparkline-nominal').fadeOut();
       
       if (actualTop > 0 && actualBottom > 0) {
         var actualPercent = (((actualTop / actualBottom) - 1) * 100).toFixed(1);
         if (actualPercent >= -0.05) actualPercent = '+' + actualPercent;
-        $('#sparkline-actual').hide().html('<strong>' + actualPercent + '%</strong> actual from ' + (BudgetLib.loadYear - 1)).fadeIn();
+        $('#sparkline-actual').hide().html('<strong>' + actualPercent + '%</strong> actual from ' + BudgetLib.endYear).fadeIn();
       }
       else $('#sparkline-actual').fadeOut();
     }
