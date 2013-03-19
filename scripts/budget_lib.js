@@ -274,6 +274,8 @@ var BudgetLib = {
  
     BudgetLib.breakdownData = fusiontabledata;
     BudgetLib.updateTable();
+
+    //BudgetHighcharts.updatePie("pie", [.2, .3, .1, .4], "Test Pie");
   },
   
   //shows fund details when row is clicked

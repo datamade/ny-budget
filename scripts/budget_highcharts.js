@@ -229,6 +229,46 @@ var BudgetHighcharts = {
       BudgetLib.sparkChart.series[1].data[selectedYearIndex].select(true,true);
     }
   },
+
+  updatePie: function(element, pieData, sliceTitle) {
+    return new Highcharts.Chart({
+        chart: {
+            renderTo: element,
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false
+        },
+        credits: { 
+          enabled: false 
+        },
+        title: {
+            text: null
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage}%</b>',
+            percentageDecimals: 1
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    color: '#000000',
+                    connectorColor: '#000000',
+                    formatter: function() {
+                        return '<b>'+ this.point.name +'</b>: '+ this.percentage +' %';
+                    }
+                }
+            }
+        },
+        series: [{
+            type: 'pie',
+            name: sliceTitle,
+            data: pieData
+        }]
+    });
+  },
   
   formatAmount: function(value) {
     if (value >= 1000000000)
