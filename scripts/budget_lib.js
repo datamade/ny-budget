@@ -228,18 +228,12 @@ var BudgetLib = {
       }).fadeIn();
       
       if (cols.length > 2) {
-        var nominalTop = rows[0][2];
         var actualTop = rows[0][3];
-        var nominalBottom = rows[0][4];
         var actualBottom = rows[0][5];
         
         if (actualTop > 0 && actualBottom > 0) {
           var actualPercent = (((actualTop / actualBottom) - 1) * 100).toFixed(1);
           if (actualPercent > -0.05) actualPercent = '+' + actualPercent;
-          
-          console.log('actualTop: ' + actualTop);
-          console.log('actualBottom: ' + actualBottom);
-          console.log('actualPercent: ' + actualPercent);
 
           $('#actual-change-percent').hide().html('<strong>' + actualPercent + '%</strong> actual from ' + (BudgetLib.endYear)).fadeIn();
         }
