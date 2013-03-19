@@ -47,7 +47,7 @@ var BudgetQueries = {
 			percentageQuery = ", SUM('Nominal " + yearCurrent + "') AS 'Nominal Top', SUM('Actual " + yearCurrent + "') AS 'Actual Top', SUM('Nominal " + yearCompare + "') AS 'Nominal Bottom', SUM('Actual " + yearCompare + "') AS 'Actual Bottom'";
 		}
 			
-		var myQuery = "SELECT SUM('Nominal " + yearCompare + "') AS 'Nominal', SUM('Actual " + yearCompare + "') AS 'Actual' " + percentageQuery + " FROM " + BudgetLib.BUDGET_TABLE_ID + whereClause;			
+		var myQuery = "SELECT SUM('Nominal " + yearCurrent + "') AS 'Nominal', SUM('Actual " + yearCurrent + "') AS 'Actual' " + percentageQuery + " FROM " + BudgetLib.BUDGET_TABLE_ID + whereClause;			
 		BudgetHelpers.query(myQuery, callback);
 	},
 	

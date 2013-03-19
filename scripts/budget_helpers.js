@@ -62,8 +62,8 @@ var BudgetHelpers = {
         <td>\
         <a onclick='" + detailLoadFunction + "'><img class='budget-expand-img' src='images/expand.png' /></a>&nbsp;<a onclick='" + detailLoadFunction + "'>" + rowName + "</a>\
         </td>\
-        <td class='num nominal'>" + nominal + "</td>\
         <td class='num actual'>" + actual + "</td>\
+        <td class='num nominal'>" + nominal + "</td>\
       </tr>";
   },
   
