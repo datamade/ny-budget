@@ -64,7 +64,7 @@ var BudgetLib = {
       
       BudgetQueries.getAgencies(BudgetLib.minorView, 'Minor Function', BudgetLib.loadYear, "BudgetLib.getDataAsBudgetTable");
       BudgetLib.updateHeader(BudgetLib.minorView, 'Agency');
-      BudgetQueries.getTotalsForYear(BudgetLib.minorView, 'Minor Function', BudgetLib.loadYear, "BudgetLib.updateScorecard");
+      BudgetQueries.getTotalsForYear(BudgetLib.minorView, 'Minor Function', BudgetLib.loadYear, BudgetLib.endYear, "BudgetLib.updateScorecard");
       BudgetQueries.getFundDescription(BudgetLib.minorView, "BudgetLib.updateScorecardDescription");
     }
     else { //load default view
@@ -79,7 +79,7 @@ var BudgetLib = {
       $('#breakdown-nav a').address();
       
       BudgetLib.updateHeader(BudgetLib.title, 'Minor Function');
-      BudgetQueries.getTotalsForYear('', '', BudgetLib.loadYear, "BudgetLib.updateScorecard");
+      BudgetQueries.getTotalsForYear('', '', BudgetLib.loadYear, BudgetLib.endYear, "BudgetLib.updateScorecard");
       BudgetQueries.getFundDescription(BudgetLib.minorView, "BudgetLib.updateScorecardDescription");
     }
     $('#breadcrumbs a').address();
@@ -133,8 +133,7 @@ var BudgetLib = {
         "aoColumns": [
           null,
           { "sType": "currency" },
-          { "sType": "currency" },
-          { "bSortable": false }
+          { "sType": "currency" }
         ],
         "bFilter": false,
         "bInfo": false,
@@ -234,21 +233,17 @@ var BudgetLib = {
         var nominalBottom = rows[0][4];
         var actualBottom = rows[0][5];
         
-        if (nominalTop > 0 && nominalBottom > 0) {
-          var nominalPercent = (((nominalTop / nominalBottom) - 1) * 100).toFixed(1);
-          if (nominalPercent > -0.05) nominalPercent = '+' + nominalPercent;
-          
-          $('#nominal-percent').hide().html('<strong>' + nominalPercent + '%</strong> nominal from ' + (BudgetLib.loadYear - 1)).fadeIn();
-        }
-        else $('#nominal-percent').fadeOut();
-        
         if (actualTop > 0 && actualBottom > 0) {
           var actualPercent = (((actualTop / actualBottom) - 1) * 100).toFixed(1);
           if (actualPercent > -0.05) actualPercent = '+' + actualPercent;
           
-          $('#actual-percent').hide().html('<strong>' + actualPercent + '%</strong> actual from ' + (BudgetLib.loadYear - 1)).fadeIn();
+          console.log('actualTop: ' + actualTop);
+          console.log('actualBottom: ' + actualBottom);
+          console.log('actualPercent: ' + actualPercent);
+
+          $('#actual-change-percent').hide().html('<strong>' + actualPercent + '%</strong> actual from ' + (BudgetLib.endYear)).fadeIn();
         }
-        else $('#actual-percent').fadeOut();
+        else $('#actual-change-percent').fadeOut();
       }
     }
   },

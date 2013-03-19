@@ -37,17 +37,18 @@ var BudgetQueries = {
 	},
 	
 	//returns total given year
-	getTotalsForYear: function(name, queryType, year, callback) {
+	getTotalsForYear: function(name, queryType, yearCurrent, yearCompare, callback) {
+		console.log('comparing ' + yearCurrent + ' to ' + yearCompare);
 		var whereClause = "";
 		if (name != "")
 			whereClause = " WHERE '" + queryType + "' = '" + name + "'";
 		
 		var percentageQuery = "";	
-		if (year > BudgetLib.startYear) {
-			percentageQuery = ", SUM('Nominal " + year + "') AS 'Nominal Top', SUM('Actual " + year + "') AS 'Actual Top', SUM('Nominal " + (year - 1) + "') AS 'Nominal Bottom', SUM('Actual " + (year - 1) + "') AS 'Actual Bottom'";
+		if (yearCurrent > BudgetLib.startYear) {
+			percentageQuery = ", SUM('Nominal " + yearCompare + "') AS 'Nominal Top', SUM('Actual " + yearCompare + "') AS 'Actual Top', SUM('Nominal " + yearCurrent + "') AS 'Nominal Bottom', SUM('Actual " + yearCurrent + "') AS 'Actual Bottom'";
 		}
 			
-		var myQuery = "SELECT SUM('Nominal " + year + "') AS 'Nominal', SUM('Actual " + year + "') AS 'Actual' " + percentageQuery + " FROM " + BudgetLib.BUDGET_TABLE_ID + whereClause;			
+		var myQuery = "SELECT SUM('Nominal " + yearCompare + "') AS 'Nominal', SUM('Actual " + yearCompare + "') AS 'Actual' " + percentageQuery + " FROM " + BudgetLib.BUDGET_TABLE_ID + whereClause;			
 		BudgetHelpers.query(myQuery, callback);
 	},
 	

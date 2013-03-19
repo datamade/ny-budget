@@ -45,7 +45,7 @@ var BudgetHelpers = {
       lastItem = i;
     }
 
-    //For the most recent year, we usually don't have Actual. 
+    //For the most recent year, we are sometimes missing data.
     //By setting the last year to null when 0, Highcharts just truncates the line.
     if (dataArray[lastItem] == 0) dataArray[lastItem] = null;
     return dataArray;
@@ -64,12 +64,6 @@ var BudgetHelpers = {
         </td>\
         <td class='num nominal'>" + nominal + "</td>\
         <td class='num actual'>" + actual + "</td>\
-        <td>\
-          <div class='bars'>\
-            <span class='nominal outer'></span>\
-            <span class='actual inner'></span>\
-          </div>\
-        </td>\
       </tr>";
   },
   
@@ -78,7 +72,7 @@ var BudgetHelpers = {
 
     return "\
       <tr class='expanded-content' id='" + itemId + "-expanded'>\
-        <td colspan='5'>\
+        <td colspan='4'>\
           <div class='expanded-primary'>\
             <h2>" + BudgetHelpers.convertToPlainString(itemId) + "</h2>\
             <p id='expanded-description'></p>\
