@@ -76,13 +76,13 @@ var BudgetLib = {
       BudgetQueries.getAllFundsForYear(BudgetLib.loadYear, "BudgetLib.getDataAsBudgetTable");
       $('#breakdown-item-title span').html('Minor Function');
       
-      $('#breakdown-nav a').address();
+      //$('#breakdown-nav a').address();
       
       BudgetLib.updateHeader(BudgetLib.title, 'Minor Function');
       BudgetQueries.getTotalsForYear('', '', BudgetLib.loadYear, BudgetLib.endYear, "BudgetLib.updateScorecard");
       BudgetQueries.getFundDescription(BudgetLib.minorView, "BudgetLib.updateScorecardDescription");
     }
-    $('#breadcrumbs a').address();
+    //$('#breadcrumbs a').address();
   },  
   
   updateHeader: function(view, subtype){
@@ -126,7 +126,7 @@ var BudgetLib = {
       $('.nominal.num').formatCurrency();
       $('.actual.num').formatCurrency();
       
-      $('.adr').address(); //after adding the table rows, initialize the address plugin on all the links
+      //$('.adr').address(); //after adding the table rows, initialize the address plugin on all the links
       
       BudgetLib.breakdownTable = $("#breakdown").dataTable({
         "aaSorting": [[1, "desc"]],

@@ -72,7 +72,7 @@ var BudgetHighcharts = {
                   }
                 });
         var clickedYear = new Date(x).getFullYear();
-        $.address.parameter('year',clickedYear);
+        //$.address.parameter('year',clickedYear);
               }
             }
           },
@@ -94,7 +94,7 @@ var BudgetHighcharts = {
           color: this.expendColor,
           data: BudgetLib.expendTotalArray,
           marker: {
-            radius: 8,
+            radius: 6,
             symbol: this.expendSybmol
           },
           name: this.expendTitle
@@ -165,8 +165,8 @@ var BudgetHighcharts = {
                   if (BudgetLib.minorView == '')
                   {
                     var clickedYear = new Date(x).getFullYear();          
-                    $.address.parameter('year',clickedYear)
-                    $.address.parameter('minor',BudgetHelpers.convertToQueryString($('.expanded-primary h2').html()));
+                    //$.address.parameter('year',clickedYear)
+                    //$.address.parameter('minor',BudgetHelpers.convertToQueryString($('.expanded-primary h2').html()));
                   }
                 }
               }
