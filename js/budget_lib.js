@@ -35,37 +35,45 @@ var BudgetLib = {
   title: "State of Washington Budget",
   startYear: 1990,
   endYear: 2013,
-  loadYear: 2013, //viewing year
-  majorView: "", //viewing minor function
-  minorView: "", //viewing minor function
+
+  // keep track of our state
+  loadYear: 2013,  // viewing year
+  viewMode: "",    // viewing mode - major or minor
+  viewName: "",    // viewing friendly name
   arraysLoaded: 0,
 
   //-------------front end display functions-------------------
   
   //primary load for graph and table
-  updateDisplay: function(viewMode, year, fund, officer, externalLoad) {
+  initialize: function(viewMode, viewName, viewYear, externalLoad) {
+    console.log(viewMode);
+    console.log(viewName);
+    console.log(viewYear);
     //load in values and update internal variables
     var viewChanged = false;
-    if (BudgetLib.minorView != BudgetHelpers.convertToPlainString(fund))
-    viewChanged = true;
+    if (BudgetLib.viewName != BudgetHelpers.convertToPlainString(viewName))
+      viewChanged = true;
     
-    if (fund != null && fund != "") BudgetLib.minorView = BudgetHelpers.convertToPlainString(fund);
-    else BudgetLib.minorView = '';
+    if (viewName != null && viewName != "") 
+      BudgetLib.viewName = BudgetHelpers.convertToPlainString(viewName);
+    else 
+      BudgetLib.viewName = '';
     
-    if (year != null && year != "") BudgetLib.loadYear = year;
+    if (viewYear != null && viewYear != "") 
+      BudgetLib.loadYear = viewYear;
   
-    //show fund view
-    if (BudgetLib.minorView != ""){
+    //show viewName view
+    if (BudgetLib.viewName != ""){
       if (viewChanged || externalLoad) {
         window.scrollTo(0, 0);
-        BudgetQueries.getTotalArray(BudgetLib.minorView, 'Minor Function', true, "BudgetLib.updateAppropTotal");
-        BudgetQueries.getTotalArray(BudgetLib.minorView, 'Minor Function', false, "BudgetLib.updateExpendTotal");
+        BudgetQueries.getTotalArray(BudgetLib.viewName, 'Minor Function', true, "BudgetLib.updateAppropTotal");
+        BudgetQueries.getTotalArray(BudgetLib.viewName, 'Minor Function', false, "BudgetLib.updateExpendTotal");
       }
       
-      BudgetQueries.getAgencies(BudgetLib.minorView, 'Minor Function', BudgetLib.loadYear, "BudgetLib.getDataAsBudgetTable");
-      BudgetLib.updateHeader(BudgetLib.minorView, 'Agency');
-      BudgetQueries.getTotalsForYear(BudgetLib.minorView, 'Minor Function', BudgetLib.loadYear, BudgetLib.endYear, "BudgetLib.updateScorecard");
-      BudgetQueries.getFundDescription(BudgetLib.minorView, "BudgetLib.updateScorecardDescription");
+      BudgetQueries.getAgencies(BudgetLib.viewName, 'Minor Function', BudgetLib.loadYear, "BudgetLib.getDataAsBudgetTable");
+      BudgetLib.updateHeader(BudgetLib.viewName, 'Agency');
+      BudgetQueries.getTotalsForYear(BudgetLib.viewName, 'Minor Function', BudgetLib.loadYear, BudgetLib.endYear, "BudgetLib.updateScorecard");
+      BudgetQueries.getFundDescription(BudgetLib.viewName, "BudgetLib.updateScorecardDescription");
     }
     else { //load default view
       if (viewChanged || externalLoad) {
@@ -80,7 +88,7 @@ var BudgetLib = {
       
       BudgetLib.updateHeader(BudgetLib.title, 'Minor Function');
       BudgetQueries.getTotalsForYear('', '', BudgetLib.loadYear, BudgetLib.endYear, "BudgetLib.updateScorecard");
-      BudgetQueries.getFundDescription(BudgetLib.minorView, "BudgetLib.updateScorecardDescription");
+      BudgetQueries.getFundDescription(BudgetLib.viewName, "BudgetLib.updateScorecardDescription");
     }
     //$('#breadcrumbs a').address();
   },  
@@ -199,7 +207,7 @@ var BudgetLib = {
       if (rows.length > 0) {
         $('#scorecard-desc p').hide().html(rows[0][0]).fadeIn();
       }
-      else if (BudgetLib.minorView == '') {
+      else if (BudgetLib.viewName == '') {
         $('#scorecard-desc p').hide().html('Breakdown by minor function').fadeIn();
       }
       else $('#scorecard-desc p').html('');
@@ -260,7 +268,7 @@ var BudgetLib = {
       var rowId = BudgetHelpers.convertToSlug(rowName);
       var detailLoadFunction = "BudgetLib.getFundDetails(\"" + BudgetHelpers.convertToSlug(rowName) + "\");";
       
-      if (BudgetLib.minorView != null && BudgetLib.minorView != "") {
+      if (BudgetLib.viewName != null && BudgetLib.viewName != "") {
         rowId = "Agency-" + AgencyId;
         detailLoadFunction = "BudgetLib.getAgencyDetails(\"Agency-" + AgencyId + "\");";
       }

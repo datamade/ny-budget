@@ -57,9 +57,9 @@ var BudgetHighcharts = {
                 $("#readme").fadeOut("fast");
                 $.cookie("budgetbreakdownreadme", "read", { expires: 7 });
                 var x = this.x,
-            y = this.y,
-                    selected = !this.selected,
-                    index = this.series.index;
+                y = this.y,
+                selected = !this.selected,
+                index = this.series.index;
                 this.select(selected, false);
     
                 $.each(this.series.chart.series, function(i, serie) {
@@ -71,8 +71,8 @@ var BudgetHighcharts = {
                     });
                   }
                 });
-        var clickedYear = new Date(x).getFullYear();
-        //$.address.parameter('year',clickedYear);
+              var clickedYear = new Date(x).getFullYear();
+              window.location.hash = '/year/' + clickedYear; 
               }
             }
           },
@@ -162,11 +162,12 @@ var BudgetHighcharts = {
               events: {
                 click: function() {
                   var x = this.x;
-                  if (BudgetLib.minorView == '')
+                  if (BudgetLib.viewName == '')
                   {
-                    var clickedYear = new Date(x).getFullYear();          
+                    var clickedYear = new Date(x).getFullYear();
+                    window.location.hash = '/year/' + clickedYear;       
                     //$.address.parameter('year',clickedYear)
-                    //$.address.parameter('minor',BudgetHelpers.convertToQueryString($('.expanded-primary h2').html()));
+                    //$.address.parameter('minor',);
                   }
                 }
               }
