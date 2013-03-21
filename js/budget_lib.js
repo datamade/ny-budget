@@ -47,9 +47,9 @@ var BudgetLib = {
   
   //primary load for graph and table
   updateView: function(viewMode, viewName, viewYear, viewChart, externalLoad) {
-    console.log(viewMode);
-    console.log(viewName);
-    console.log(viewYear);
+    // console.log(viewMode);
+    // console.log(viewName);
+    // console.log(viewYear);
     //load in values and update internal variables    
     if (viewName != null) 
       BudgetLib.viewName = BudgetHelpers.convertToPlainString(viewName);
