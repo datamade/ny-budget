@@ -17,7 +17,7 @@ var BudgetHelpers = {
 
   query: function(sql, callback) {  
     var sql = encodeURIComponent(sql);
-    //console.log("https://www.googleapis.com/fusiontables/v1/query?sql="+sql+"&key="+BudgetLib.FusionTableApiKey);
+    console.log("https://www.googleapis.com/fusiontables/v1/query?sql="+sql+"&key="+BudgetLib.FusionTableApiKey);
     $.ajax({
       url: "https://www.googleapis.com/fusiontables/v1/query?sql="+sql+"&callback="+callback+"&key="+BudgetLib.FusionTableApiKey, 
       dataType: "jsonp"
@@ -52,8 +52,8 @@ var BudgetHelpers = {
   },
 
   getAddressLink: function(year, type, handle, linkTitle) {
-    var href = "/?year=" + year + "&amp;" + type + "=" + handle;
-  	return ("<a class='adr' href='" + href + "' rel='address:" + href + "'>" + linkTitle + "</a>");
+    var href = '#/' + type + '/' + handle + '/' + year;
+  	return ("<a href='" + href + "'>" + linkTitle + "</a>");
   },
   
   generateTableRow: function(rowId, detailLoadFunction, rowName, nominal, actual) {
@@ -70,6 +70,7 @@ var BudgetHelpers = {
   generateExpandedRow: function(itemId, type) {
     var breakdownLink = BudgetHelpers.getAddressLink(BudgetLib.loadYear, type, BudgetHelpers.convertToQueryString(itemId), "Breakdown by agency&nbsp;&raquo;");
 
+    console.log(breakdownLink);
     return "\
       <tr class='expanded-content' id='" + itemId + "-expanded'>\
         <td colspan='4'>\

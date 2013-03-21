@@ -46,9 +46,9 @@ var BudgetLib = {
   
   //primary load for graph and table
   initialize: function(viewMode, viewName, viewYear, externalLoad) {
-    console.log(viewMode);
-    console.log(viewName);
-    console.log(viewYear);
+    // console.log(viewMode);
+    // console.log(viewName);
+    // console.log(viewYear);
     //load in values and update internal variables
     var viewChanged = false;
     if (BudgetLib.viewName != BudgetHelpers.convertToPlainString(viewName))
@@ -84,13 +84,10 @@ var BudgetLib = {
       BudgetQueries.getAllFundsForYear(BudgetLib.loadYear, "BudgetLib.getDataAsBudgetTable");
       $('#breakdown-item-title span').html('Minor Function');
       
-      //$('#breakdown-nav a').address();
-      
       BudgetLib.updateHeader(BudgetLib.title, 'Minor Function');
       BudgetQueries.getTotalsForYear('', '', BudgetLib.loadYear, BudgetLib.endYear, "BudgetLib.updateScorecard");
       BudgetQueries.getFundDescription(BudgetLib.viewName, "BudgetLib.updateScorecardDescription");
     }
-    //$('#breadcrumbs a').address();
   },  
   
   updateHeader: function(view, subtype){
@@ -162,7 +159,7 @@ var BudgetLib = {
       $('#breakdown .expanded-content').remove();
       $('#breakdown tr').removeClass('expanded-head');
       $('#' + itemId + ' .budget-expand-img').attr('src', 'images/collapse.png');
-      $(detail).insertAfter($('#' + itemId));
+      $('#' + itemId).after(detail);
       $('#' + itemId).addClass('expanded-head');
     }
     else {
@@ -288,8 +285,9 @@ var BudgetLib = {
   
   //shows fund details when row is clicked
   getFundDetails: function(itemId) {  
-    var fusiontabledata = BudgetHelpers.generateExpandedRow(itemId, 'minor');
-    BudgetLib.updateDetail(itemId, fusiontabledata);
+    var expanded_row = BudgetHelpers.generateExpandedRow(itemId, 'minor');
+    console.log(expanded_row);
+    BudgetLib.updateDetail(itemId, expanded_row);
     BudgetQueries.getFundDescription(BudgetHelpers.convertToPlainString(itemId), "BudgetLib.updateExpandedDescription");
     BudgetQueries.getTotalArray(BudgetHelpers.convertToPlainString(itemId), 'Minor Function', true, "BudgetLib.updateSparkAppropTotal");
     BudgetQueries.getTotalArray(BudgetHelpers.convertToPlainString(itemId), 'Minor Function', false, "BudgetLib.updateSparkExpendTotal");

@@ -71,8 +71,8 @@ var BudgetHighcharts = {
                     });
                   }
                 });
-              var clickedYear = new Date(x).getFullYear();
-              window.location.hash = '/year/' + clickedYear; 
+                var clickedYear = new Date(x).getFullYear();
+                BudgetHighcharts.updateNavigation(clickedYear);
               }
             }
           },
@@ -161,14 +161,8 @@ var BudgetHighcharts = {
             point: {
               events: {
                 click: function() {
-                  var x = this.x;
-                  if (BudgetLib.viewName == '')
-                  {
-                    var clickedYear = new Date(x).getFullYear();
-                    window.location.hash = '/year/' + clickedYear;       
-                    //$.address.parameter('year',clickedYear)
-                    //$.address.parameter('minor',);
-                  }
+                  var clickedYear = new Date(this.x).getFullYear();
+                  BudgetHighcharts.updateNavigation(clickedYear);
                 }
               }
             },
@@ -278,5 +272,16 @@ var BudgetHighcharts = {
       return "$" + value / 1000000 + "M";
     else
       return "$" + value;
+  },
+
+  updateNavigation: function(clickedYear) {
+    if (BudgetLib.viewMode != "" && BudgetLib.viewName != "") {
+      app_router.navigate((BudgetLib.viewMode + '/' + BudgetLib.viewName + '/' + clickedYear), {trigger: false});
+      BudgetLib.initialize(BudgetLib.viewMode, BudgetLib.viewName, clickedYear, false);
+    }
+    else {
+      app_router.navigate(('/year/' + clickedYear), {trigger: false});
+      BudgetLib.initialize(null, null, clickedYear, false);
+    }
   }
 }
