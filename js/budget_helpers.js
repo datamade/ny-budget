@@ -17,7 +17,7 @@ var BudgetHelpers = {
 
   query: function(sql, callback) {  
     var sql = encodeURIComponent(sql);
-    console.log("https://www.googleapis.com/fusiontables/v1/query?sql="+sql+"&key="+BudgetLib.FusionTableApiKey);
+    //console.log("https://www.googleapis.com/fusiontables/v1/query?sql="+sql+"&key="+BudgetLib.FusionTableApiKey);
     $.ajax({
       url: "https://www.googleapis.com/fusiontables/v1/query?sql="+sql+"&callback="+callback+"&key="+BudgetLib.FusionTableApiKey, 
       dataType: "jsonp"
@@ -68,9 +68,8 @@ var BudgetHelpers = {
   },
   
   generateExpandedRow: function(itemId, type) {
-    var breakdownLink = BudgetHelpers.getAddressLink(BudgetLib.loadYear, type, BudgetHelpers.convertToQueryString(itemId), "Breakdown by agency&nbsp;&raquo;");
+    var breakdownLink = BudgetHelpers.getAddressLink(BudgetLib.viewYear, type, BudgetHelpers.convertToQueryString(itemId), "Breakdown by agency&nbsp;&raquo;");
 
-    console.log(breakdownLink);
     return "\
       <tr class='expanded-content' id='" + itemId + "-expanded'>\
         <td colspan='4'>\
@@ -91,20 +90,16 @@ var BudgetHelpers = {
       </tr>";
   },
   
-  generateExpandedDeptRow: function(departmentId, department, description, linkToWebsite, majorFunction, minorFunction) {
-    if (linkToWebsite != '')
-      linkToWebsite = "<a href='" + linkToWebsite + "'>Official&nbsp;website&nbsp;&raquo;</a>";
-      
+  generateExpandedDeptRow: function(departmentId, department, description, majorFunction, minorFunction) {
     return "\
       <tr class='expanded-content' id='department-" + departmentId + "-expanded'>\
         <td colspan='5'>\
           <div class='expanded-primary'>\
             <h2>" + department + "</h2>\
-            <p>" + description + " " + linkToWebsite + "</p>\
             <p>\
-              Major Function: " + BudgetHelpers.getAddressLink(BudgetLib.loadYear, 'major', BudgetHelpers.convertToQueryString(majorFunction), majorFunction + " &raquo;") + "</a>\
+              Major Function: " + BudgetHelpers.getAddressLink(BudgetLib.viewYear, 'major', BudgetHelpers.convertToQueryString(majorFunction), majorFunction + " &raquo;") + "</a>\
               <br />\
-              Minor Function: " + BudgetHelpers.getAddressLink(BudgetLib.loadYear, 'minor', BudgetHelpers.convertToQueryString(minorFunction), minorFunction + " &raquo;") + "</a>\
+              Minor Function: " + BudgetHelpers.getAddressLink(BudgetLib.viewYear, 'minor', BudgetHelpers.convertToQueryString(minorFunction), minorFunction + " &raquo;") + "</a>\
             </p>\
           </div>\
           <div class='expanded-secondary'>\

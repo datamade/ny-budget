@@ -42,13 +42,9 @@ var BudgetQueries = {
 		if (name != "")
 			whereClause = " WHERE '" + queryType + "' = '" + name + "'";
 		
-		var percentageQuery = "";	
-		if (yearCurrent > BudgetLib.startYear) {
-			percentageQuery = ", SUM('Nominal " + yearCurrent + "') AS 'Nominal Top', SUM('Actual " + yearCurrent + "') AS 'Actual Top', SUM('Nominal " + yearCompare + "') AS 'Nominal Bottom', SUM('Actual " + yearCompare + "') AS 'Actual Bottom'";
-		}
-			
-		var myQuery = "SELECT SUM('Nominal " + yearCurrent + "') AS 'Nominal', SUM('Actual " + yearCurrent + "') AS 'Actual' " + percentageQuery + " FROM " + BudgetLib.BUDGET_TABLE_ID + whereClause;			
-		BudgetHelpers.query(myQuery, callback);
+		var select = "SUM('Nominal " + yearCurrent + "') AS 'Nominal Current', SUM('Actual " + yearCurrent + "') AS 'Actual Current', SUM('Nominal " + yearCompare + "') AS 'Nominal Compare', SUM('Actual " + yearCompare + "') AS 'Actual Compare'";
+		var query = "SELECT " + select + " FROM " + BudgetLib.BUDGET_TABLE_ID + whereClause;			
+		BudgetHelpers.query(query, callback);
 	},
 	
 	//returns all funds nominal/actual totals for given year
@@ -71,19 +67,17 @@ var BudgetQueries = {
 	
 	//get a Agency description from a Agency ID
 	getAgencyDescription: function(AgencyId, callback) {
-		var myQuery = "SELECT 'Agency ID', Agency, 'Link to Website', 'Description', 'Major Function', 'Minor Function' FROM " + BudgetLib.BUDGET_TABLE_ID + " WHERE 'Agency ID' = " + AgencyId;			
+		var myQuery = "SELECT 'Agency ID', Agency, 'Description', 'Major Function', 'Minor Function' FROM " + BudgetLib.BUDGET_TABLE_ID + " WHERE 'Agency ID' = " + AgencyId;			
 		BudgetHelpers.query(myQuery, callback);
 	},
 	
 	//get percentage change per year for display below the sparkline in expanded row detail
 	getSparklinePercentages: function(name, queryType, yearCurrent, yearCompare, callback) {	
-		if (yearCurrent > BudgetLib.startYear) {
-			var whereClause = "";
-			if (queryType != "")
-				whereClause += " WHERE '" + queryType + "' = '" + name + "'";
-				
-			var myQuery = "SELECT SUM('Nominal " + yearCurrent + "') AS 'Nominal Top', SUM('Actual " + yearCurrent + "') AS 'Actual Top', SUM('Nominal " + yearCompare + "') AS 'Nominal Bottom', SUM('Actual " + yearCompare + "') AS 'Actual Bottom' FROM " + BudgetLib.BUDGET_TABLE_ID + whereClause;			
-			BudgetHelpers.query(myQuery, callback);
-		}
+		var whereClause = "";
+		if (queryType != "")
+			whereClause += " WHERE '" + queryType + "' = '" + name + "'";
+			
+		var myQuery = "SELECT SUM('Nominal " + yearCurrent + "') AS 'Nominal Top', SUM('Actual " + yearCurrent + "') AS 'Actual Top', SUM('Nominal " + yearCompare + "') AS 'Nominal Bottom', SUM('Actual " + yearCompare + "') AS 'Actual Bottom' FROM " + BudgetLib.BUDGET_TABLE_ID + whereClause;
+		BudgetHelpers.query(myQuery, callback);
 	}
 }

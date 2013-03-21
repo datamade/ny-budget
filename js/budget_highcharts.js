@@ -4,11 +4,11 @@ var BudgetHighcharts = {
   pointInterval: 365 * 24 * 3600 * 1000, //one year in ms
   apropColor:   '#403A68',
   apropSymbol:  'circle',
-  apropTitle:   'Actual',
+  apropTitle:   'Real (Inflation-adjusted)',
   
   expendColor:  '#6F6B8C',
   expendSybmol: 'square',
-  expendTitle:  'Nominal',
+  expendTitle:  'Nominal (Unadjusted)',
   
   //displays main graph using highcharts (http://www.highcharts.com)
   updateMainChart: function() {
@@ -44,7 +44,7 @@ var BudgetHighcharts = {
         borderColor: "#cccccc",
         floating: true,
         verticalAlign: "top",
-        x: -300,
+        x: -220,
         y: 20
       },
       plotOptions: {
@@ -72,7 +72,7 @@ var BudgetHighcharts = {
                   }
                 });
                 var clickedYear = new Date(x).getFullYear();
-                BudgetHighcharts.updateNavigation(clickedYear);
+                BudgetLib.updateYear(clickedYear, false);
               }
             }
           },
@@ -129,7 +129,7 @@ var BudgetHighcharts = {
       }
     });
     //select the current year on load
-    var selectedYearIndex = BudgetLib.loadYear - BudgetLib.startYear;
+    var selectedYearIndex = BudgetLib.viewYear - BudgetLib.startYear;
     if (mainChart.series[0].data[selectedYearIndex].y != null)
       mainChart.series[0].data[selectedYearIndex].select(true,true);
     if (mainChart.series[1].data[selectedYearIndex].y != null)
@@ -161,8 +161,10 @@ var BudgetHighcharts = {
             point: {
               events: {
                 click: function() {
-                  var clickedYear = new Date(this.x).getFullYear();
-                  BudgetHighcharts.updateNavigation(clickedYear);
+                  if (BudgetLib.viewName == "") {
+                    var clickedYear = new Date(this.x).getFullYear();
+                    BudgetLib.updateYear(clickedYear, true);
+                  }
                 }
               }
             },
@@ -217,7 +219,7 @@ var BudgetHighcharts = {
           title: { text: null }
         }
       });
-    var selectedYearIndex = BudgetLib.loadYear - BudgetLib.startYear;
+    var selectedYearIndex = BudgetLib.viewYear - BudgetLib.startYear;
     if (BudgetLib.sparkChart.series[0].data[selectedYearIndex].y != null)
       BudgetLib.sparkChart.series[0].data[selectedYearIndex].select(true,true);
     if (BudgetLib.sparkChart.series[1].data[selectedYearIndex].y != null)
@@ -226,6 +228,14 @@ var BudgetHighcharts = {
   },
 
   updatePie: function(element, pieData, sliceTitle) {
+
+    // ensure pie data is sorted by y value
+    pieData.sort(function (a, b) {
+        if (a['y'] < b['y']) return 1;
+        if (b['y'] < a['y']) return -1;
+        return 0;
+    });
+
     return new Highcharts.Chart({
         chart: {
             renderTo: element,
@@ -240,8 +250,12 @@ var BudgetHighcharts = {
             text: null
         },
         tooltip: {
-            pointFormat: '{series.name}: <b>{point.percentage}%</b>',
-            percentageDecimals: 1
+            formatter: function() {
+                return "<b>" + this.point.name + "</b>\
+                <br />$" + Highcharts.numberFormat(this.point.y, 0) + "\
+                <br />" + this.percentage.toFixed(2) + "%\
+                </p>";
+            }
         },
         plotOptions: {
             pie: {
@@ -252,7 +266,7 @@ var BudgetHighcharts = {
                     color: '#000000',
                     connectorColor: '#000000',
                     formatter: function() {
-                        return '<b>'+ this.point.name +'</b>: '+ this.percentage +' %';
+                        return '<b>'+ this.point.name +'</b>: ' + this.percentage.toFixed(2) + '%';
                     }
                 }
             }
@@ -272,16 +286,5 @@ var BudgetHighcharts = {
       return "$" + value / 1000000 + "M";
     else
       return "$" + value;
-  },
-
-  updateNavigation: function(clickedYear) {
-    if (BudgetLib.viewMode != "" && BudgetLib.viewName != "") {
-      app_router.navigate((BudgetLib.viewMode + '/' + BudgetLib.viewName + '/' + clickedYear), {trigger: false});
-      BudgetLib.initialize(BudgetLib.viewMode, BudgetLib.viewName, clickedYear, false);
-    }
-    else {
-      app_router.navigate(('/year/' + clickedYear), {trigger: false});
-      BudgetLib.initialize(null, null, clickedYear, false);
-    }
   }
 }

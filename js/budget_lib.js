@@ -37,69 +37,98 @@ var BudgetLib = {
   endYear: 2013,
 
   // keep track of our state
-  loadYear: 2013,  // viewing year
-  viewMode: "",    // viewing mode - major or minor
-  viewName: "",    // viewing friendly name
+  viewYear: 2013,  // viewing year
+  viewMode: '',    // viewing mode - major or minor
+  viewName: '',    // viewing friendly name
   arraysLoaded: 0,
 
   //-------------front end display functions-------------------
   
   //primary load for graph and table
-  initialize: function(viewMode, viewName, viewYear, externalLoad) {
+  updateView: function(viewMode, viewName, viewYear, viewChart, externalLoad) {
     // console.log(viewMode);
     // console.log(viewName);
     // console.log(viewYear);
-    //load in values and update internal variables
-    var viewChanged = false;
-    if (BudgetLib.viewName != BudgetHelpers.convertToPlainString(viewName))
-      viewChanged = true;
-    
-    if (viewName != null && viewName != "") 
+    //load in values and update internal variables    
+    if (viewName != null) 
       BudgetLib.viewName = BudgetHelpers.convertToPlainString(viewName);
     else 
       BudgetLib.viewName = '';
     
-    if (viewYear != null && viewYear != "") 
-      BudgetLib.loadYear = viewYear;
+    if (viewYear != null) 
+      BudgetLib.viewYear = viewYear;
+
+    if (viewChart != null && viewChart == 'pie') {
+      $("#breakdown-nav").html("\
+        <ul>\
+          <li><a href='#/year/" + BudgetLib.viewYear + "'>View as list</a></li>\
+          <li class='current'>View as pie chart</li>\
+        </ul>");
+
+      $('#breakdown').hide();
+      $('#pie').show();
+
+    }
+    else {
+      $("#breakdown-nav").html("\
+        <ul>\
+          <li class='current'>View as list</li>\
+          <li><a href='#/year/" + BudgetLib.viewYear + "/pie'>View as pie chart</a></li>\
+        </ul>");
+
+      $('#breakdown').show();
+      $('#pie').hide();
+    }
   
     //show viewName view
     if (BudgetLib.viewName != ""){
-      if (viewChanged || externalLoad) {
+      if (externalLoad) {
         window.scrollTo(0, 0);
         BudgetQueries.getTotalArray(BudgetLib.viewName, 'Minor Function', true, "BudgetLib.updateAppropTotal");
         BudgetQueries.getTotalArray(BudgetLib.viewName, 'Minor Function', false, "BudgetLib.updateExpendTotal");
       }
       
-      BudgetQueries.getAgencies(BudgetLib.viewName, 'Minor Function', BudgetLib.loadYear, "BudgetLib.getDataAsBudgetTable");
+      BudgetQueries.getAgencies(BudgetLib.viewName, 'Minor Function', BudgetLib.viewYear, "BudgetLib.getDataAsBudgetTable");
       BudgetLib.updateHeader(BudgetLib.viewName, 'Agency');
-      BudgetQueries.getTotalsForYear(BudgetLib.viewName, 'Minor Function', BudgetLib.loadYear, BudgetLib.endYear, "BudgetLib.updateScorecard");
+      BudgetQueries.getTotalsForYear(BudgetLib.viewName, 'Minor Function', BudgetLib.viewYear, BudgetLib.endYear, "BudgetLib.updateScorecard");
       BudgetQueries.getFundDescription(BudgetLib.viewName, "BudgetLib.updateScorecardDescription");
     }
     else { //load default view
-      if (viewChanged || externalLoad) {
+      if (externalLoad) {
         BudgetQueries.getTotalArray('', '', true, "BudgetLib.updateAppropTotal");
         BudgetQueries.getTotalArray('', '', false, "BudgetLib.updateExpendTotal");
       }
       
-      BudgetQueries.getAllFundsForYear(BudgetLib.loadYear, "BudgetLib.getDataAsBudgetTable");
+      BudgetQueries.getAllFundsForYear(BudgetLib.viewYear, "BudgetLib.getDataAsBudgetTable");
       $('#breakdown-item-title span').html('Minor Function');
       
       BudgetLib.updateHeader(BudgetLib.title, 'Minor Function');
-      BudgetQueries.getTotalsForYear('', '', BudgetLib.loadYear, BudgetLib.endYear, "BudgetLib.updateScorecard");
+      BudgetQueries.getTotalsForYear('', '', BudgetLib.viewYear, BudgetLib.endYear, "BudgetLib.updateScorecard");
       BudgetQueries.getFundDescription(BudgetLib.viewName, "BudgetLib.updateScorecardDescription");
     }
   },  
+
+  updateYear: function(clickedYear, updateView) {
+    if (BudgetLib.viewMode != "" && BudgetLib.viewName != "") {
+      app_router.navigate((BudgetLib.viewMode + '/' + BudgetLib.viewName + '/' + clickedYear), {trigger: false});
+      BudgetLib.updateView(BudgetLib.viewMode, BudgetLib.viewName, clickedYear, updateView);
+    }
+    else {
+      app_router.navigate(('/year/' + clickedYear), {trigger: false});
+      BudgetLib.updateView(null, null, clickedYear, updateView);
+    }
+  },
   
   updateHeader: function(view, subtype){
     $('h1').html(view);
     if (view != BudgetLib.title) {
-      $('#breadcrumbs').html("<a href='/?year=" + BudgetLib.loadYear + "' rel='address:/?year=" + BudgetLib.loadYear + "'>&laquo back to " + BudgetLib.title + "</a>");
+      $('#breadcrumbs').html("<a href='#/year/" + BudgetLib.viewYear + "'>&laquo back to " + BudgetLib.title + "</a>");
       $("#breakdown-nav").html("");
     }
     else
       $('#breadcrumbs').html("");
     
-    $('#secondary-title').html(BudgetLib.loadYear + ' ' + view);
+    $('#secondary-title').html(BudgetLib.viewYear + ' ' + view);
     $('#breakdown-item-title span').html(subtype);
   },
     
@@ -216,31 +245,33 @@ var BudgetLib = {
     var rows = json["rows"];
     var cols = json["columns"];
     if (rows.length > 0) {
+      var nominalCurrent = rows[0][0];
+      var actualCurrent = rows[0][1];
+      var nominalCompare = rows[0][2];
+      var actualCompare = rows[0][3];
+
       $('#scorecard .nominal').fadeOut('fast', function(){
-        $('#scorecard .nominal').html(rows[0][0]);
+        $('#scorecard .nominal').html(nominalCurrent);
         $('#scorecard .nominal').formatCurrency();
       }).fadeIn('fast');
       
       $('#scorecard .actual').fadeOut('fast', function(){
-        $('#scorecard .actual').html(rows[0][1]);
+        $('#scorecard .actual').html(actualCurrent);
         $('#scorecard .actual').formatCurrency();
         
-        if (BudgetLib.loadYear == BudgetLib.endYear && rows[0][1] == 0) {
+        if (BudgetLib.viewYear == BudgetLib.endYear && actualCurrent == 0) {
           $('#scorecard .actual').append("<sup class='ref'>&dagger;</sup>");
           $('#f-zero2011').show();
         } 
         else $('#f-zero2011').hide();
       }).fadeIn();
       
-      if (cols.length > 2) {
-        var actualTop = rows[0][3];
-        var actualBottom = rows[0][5];
-        
-        if (actualTop > 0 && actualBottom > 0) {
-          var actualPercent = (((actualTop / actualBottom) - 1) * 100).toFixed(1);
+      if (cols.length > 2) {        
+        if (actualCompare > 0 && actualCurrent > 0) {
+          var actualPercent = (((actualCurrent / actualCompare) - 1) * 100).toFixed(1);
           if (actualPercent > -0.05) actualPercent = '+' + actualPercent;
 
-          $('#actual-change-percent').hide().html('<strong>' + actualPercent + '%</strong> actual from ' + (BudgetLib.endYear)).fadeIn();
+          $('#actual-change-percent').hide().html('<strong>' + actualPercent + '%</strong> Real (Inflation-adjusted) from ' + (BudgetLib.endYear)).fadeIn();
         }
         else $('#actual-change-percent').fadeOut();
       }
@@ -251,7 +282,8 @@ var BudgetLib = {
   getDataAsBudgetTable: function(json) {
     var rows = json["rows"];
     var cols = json["columns"];  
-    var fusiontabledata;
+    var budget_data;
+    var pie_array = [];
 
     for(i = 0; i < rows.length; i++) {
       var rowName = rows[i][0];
@@ -261,6 +293,8 @@ var BudgetLib = {
       var year = cols[3];
       var nominal = rows[i][1];
       var actual = rows[i][2];
+
+      pie_array.push({name: rowName, y: actual})
       
       var rowId = BudgetHelpers.convertToSlug(rowName);
       var detailLoadFunction = "BudgetLib.getFundDetails(\"" + BudgetHelpers.convertToSlug(rowName) + "\");";
@@ -273,25 +307,24 @@ var BudgetLib = {
         detailLoadFunction = "BudgetLib.getControlOfficerDetails(\"" + BudgetHelpers.convertToSlug(rowName) + "\");";
       
       if (nominal != 0 || actual != 0) {
-        fusiontabledata += BudgetHelpers.generateTableRow(rowId, detailLoadFunction, rowName, nominal, actual);
+        budget_data += BudgetHelpers.generateTableRow(rowId, detailLoadFunction, rowName, nominal, actual);
       }
     }
  
-    BudgetLib.breakdownData = fusiontabledata;
+    BudgetLib.breakdownData = budget_data;
     BudgetLib.updateTable();
 
-    //BudgetHighcharts.updatePie("pie", [.2, .3, .1, .4], "Test Pie");
+    BudgetHighcharts.updatePie("pie", pie_array, "Budget breakdown");
   },
   
   //shows fund details when row is clicked
   getFundDetails: function(itemId) {  
     var expanded_row = BudgetHelpers.generateExpandedRow(itemId, 'minor');
-    console.log(expanded_row);
     BudgetLib.updateDetail(itemId, expanded_row);
     BudgetQueries.getFundDescription(BudgetHelpers.convertToPlainString(itemId), "BudgetLib.updateExpandedDescription");
     BudgetQueries.getTotalArray(BudgetHelpers.convertToPlainString(itemId), 'Minor Function', true, "BudgetLib.updateSparkAppropTotal");
     BudgetQueries.getTotalArray(BudgetHelpers.convertToPlainString(itemId), 'Minor Function', false, "BudgetLib.updateSparkExpendTotal");
-    BudgetQueries.getSparklinePercentages(BudgetHelpers.convertToPlainString(itemId), 'Minor Function', BudgetLib.loadYear, BudgetLib.endYear, "BudgetLib.updateSparklinePercentages");
+    BudgetQueries.getSparklinePercentages(BudgetHelpers.convertToPlainString(itemId), 'Minor Function', BudgetLib.viewYear, BudgetLib.endYear, "BudgetLib.updateSparklinePercentages");
   },
   
   //shows description in expanded row when row is clicked
@@ -317,17 +350,16 @@ var BudgetLib = {
 
     var agencyId = rows[0][0];
     var agency = rows[0][1];
-    var linkToWebsite = rows[0][2];
-    var description = rows[0][3];
-    var majorFunction = rows[0][4];
-    var minorFunction = rows[0][5];
+    var description = rows[0][2];
+    var majorFunction = rows[0][3];
+    var minorFunction = rows[0][4];
      
-    var fusiontabledata = BudgetHelpers.generateExpandedDeptRow(agencyId, agency, description, linkToWebsite, majorFunction, minorFunction);
+    var fusiontabledata = BudgetHelpers.generateExpandedDeptRow(agencyId, agency, description, majorFunction, minorFunction);
     BudgetLib.updateDetail('Agency-' + agencyId, fusiontabledata);
     
     BudgetQueries.getTotalArray(agencyId, 'Agency ID', true, "BudgetLib.updateSparkAppropTotal");
     BudgetQueries.getTotalArray(agencyId, 'Agency ID', false, "BudgetLib.updateSparkExpendTotal");
-    BudgetQueries.getSparklinePercentages(agencyId, 'Agency ID', BudgetLib.loadYear, BudgetLib.endYear, "BudgetLib.updateSparklinePercentages"); 
+    BudgetQueries.getSparklinePercentages(agencyId, 'Agency ID', BudgetLib.viewYear, BudgetLib.endYear, "BudgetLib.updateSparklinePercentages"); 
   },
   
   //updates percentages that display below the expanded row sparkling
@@ -335,15 +367,14 @@ var BudgetLib = {
     var rows = json["rows"];
     var cols = json["columns"]; 
 
-    if (rows.length > 0)
-    {
+    if (rows.length > 0) {
       var actualTop = rows[0][1];
       var actualBottom = rows[0][3];
       
       if (actualTop > 0 && actualBottom > 0) {
         var actualPercent = (((actualTop / actualBottom) - 1) * 100).toFixed(1);
         if (actualPercent >= -0.05) actualPercent = '+' + actualPercent;
-        $('#sparkline-actual').hide().html('<strong>' + actualPercent + '%</strong> actual from ' + BudgetLib.endYear).fadeIn();
+        $('#sparkline-actual').hide().html('<strong>' + actualPercent + '%</strong> Real (Inflation-adjusted) from ' + BudgetLib.endYear).fadeIn();
       }
       else $('#sparkline-actual').fadeOut();
     }
