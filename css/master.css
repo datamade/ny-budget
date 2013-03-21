@@ -145,7 +145,11 @@ ul { list-style: disc; }
   #breakdown-nav ul { list-style: none; margin: 0; }
   
   /* Scorecard */
-  #scorecard { border-top: 3px solid #403A68; margin: 0; }
+  #scorecard { 
+    border-top: 3px solid #403A68; 
+    border-bottom: 1px solid #ddd; 
+    margin: 0; 
+  }
   #scorecard h2 { font-size: 20px; }
   #scorecard h2, #scorecard p { margin: 0; }
   #scorecard td { border: 1px solid #ddd; border-bottom: 0; padding: 0.8em 10px; width: 25%; }
