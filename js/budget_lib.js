@@ -102,7 +102,7 @@ var BudgetLib = {
       $("#breakdown-nav").html("\
         <ul>\
           <li class='current'>View as list</li>\
-          <li>" + BudgetHelpers.getAddressLink(null, null, null, 'pie', 'View as pie') + "</li>\
+          <li>" + BudgetHelpers.getAddressLink(null, null, null, 'pie', 'View as pie chart') + "</li>\
         </ul>");
 
       $('#breakdown').show();
@@ -113,7 +113,7 @@ var BudgetLib = {
   updateHeader: function(view, subtype){
     $('h1').html(view);
     if (view != BudgetLib.title) {
-      $('#breadcrumbs').html("<a href='#year/" + BudgetLib.viewYear + "'>&laquo back to " + BudgetLib.title + "</a>");
+      $('#breadcrumbs').html(BudgetHelpers.getAddressLink('home', 'default', null, null, "&laquo back to " + BudgetLib.title));
     }
     else
       $('#breadcrumbs').html("");
