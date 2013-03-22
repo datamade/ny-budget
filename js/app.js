@@ -8,11 +8,9 @@ if ($.cookie("budgetbreakdownreadme") != "read") {
   $("#readme").fadeIn("fast");
 }
 
-
 // main application handler
 var AppRouter = Backbone.Router.extend({
     routes: {
-        "year/:year(/:viewChart)": "routeYear",
         ":mode/:name/:year(/:viewChart)": "routeView",
         "*actions": "defaultRoute"
     }
@@ -20,14 +18,11 @@ var AppRouter = Backbone.Router.extend({
 
 // Instantiate the router
 var app_router = new AppRouter;
-app_router.on('route:routeYear', function (year, viewChart) {
-    BudgetLib.updateView(null, null, year, viewChart, true); 
-});
 app_router.on('route:routeView', function (mode, name, year, viewChart) {
     BudgetLib.updateView(mode, name, year, viewChart, true); 
 });
 app_router.on('route:defaultRoute', function (actions) {
-    BudgetLib.updateView(null, null, null, null, true); 
+    BudgetLib.updateView('home', 'default', 2013, 'list', true); 
 });
 
 // Start Backbone history a necessary step for bookmarkable URL's

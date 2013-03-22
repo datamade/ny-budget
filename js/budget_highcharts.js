@@ -72,7 +72,9 @@ var BudgetHighcharts = {
                   }
                 });
                 var clickedYear = new Date(x).getFullYear();
-                BudgetLib.updateYear(clickedYear, false);
+                // hack to prevent chart from re-loading while updating the url
+                app_router.navigate((BudgetLib.viewMode + '/' + BudgetLib.viewName + '/' + clickedYear + '/' + BudgetLib.viewChart), {trigger: false});
+                BudgetLib.updateView(BudgetLib.viewMode, BudgetLib.viewName, clickedYear, BudgetLib.viewChart, false);
               }
             }
           },
@@ -158,16 +160,6 @@ var BudgetHighcharts = {
           area: { fillOpacity: 0.25 },
           series: {
             lineWidth: 2,
-            point: {
-              events: {
-                click: function() {
-                  if (BudgetLib.viewName == "") {
-                    var clickedYear = new Date(this.x).getFullYear();
-                    BudgetLib.updateYear(clickedYear, true);
-                  }
-                }
-              }
-            },
             pointInterval: BudgetHighcharts.pointInterval,
             pointStart: Date.UTC(BudgetLib.startYear, 1, 1),
             shadow: false

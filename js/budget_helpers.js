@@ -51,8 +51,13 @@ var BudgetHelpers = {
     return dataArray;
   },
 
-  getAddressLink: function(year, type, handle, linkTitle) {
-    var href = '#' + type + '/' + handle + '/' + year + '/' + BudgetLib.viewChart;
+  getAddressLink: function(mode, name, year, chart, linkTitle) {
+    if (mode == null) mode = BudgetLib.viewMode;
+    if (name == null) name = BudgetLib.viewName;
+    if (year == null) year = BudgetLib.viewYear;
+    if (chart == null) chart = BudgetLib.viewChart;
+
+    var href = '#' + mode + '/' + name + '/' + year + '/' + chart;
   	return ("<a href='" + href + "'>" + linkTitle + "</a>");
   },
   
@@ -68,7 +73,7 @@ var BudgetHelpers = {
   },
   
   generateExpandedRow: function(itemId, type) {
-    var breakdownLink = BudgetHelpers.getAddressLink(BudgetLib.viewYear, type, BudgetHelpers.convertToQueryString(itemId), "Breakdown by agency&nbsp;&raquo;");
+    var breakdownLink = BudgetHelpers.getAddressLink(type, BudgetHelpers.convertToQueryString(itemId), BudgetLib.viewYear, null, "Breakdown by agency&nbsp;&raquo;");
 
     return "\
       <tr class='expanded-content' id='" + itemId + "-expanded'>\
@@ -97,9 +102,9 @@ var BudgetHelpers = {
           <div class='expanded-primary'>\
             <h2>" + department + "</h2>\
             <p>\
-              Major Function: " + BudgetHelpers.getAddressLink(BudgetLib.viewYear, 'major', BudgetHelpers.convertToQueryString(majorFunction), majorFunction + " &raquo;") + "</a>\
+              Major Function: " + BudgetHelpers.getAddressLink('major', BudgetLib.viewYear, BudgetHelpers.convertToQueryString(majorFunction), null, majorFunction + " &raquo;") + "</a>\
               <br />\
-              Minor Function: " + BudgetHelpers.getAddressLink(BudgetLib.viewYear, 'minor', BudgetHelpers.convertToQueryString(minorFunction), minorFunction + " &raquo;") + "</a>\
+              Minor Function: " + BudgetHelpers.getAddressLink('minor', BudgetLib.viewYear, BudgetHelpers.convertToQueryString(minorFunction), null, minorFunction + " &raquo;") + "</a>\
             </p>\
           </div>\
           <div class='expanded-secondary'>\

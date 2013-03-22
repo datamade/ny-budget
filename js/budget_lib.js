@@ -38,8 +38,8 @@ var BudgetLib = {
 
   // keep track of our state
   viewYear: 2013,  // viewing year
-  viewMode: '',    // viewing mode - major or minor
-  viewName: '',    // viewing friendly name
+  viewMode: 'home',    // viewing mode - major or minor
+  viewName: 'default',    // viewing friendly name
   viewChart: 'list',
   arraysLoaded: 0,
 
@@ -47,27 +47,19 @@ var BudgetLib = {
   
   //primary load for graph and table
   updateView: function(viewMode, viewName, viewYear, viewChart, externalLoad) {
-    // console.log(viewMode);
-    // console.log(viewName);
-    // console.log(viewYear);
-    //load in values and update internal variables    
-    if (viewName != null) 
-      BudgetLib.viewName = BudgetHelpers.convertToPlainString(viewName);
-    else 
-      BudgetLib.viewName = '';
-
-    if (viewChart != null) 
-      BudgetLib.viewChart = viewChart;
-    else
-      BudgetLib.viewChart = 'list';
-    
-    if (viewYear != null) 
-      BudgetLib.viewYear = viewYear;
+    console.log(viewMode);
+    console.log(viewName);
+    console.log(viewYear);
+    //load in values and update internal variables
+    BudgetLib.viewMode = viewMode;
+    BudgetLib.viewName = BudgetHelpers.convertToPlainString(viewName);
+    BudgetLib.viewChart = viewChart;
+    BudgetLib.viewYear = viewYear;
 
     BudgetLib.updateChartSelector();
   
     //show viewName view
-    if (BudgetLib.viewName != ""){
+    if (BudgetLib.viewName != "default"){
       if (externalLoad) {
         window.scrollTo(0, 0);
         BudgetQueries.getTotalArray(BudgetLib.viewName, 'Minor Function', true, "BudgetLib.updateAppropTotal");
@@ -92,24 +84,13 @@ var BudgetLib = {
       BudgetQueries.getTotalsForYear('', '', BudgetLib.viewYear, BudgetLib.endYear, "BudgetLib.updateScorecard");
       BudgetQueries.getFundDescription(BudgetLib.viewName, "BudgetLib.updateScorecardDescription");
     }
-  },  
-
-  updateYear: function(clickedYear, updateView) {
-    if (BudgetLib.viewName != null && BudgetLib.viewName != '') {
-      app_router.navigate((BudgetLib.viewMode + '/' + BudgetLib.viewName + '/' + clickedYear + '/' + BudgetLib.viewChart), {trigger: false});
-      BudgetLib.updateView(BudgetLib.viewMode, BudgetLib.viewName, clickedYear, BudgetLib.viewChart, updateView);
-    }
-    else {
-      app_router.navigate(('year/' + clickedYear + '/' + BudgetLib.viewChart), {trigger: false});
-      BudgetLib.updateView(null, null, clickedYear, BudgetLib.viewChart, updateView);
-    }
   },
 
   updateChartSelector: function() {
     if (BudgetLib.viewChart == 'pie') {
       $("#breakdown-nav").html("\
         <ul>\
-          <li><a href='#year/" + BudgetLib.viewYear + "/list'>View as list</a></li>\
+          <li>" + BudgetHelpers.getAddressLink(null, null, null, 'list', 'View as list') + "</li>\
           <li class='current'>View as pie chart</li>\
         </ul>");
 
@@ -121,7 +102,7 @@ var BudgetLib = {
       $("#breakdown-nav").html("\
         <ul>\
           <li class='current'>View as list</li>\
-          <li><a href='#year/" + BudgetLib.viewYear + "/pie'>View as pie chart</a></li>\
+          <li>" + BudgetHelpers.getAddressLink(null, null, null, 'pie', 'View as pie') + "</li>\
         </ul>");
 
       $('#breakdown').show();
@@ -242,7 +223,7 @@ var BudgetLib = {
       if (rows.length > 0) {
         $('#scorecard-desc p').hide().html(rows[0][0]).fadeIn();
       }
-      else if (BudgetLib.viewName == '') {
+      else if (BudgetLib.viewName == 'default') {
         $('#scorecard-desc p').hide().html('Breakdown by minor function').fadeIn();
       }
       else $('#scorecard-desc p').html('');
@@ -308,7 +289,7 @@ var BudgetLib = {
       var rowId = BudgetHelpers.convertToSlug(rowName);
       var detailLoadFunction = "BudgetLib.getFundDetails(\"" + BudgetHelpers.convertToSlug(rowName) + "\");";
       
-      if (BudgetLib.viewName != null && BudgetLib.viewName != "") {
+      if (BudgetLib.viewName != 'default') {
         rowId = "Agency-" + AgencyId;
         detailLoadFunction = "BudgetLib.getAgencyDetails(\"Agency-" + AgencyId + "\");";
       }
