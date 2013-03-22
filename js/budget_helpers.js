@@ -52,7 +52,7 @@ var BudgetHelpers = {
   },
 
   getAddressLink: function(year, type, handle, linkTitle) {
-    var href = '#/' + type + '/' + handle + '/' + year;
+    var href = '#' + type + '/' + handle + '/' + year + '/' + BudgetLib.viewChart;
   	return ("<a href='" + href + "'>" + linkTitle + "</a>");
   },
   

@@ -40,7 +40,7 @@ var BudgetLib = {
   viewYear: 2013,  // viewing year
   viewMode: '',    // viewing mode - major or minor
   viewName: '',    // viewing friendly name
-  viewChart: '',
+  viewChart: 'list',
   arraysLoaded: 0,
 
   //-------------front end display functions-------------------
@@ -59,7 +59,7 @@ var BudgetLib = {
     if (viewChart != null) 
       BudgetLib.viewChart = viewChart;
     else
-      BudgetLib.viewChart = '';
+      BudgetLib.viewChart = 'list';
     
     if (viewYear != null) 
       BudgetLib.viewYear = viewYear;
@@ -95,13 +95,13 @@ var BudgetLib = {
   },  
 
   updateYear: function(clickedYear, updateView) {
-    if (BudgetLib.viewMode != null && BudgetLib.viewName != null) {
-      app_router.navigate((BudgetLib.viewMode + '/' + BudgetLib.viewName + '/' + clickedYear), {trigger: false});
-      BudgetLib.updateView(BudgetLib.viewMode, BudgetLib.viewName, clickedYear, updateView);
+    if (BudgetLib.viewName != null && BudgetLib.viewName != '') {
+      app_router.navigate((BudgetLib.viewMode + '/' + BudgetLib.viewName + '/' + clickedYear + '/' + BudgetLib.viewChart), {trigger: false});
+      BudgetLib.updateView(BudgetLib.viewMode, BudgetLib.viewName, clickedYear, BudgetLib.viewChart, updateView);
     }
     else {
-      app_router.navigate(('/year/' + clickedYear), {trigger: false});
-      BudgetLib.updateView(null, null, clickedYear, updateView);
+      app_router.navigate(('year/' + clickedYear + '/' + BudgetLib.viewChart), {trigger: false});
+      BudgetLib.updateView(null, null, clickedYear, BudgetLib.viewChart, updateView);
     }
   },
 
@@ -109,7 +109,7 @@ var BudgetLib = {
     if (BudgetLib.viewChart == 'pie') {
       $("#breakdown-nav").html("\
         <ul>\
-          <li><a href='#/year/" + BudgetLib.viewYear + "'>View as list</a></li>\
+          <li><a href='#year/" + BudgetLib.viewYear + "/list'>View as list</a></li>\
           <li class='current'>View as pie chart</li>\
         </ul>");
 
@@ -121,7 +121,7 @@ var BudgetLib = {
       $("#breakdown-nav").html("\
         <ul>\
           <li class='current'>View as list</li>\
-          <li><a href='#/year/" + BudgetLib.viewYear + "/pie'>View as pie chart</a></li>\
+          <li><a href='#year/" + BudgetLib.viewYear + "/pie'>View as pie chart</a></li>\
         </ul>");
 
       $('#breakdown').show();
@@ -132,8 +132,7 @@ var BudgetLib = {
   updateHeader: function(view, subtype){
     $('h1').html(view);
     if (view != BudgetLib.title) {
-      $('#breadcrumbs').html("<a href='#/year/" + BudgetLib.viewYear + "'>&laquo back to " + BudgetLib.title + "</a>");
-      $("#breakdown-nav").html("");
+      $('#breadcrumbs').html("<a href='#year/" + BudgetLib.viewYear + "'>&laquo back to " + BudgetLib.title + "</a>");
     }
     else
       $('#breadcrumbs').html("");
