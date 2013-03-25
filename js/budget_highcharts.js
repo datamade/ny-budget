@@ -2,11 +2,11 @@ var BudgetHighcharts = BudgetHighcharts || {};
 var BudgetHighcharts = {  
 
   pointInterval: 365 * 24 * 3600 * 1000, //one year in ms
-  apropColor:   '#403A68',
+  apropColor:   '#13345a',
   apropSymbol:  'circle',
   apropTitle:   'Real (Inflation-adjusted)',
   
-  expendColor:  '#6F6B8C',
+  expendColor:  '#405c7d',
   expendSybmol: 'square',
   expendTitle:  'Nominal (Unadjusted)',
   

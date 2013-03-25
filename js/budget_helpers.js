@@ -51,14 +51,17 @@ var BudgetHelpers = {
     return dataArray;
   },
 
-  getAddressLink: function(mode, name, year, chart, linkTitle) {
+  getAddressHref: function(mode, name, year, chart) {
     if (mode == null) mode = BudgetLib.viewMode;
     if (name == null) name = BudgetLib.viewName;
     if (year == null) year = BudgetLib.viewYear;
     if (chart == null) chart = BudgetLib.viewChart;
 
-    var href = '#' + mode + '/' + name + '/' + year + '/' + chart;
-  	return ("<a href='" + href + "'>" + linkTitle + "</a>");
+    return '#' + mode + '/' + name + '/' + year + '/' + chart;
+  },
+
+  getAddressLink: function(mode, name, year, chart, linkTitle) {
+  	return ("<a href='" + BudgetHelpers.getAddressHref(mode, name, year, chart) + "'>" + linkTitle + "</a>");
   },
   
   generateTableRow: function(rowId, detailLoadFunction, rowName, nominal, actual) {
