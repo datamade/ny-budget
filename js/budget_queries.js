@@ -52,6 +52,11 @@ var BudgetQueries = {
 		var myQuery = "SELECT 'Minor Function', SUM('Nominal " + year + "') AS 'Nominal', SUM('Actual " + year + "') AS 'Actual', 'Minor Function' AS '" + year + "' FROM " + BudgetLib.BUDGET_TABLE_ID + " GROUP BY 'Minor Function'";			
 		BudgetHelpers.query(myQuery, callback);
 	},
+
+	getAgenciesForQuery: function(query, year, callback) {		
+		var myQuery = "SELECT 'Agency', SUM('Nominal " + year + "') AS 'Nominal', SUM('Actual " + year + "') AS 'Actual', 'Agency' AS '" + year + "', 'Agency ID' FROM " + BudgetLib.BUDGET_TABLE_ID + " WHERE 'Agency' CONTAINS IGNORING CASE '" + query + "' GROUP BY 'Agency ID', 'Agency'";			
+		BudgetHelpers.query(myQuery, callback);
+	},
 	
 	//returns all funds nominal/actual totals for given year
 	getAgencies: function(name, queryType, year, callback) {		

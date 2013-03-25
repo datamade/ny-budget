@@ -47,9 +47,9 @@ var BudgetLib = {
   
   //primary load for graph and table
   updateView: function(viewMode, viewName, viewYear, viewChart, externalLoad) {
-    console.log(viewMode);
-    console.log(viewName);
-    console.log(viewYear);
+    // console.log(viewMode);
+    // console.log(viewName);
+    // console.log(viewYear);
     //load in values and update internal variables
     BudgetLib.viewMode = viewMode;
     BudgetLib.viewName = BudgetHelpers.convertToPlainString(viewName);
@@ -57,9 +57,12 @@ var BudgetLib = {
     BudgetLib.viewYear = viewYear;
 
     BudgetLib.updateChartSelector();
-  
+
+    $('#main-chart').show();
+    $('#search-query').val('');
+
     //show viewName view
-    if (BudgetLib.viewName != "default"){
+    if (BudgetLib.viewMode != "home"){
       if (externalLoad) {
         window.scrollTo(0, 0);
         BudgetQueries.getTotalArray(BudgetLib.viewName, 'Minor Function', true, "BudgetLib.updateAppropTotal");
@@ -84,6 +87,18 @@ var BudgetLib = {
       BudgetQueries.getTotalsForYear('', '', BudgetLib.viewYear, BudgetLib.endYear, "BudgetLib.updateScorecard");
       BudgetQueries.getFundDescription(BudgetLib.viewName, "BudgetLib.updateScorecardDescription");
     }
+  },
+
+  renderSearch: function(query) {
+    // console.log(BudgetLib.viewMode);
+    // console.log(BudgetLib.viewName);
+    // console.log(BudgetLib.viewYear);
+
+    BudgetLib.viewMode = 'search';
+    $('#main-chart').hide();
+    $('#search-query').val(query);
+    BudgetQueries.getAgenciesForQuery(query, BudgetLib.viewYear, "BudgetLib.getDataAsBudgetTable");
+    BudgetLib.updateHeader("Search results for '" + query + "'", 'Agency');
   },
 
   updateChartSelector: function() {
@@ -111,7 +126,7 @@ var BudgetLib = {
   },
   
   updateHeader: function(view, subtype){
-    $('h1').html(view);
+    $('#budget-title').html(view);
     if (view != BudgetLib.title) {
       $('#breadcrumbs').html(BudgetHelpers.getAddressLink('home', 'default', null, null, "&laquo back to " + BudgetLib.title));
     }
@@ -223,7 +238,7 @@ var BudgetLib = {
       if (rows.length > 0) {
         $('#scorecard-desc p').hide().html(rows[0][0]).fadeIn();
       }
-      else if (BudgetLib.viewName == 'default') {
+      else if (BudgetLib.viewMode == 'home') {
         $('#scorecard-desc p').hide().html('Breakdown by minor function').fadeIn();
       }
       else $('#scorecard-desc p').html('');
@@ -275,38 +290,42 @@ var BudgetLib = {
     var budget_data;
     var pie_array = [];
 
-    for(i = 0; i < rows.length; i++) {
-      var rowName = rows[i][0];
-      var AgencyId = 0;
-      if (cols.length > 4)
-        AgencyId = rows[i][4];
-      var year = cols[3];
-      var nominal = rows[i][1];
-      var actual = rows[i][2];
+    if (rows != null) {
+      for(i = 0; i < rows.length; i++) {
+        var rowName = rows[i][0];
+        var AgencyId = 0;
+        if (cols.length > 4)
+          AgencyId = rows[i][4];
+        var year = cols[3];
+        var nominal = rows[i][1];
+        var actual = rows[i][2];
 
-      pie_array.push({name: rowName, y: actual})
-      
-      var rowId = BudgetHelpers.convertToSlug(rowName);
-      var detailLoadFunction = "BudgetLib.getFundDetails(\"" + BudgetHelpers.convertToSlug(rowName) + "\");";
-      
-      if (BudgetLib.viewName != 'default') {
-        rowId = "Agency-" + AgencyId;
-        detailLoadFunction = "BudgetLib.getAgencyDetails(\"Agency-" + AgencyId + "\");";
+        pie_array.push({name: rowName, y: actual})
+        
+        var rowId = BudgetHelpers.convertToSlug(rowName);
+        var detailLoadFunction = "BudgetLib.getFundDetails(\"" + BudgetHelpers.convertToSlug(rowName) + "\");";
+        
+        if (BudgetLib.viewMode != 'home') {
+          rowId = "Agency-" + AgencyId;
+          detailLoadFunction = "BudgetLib.getAgencyDetails(\"Agency-" + AgencyId + "\");";
+        }
+
+        if (nominal != 0 || actual != 0) {
+          budget_data += BudgetHelpers.generateTableRow(rowId, detailLoadFunction, rowName, nominal, actual);
+        }
       }
-      else if (BudgetLib.viewByOfficer)
-        detailLoadFunction = "BudgetLib.getControlOfficerDetails(\"" + BudgetHelpers.convertToSlug(rowName) + "\");";
-      
-      if (nominal != 0 || actual != 0) {
-        budget_data += BudgetHelpers.generateTableRow(rowId, detailLoadFunction, rowName, nominal, actual);
-      }
+   
+      BudgetLib.breakdownData = budget_data;
+
+      if (BudgetLib.viewChart == 'pie')
+        BudgetHighcharts.updatePie("pie", pie_array, "Budget breakdown");
+      else
+        BudgetLib.updateTable();
     }
- 
-    BudgetLib.breakdownData = budget_data;
-
-    if (BudgetLib.viewChart == 'pie')
-      BudgetHighcharts.updatePie("pie", pie_array, "Budget breakdown");
-    else
+    else {
+      BudgetLib.breakdownData = BudgetHelpers.generateTableRowNotFound();
       BudgetLib.updateTable();
+    }
   },
   
   //shows fund details when row is clicked

@@ -21,7 +21,7 @@ a:visited { color: #a38d4f; }
 
 dl, ol, p, ul, table { margin-bottom: 1.5em; }
 cite, em { font-style: italic; }
-h1 { font-size: 39px; margin-bottom: 0.3em; line-height: 1.1; }
+.col1 h1 { font-size: 39px; margin: 15px 0; line-height: 1.1;}
 h1, h2 { color: #13345a; }
 h1, h2, h3, h4, h5, h6, strong { font-weight: bold; }
 h2 { font-size: 25px; line-height: 1.2; margin-bottom: 0.3em; }
@@ -78,12 +78,13 @@ ul { list-style: disc; }
 	-moz-box-shadow: 0 1px 3px #999;
 	-webkit-box-shadow: 0 1px 3px #999;
 	box-shadow: 0 1px 3px #999;
-	color: #653733;
+	color: #13345a;
 	display: inline-block;
 	font-size: 21px;
 	font-weight: bold;
 	padding: 0.3em 0.7em 0.2em;
 	white-space: nowrap;
+  cursor: pointer;
 }
 
 /* Breakdown table */
@@ -190,8 +191,28 @@ a[class*="icon"] {
 /* Muted text */
 .mute { color: #777; font-size: 13px; }
 
+/* Search */
+#search-form { text-align: right; white-space: nowrap; margin: 15px 0;}
+#search-form input { font-size: 17px; vertical-align: middle; }
+#search-form input[type=text] { padding: 0.6em; width: 13em; }
+
 /* Tertiary content */
 #content-tertiary .action { margin-right: 10px; }
+
+/* Text boxes */
+input[type=text] {
+  border: 1px solid #ccc;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  -moz-box-shadow: inset 0 1px 1px #ddd;
+  -webkit-box-shadow: inset 0 1px 1px #ddd;
+  box-shadow: inset 0 1px 1px #ddd;
+  margin-right: 0.5em;
+  padding: 0.3em;
+  vertical-align: middle;
+  width: 95%;
+}
 
 /* Timelines */
 #readme { display: none; left: -25px; position: absolute; top: 110px; }

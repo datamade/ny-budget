@@ -74,6 +74,15 @@ var BudgetHelpers = {
         <td class='num nominal'>" + nominal + "</td>\
       </tr>";
   },
+
+  generateTableRowNotFound: function() {
+    return "\
+      <tr>\
+        <td>No results found</td>\
+        <td class='num actual'></td>\
+        <td class='num nominal'></td>\
+      </tr>";
+  },
   
   generateExpandedRow: function(itemId, type) {
     var breakdownLink = BudgetHelpers.getAddressLink(type, BudgetHelpers.convertToQueryString(itemId), BudgetLib.viewYear, null, "Breakdown by agency&nbsp;&raquo;");
