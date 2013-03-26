@@ -272,7 +272,18 @@ var BudgetHighcharts = {
         series: [{
             type: 'pie',
             name: sliceTitle,
-            data: pieData
+            data: pieData,
+            point: {
+                events: {
+                  click: function(e) {
+                    if (BudgetLib.viewMode == 'home') {
+                      // hack to prevent chart from re-loading while updating the url
+                      app_router.navigate(('minor/' + this.name + '/' + BudgetLib.viewYear + '/' + BudgetLib.viewChart));
+                      BudgetLib.updateView('minor', this.name, BudgetLib.viewYear, BudgetLib.viewChart, true);
+                    }
+                  }
+               }
+             }
         }]
     });
   },
