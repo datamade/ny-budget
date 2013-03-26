@@ -25,6 +25,7 @@ app_router.on('route:defaultRoute', function (actions) {
 Backbone.history.start();  
 
 // Additional setup
+$("#search-query").ezpz_hint();
 
 //cookies for first time visitors
 $("body").bind("click", function(e){

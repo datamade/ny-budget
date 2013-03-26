@@ -228,6 +228,12 @@ var BudgetHighcharts = {
         return 0;
     });
 
+    // set the color
+    // var color_array = ['#405C7D', '#5D2043', '#306611', '#13593A', '#F6C62D'];
+    // for(i = 0; i < pieData.length; i++) {
+    //   pieData[i]['color'] = color_array[(i % color_array.length)];
+    // }
+
     return new Highcharts.Chart({
         chart: {
             renderTo: element,

@@ -95,6 +95,11 @@ var BudgetLib = {
     // console.log(BudgetLib.viewYear);
 
     BudgetLib.viewMode = 'search';
+    BudgetLib.viewChart = 'list';
+
+    $('#breakdown').show();
+    $('#pie').hide();
+    
     $('#main-chart').hide();
     $('#search-query').val(query);
     BudgetQueries.getAgenciesForQuery(query, BudgetLib.viewYear, "BudgetLib.getDataAsBudgetTable");
@@ -289,6 +294,7 @@ var BudgetLib = {
     var cols = json["columns"];  
     var budget_data;
     var pie_array = [];
+    
 
     if (rows != null) {
       for(i = 0; i < rows.length; i++) {

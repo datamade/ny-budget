@@ -108,14 +108,16 @@ var BudgetHelpers = {
   },
   
   generateExpandedDeptRow: function(departmentId, department, description, majorFunction, minorFunction) {
+      
+    // Major Function: " + BudgetHelpers.getAddressLink('major', BudgetLib.viewYear, BudgetHelpers.convertToQueryString(majorFunction), null, majorFunction + " &raquo;") + "</a>\
+    // <br />\
+
     return "\
       <tr class='expanded-content' id='department-" + departmentId + "-expanded'>\
         <td colspan='5'>\
           <div class='expanded-primary'>\
             <h2>" + department + "</h2>\
             <p>\
-              Major Function: " + BudgetHelpers.getAddressLink('major', BudgetLib.viewYear, BudgetHelpers.convertToQueryString(majorFunction), null, majorFunction + " &raquo;") + "</a>\
-              <br />\
               Minor Function: " + BudgetHelpers.getAddressLink('minor', BudgetLib.viewYear, BudgetHelpers.convertToQueryString(minorFunction), null, minorFunction + " &raquo;") + "</a>\
             </p>\
           </div>\
