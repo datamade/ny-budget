@@ -25,7 +25,7 @@ a:visited { color: #a38d4f; }
 /* Basics
 ======================================================================*/
 a { color: #a38d4f; text-decoration: none; }
-a:hover { text-decoration: underline; }
+a:hover { text-decoration: underline; color: #a38d4f; }
 
 
 dl, ol, p, ul, table { margin-bottom: 1.5em; }

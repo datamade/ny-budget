@@ -160,6 +160,19 @@ var BudgetHighcharts = {
           area: { fillOpacity: 0.25 },
           series: {
             lineWidth: 2,
+            point: {
+              events: {
+                click: function() {
+                  var x = this.x;
+                  if (BudgetLib.viewMode == 'home')
+                  {
+                    var clickedYear = new Date(x).getFullYear();  
+                    app_router.navigate(('minor/' + BudgetHelpers.convertToQueryString($('.expanded-primary h2').html()) + '/' + clickedYear + '/' + BudgetLib.viewChart), {trigger: false});
+                    BudgetLib.updateView('minor', BudgetHelpers.convertToQueryString($('.expanded-primary h2').html()), clickedYear, BudgetLib.viewChart, true);        
+                  }
+                }
+              }
+            },
             pointInterval: BudgetHighcharts.pointInterval,
             pointStart: Date.UTC(BudgetLib.startYear, 1, 1),
             shadow: false
