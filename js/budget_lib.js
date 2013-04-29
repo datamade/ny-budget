@@ -368,10 +368,11 @@ var BudgetLib = {
     var agencyId = rows[0][0];
     var agency = rows[0][1];
     var description = rows[0][2];
-    var majorFunction = rows[0][3];
-    var minorFunction = rows[0][4];
+    var linkToWebsite = rows[0][3]
+    var majorFunction = rows[0][4];
+    var minorFunction = rows[0][5];
      
-    var fusiontabledata = BudgetHelpers.generateExpandedDeptRow(agencyId, agency, description, majorFunction, minorFunction);
+    var fusiontabledata = BudgetHelpers.generateExpandedDeptRow(agencyId, agency, description, linkToWebsite, majorFunction, minorFunction);
     BudgetLib.updateDetail('Agency-' + agencyId, fusiontabledata);
     
     BudgetQueries.getTotalArray(agencyId, 'Agency ID', true, "BudgetLib.updateSparkAppropTotal");

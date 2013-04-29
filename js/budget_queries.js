@@ -73,7 +73,7 @@ var BudgetQueries = {
 	
 	//get a Agency description from a Agency ID
 	getAgencyDescription: function(AgencyId, callback) {
-		var myQuery = "SELECT 'Agency ID', Agency, 'Description', 'Major Function', 'Minor Function' FROM " + BudgetLib.BUDGET_TABLE_ID + " WHERE 'Agency ID' = '" + AgencyId + "'";			
+		var myQuery = "SELECT 'Agency ID', Agency, 'Description', 'Website', 'Major Function', 'Minor Function' FROM " + BudgetLib.BUDGET_TABLE_ID + " WHERE 'Agency ID' = '" + AgencyId + "'";			
 		BudgetHelpers.query(myQuery, callback);
 	},
 	

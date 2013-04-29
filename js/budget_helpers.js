@@ -107,17 +107,17 @@ var BudgetHelpers = {
       </tr>";
   },
   
-  generateExpandedDeptRow: function(departmentId, department, description, majorFunction, minorFunction) {
+  generateExpandedDeptRow: function(departmentId, department, description, linkToWebsite, majorFunction, minorFunction) {
       
-    // Major Function: " + BudgetHelpers.getAddressLink('major', BudgetLib.viewYear, BudgetHelpers.convertToQueryString(majorFunction), null, majorFunction + " &raquo;") + "</a>\
-    // <br />\
+    if (linkToWebsite != '')
+      linkToWebsite = "<a href='" + linkToWebsite + "'>Official&nbsp;website&nbsp;&raquo;</a>";
 
     return "\
       <tr class='expanded-content' id='department-" + departmentId + "-expanded'>\
         <td colspan='5'>\
           <div class='expanded-primary'>\
             <h2>" + department + "</h2>\
-            <p>" + description + "</p>\
+            <p>" + description + " " + linkToWebsite + "</p>\
             <p>\
               Minor Function: " + BudgetHelpers.getAddressLink('minor', BudgetLib.viewYear, BudgetHelpers.convertToQueryString(minorFunction), null, minorFunction + " &raquo;") + "</a>\
             </p>\
