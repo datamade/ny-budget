@@ -66,13 +66,14 @@ var BudgetQueries = {
 	
 	//gets a fund description based on a fund name
 	getFundDescription: function(fund, callback) {
-		var myQuery = "SELECT 'Fund Description' FROM " + BudgetLib.FUND_DESCRIPTION_TABLE_ID + " WHERE Item = '" + fund + "'";			
+		var myQuery = "SELECT 'Description' FROM " + BudgetLib.FUND_DESCRIPTION_TABLE_ID + " WHERE 'Name' = '" + fund + "'";			
+		console.log(myQuery);
 		BudgetHelpers.query(myQuery, callback);
 	},
 	
 	//get a Agency description from a Agency ID
 	getAgencyDescription: function(AgencyId, callback) {
-		var myQuery = "SELECT 'Agency ID', Agency, 'Description', 'Major Function', 'Minor Function' FROM " + BudgetLib.BUDGET_TABLE_ID + " WHERE 'Agency ID' = " + AgencyId;			
+		var myQuery = "SELECT 'Agency ID', Agency, 'Description', 'Major Function', 'Minor Function' FROM " + BudgetLib.BUDGET_TABLE_ID + " WHERE 'Agency ID' = '" + AgencyId + "'";			
 		BudgetHelpers.query(myQuery, callback);
 	},
 	

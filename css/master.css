@@ -158,7 +158,7 @@ ul { list-style: disc; }
   #scorecard td#scorecard-desc { width: 50%; }  
   
   /* Stats */
-  .stats { list-style: none; margin: 0 0 0.5em 0; }
+  .stats { list-style: none; margin: 0 0 0.5em 0; padding-left: 0;}
   .stats li { display: inline; margin-right: 1em; white-space: nowrap; }
   .stats strong { font-size: 25px; }
 

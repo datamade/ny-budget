@@ -117,6 +117,7 @@ var BudgetHelpers = {
         <td colspan='5'>\
           <div class='expanded-primary'>\
             <h2>" + department + "</h2>\
+            <p>" + description + "</p>\
             <p>\
               Minor Function: " + BudgetHelpers.getAddressLink('minor', BudgetLib.viewYear, BudgetHelpers.convertToQueryString(minorFunction), null, minorFunction + " &raquo;") + "</a>\
             </p>\

@@ -29,8 +29,7 @@ var BudgetLib = {
   //IDs used to reference Fusion Tables, where we store our data
   FusionTableApiKey: "AIzaSyDgYMq5VzeWQdYNpvYfP0W3NuCKYOAB5_Y",
   BUDGET_TABLE_ID: "1lkIgEa1qFZiBEdxFgwWdIdHMzJ9vQN1nJEK_jcY", //main budget table with Actual/Nominal per Agency per year
-  FUND_DESCRIPTION_TABLE_ID: "1DVnzs1tOFrVxrf6_jRFeXUe7b6lDYd5jh309Up4",
-  OFFICER_DESCRIPTION_TABLE_ID: "1uSDhUpVbk3c7m0E7iT87LP8GfPk6vnczh-y64sI",
+  FUND_DESCRIPTION_TABLE_ID: "1-lAUWw46nAfziDTfGjKRpRY2L4QKWHC0Lfekz_Q",
   
   title: "State of Washington Budget",
   startYear: 1990,
@@ -299,7 +298,7 @@ var BudgetLib = {
     if (rows != null) {
       for(i = 0; i < rows.length; i++) {
         var rowName = rows[i][0];
-        var AgencyId = 0;
+        var AgencyId = '0';
         if (cols.length > 4)
           AgencyId = rows[i][4];
         var year = cols[3];
@@ -346,6 +345,7 @@ var BudgetLib = {
   
   //shows description in expanded row when row is clicked
   updateExpandedDescription: function(json) {
+    console.log(json);
     var rows = json["rows"];
     var description = '';
     
