@@ -32,7 +32,7 @@ var BudgetLib = {
   FUND_DESCRIPTION_TABLE_ID: "1-lAUWw46nAfziDTfGjKRpRY2L4QKWHC0Lfekz_Q",
   
   title: "State of Washington Budget",
-  startYear: 1990,
+  startYear: 2002,
   endYear: 2013,
 
   // keep track of our state
