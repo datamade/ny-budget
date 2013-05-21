@@ -113,14 +113,12 @@ var BudgetHelpers = {
       linkToWebsite = "<a href='" + linkToWebsite + "'>Official&nbsp;website&nbsp;&raquo;</a>";
 
     return "\
-      <tr class='expanded-content' id='department-" + departmentId + "-expanded'>\
+      <tr class='expanded-content' id='Agency-" + departmentId + "-expanded'>\
         <td colspan='5'>\
           <div class='expanded-primary'>\
             <h2>" + department + "</h2>\
-            <p>" + description + " " + linkToWebsite + "</p>\
-            <p>\
-              Minor Function: " + BudgetHelpers.getAddressLink('minor', BudgetLib.viewYear, BudgetHelpers.convertToQueryString(minorFunction), null, minorFunction + " &raquo;") + "</a>\
-            </p>\
+            <p>" + description + "</p>\
+            <p>" + linkToWebsite + "</p>\
           </div>\
           <div class='expanded-secondary'>\
             <div class='sparkline' id='selected-chart'></div>\

@@ -44,7 +44,7 @@ var BudgetHighcharts = {
         borderColor: "#cccccc",
         floating: true,
         verticalAlign: "top",
-        x: -220,
+        x: -280,
         y: 20
       },
       plotOptions: {

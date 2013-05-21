@@ -345,7 +345,7 @@ var BudgetLib = {
   
   //shows description in expanded row when row is clicked
   updateExpandedDescription: function(json) {
-    console.log(json);
+    // console.log(json);
     var rows = json["rows"];
     var description = '';
     

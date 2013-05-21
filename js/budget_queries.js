@@ -66,8 +66,7 @@ var BudgetQueries = {
 	
 	//gets a fund description based on a fund name
 	getFundDescription: function(fund, callback) {
-		var myQuery = "SELECT 'Description' FROM " + BudgetLib.FUND_DESCRIPTION_TABLE_ID + " WHERE 'Name' = '" + fund + "'";			
-		console.log(myQuery);
+		var myQuery = "SELECT 'Description' FROM " + BudgetLib.FUND_DESCRIPTION_TABLE_ID + " WHERE 'Name' = '" + fund + "'";
 		BudgetHelpers.query(myQuery, callback);
 	},
 	
