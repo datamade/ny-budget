@@ -110,7 +110,7 @@ var BudgetHelpers = {
   generateExpandedDeptRow: function(departmentId, department, description, linkToWebsite, majorFunction, minorFunction) {
       
     if (linkToWebsite != '')
-      linkToWebsite = "<a href='" + linkToWebsite + "'>Official&nbsp;website&nbsp;&raquo;</a>";
+      linkToWebsite = "<a href='" + linkToWebsite + "'>More&nbsp;information&nbsp;&raquo;</a>";
 
     return "\
       <tr class='expanded-content' id='Agency-" + departmentId + "-expanded'>\
