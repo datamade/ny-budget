@@ -240,12 +240,12 @@ var BudgetLib = {
       $("#f-officers").hide();
       
       if (rows.length > 0) {
-        $('#scorecard-desc p').hide().html(rows[0][0]).fadeIn();
+        $('#secondary-description').hide().html(rows[0][0]).fadeIn();
       }
       else if (BudgetLib.viewMode == 'home') {
-        $('#scorecard-desc p').hide().html('Breakdown by minor function').fadeIn();
+        $('#secondary-description').hide().html('Breakdown by minor function').fadeIn();
       }
-      else $('#scorecard-desc p').html('');
+      else $('#secondary-description').html('');
     }
   },
   
