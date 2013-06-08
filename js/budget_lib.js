@@ -275,12 +275,12 @@ var BudgetLib = {
         else $('#f-zero2011').hide();
       }).fadeIn();
       
-      if (cols.length > 2) {        
+     if (cols.length > 2) {        
         if (actualCompare > 0 && actualCurrent > 0) {
-          var actualPercent = (((actualCurrent / actualCompare) - 1) * 100).toFixed(1);
-          if (actualPercent > -0.05) actualPercent = '+' + actualPercent;
+          var actualPercent = (((actualCompare / actualCurrent) - 1) * 100).toFixed(1);
+		            if (actualPercent > 0) actualPercent = '+' + actualPercent;
 
-          $('#actual-change-percent').hide().html('<strong>' + actualPercent + '%</strong> Real (Inflation-adjusted) from ' + (BudgetLib.endYear)).fadeIn();
+          $('#actual-change-percent').hide().html('<strong>' + actualPercent + '% </strong>change from '  + (BudgetLib.viewYear) + ' to ' + (BudgetLib.endYear) + ' (Real)').fadeIn();
         }
         else $('#actual-change-percent').fadeOut();
       }
@@ -391,9 +391,9 @@ var BudgetLib = {
       var actualBottom = rows[0][3];
       
       if (actualTop > 0 && actualBottom > 0) {
-        var actualPercent = (((actualTop / actualBottom) - 1) * 100).toFixed(1);
+        var actualPercent = (((actualBottom / actualTop) - 1) * 100).toFixed(1);
         if (actualPercent >= -0.05) actualPercent = '+' + actualPercent;
-        $('#sparkline-actual').hide().html('<strong>' + actualPercent + '%</strong> Real (Inflation-adjusted) from ' + BudgetLib.endYear).fadeIn();
+        $('#sparkline-actual').hide().html('<strong>' + actualPercent + '%</strong> change from ' + BudgetLib.viewYear + ' to ' + BudgetLib.endYear).fadeIn();
       }
       else $('#sparkline-actual').fadeOut();
     }
