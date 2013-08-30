@@ -6,7 +6,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Starter Template for Bootstrap</title>
+    <title>Look at Macoupin</title>
 
     <!-- Bootstrap core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -22,11 +22,13 @@
   <body>
     <a href="#content" class="sr-only">Skip to content</a>
     <div class="container">
-      <h1><a href='/'>Look at Macoupin</a></h1>
-      <p class='pull-right'>A project by <a href="http://datamade.us">DataMade</a></p>
+      <div id='header'>
+        <h1><a href='/'>Look at Macoupin</a></h1>
+        <p class='pull-right'>A project by <a href="http://datamade.us">DataMade</a></p>
 
-      <p>Explore the Macoupin County, IL budget from 1995 to 2012 and learn how the money is being spent. <a href="#">Read more &raquo;</a></p>
+        <p>Explore the Macoupin County, IL budget from 1995 to 2012 and learn how the money is being spent. <a href="#">Read more &raquo;</a></p>
 
+      </div>
       <div class='well'>
         <div class='row'>
           <div class='col-md-8'>
@@ -34,7 +36,7 @@
             <span id="breadcrumbs"></span>
           </div>
           <div class='col-md-4'>
-            <form class='pull-right form-inline' id="search-form">
+            <form class='form-inline' id="search-form">
               <div class="form-group">
                 <input type="text" id="search-query" class='form-control' placeholder="Department search ..."/>
               </div>
@@ -51,7 +53,7 @@
           <div id="timeline">
             <h2></h2>
             <div id="timeline-chart"></div>
-            <div id="readme"><img alt="Click points to see annual budgets below" src="images/readme.png" /></div>
+            <div id="readme" class='visible-lg'><img alt="Click points to see annual budgets below" src="images/readme.png" /></div>
           </div>
 
           <div id="breakdown-nav"></div>
@@ -76,7 +78,7 @@
           </table>
         </div>
 
-        <table id="breakdown" class='table table-condensed table-hover'>
+        <table id="breakdown" class='table table-condensed table-bordered'>
           <thead>
             <tr>
               <th id='breakdown-item-title'><span id="secondary-title">Minor Function</span></th>
@@ -97,14 +99,16 @@
         </div>
       </div>
 
-      <p class='pull-left'>
-        <a id="download-button" class="btn btn-primary" href="#">View &amp; download data</a>
-        All the data for this project is freely available to download or explore.
-      </p>
-      <p class='pull-right'>
-        <a href="http://www.facebook.com/share.php?u=#"><img alt="Facebook" src="images/facebook-lg.png" /> Share on <strong>Facebook</strong></a>
-        <a href="http://twitter.com/share?text=Where's%20the%20money%20going%3F%20Explore%20Macoupin%20County's%20budget&amp;url=#"><img alt="Twitter" src="images/twitter-lg.png" /> Share on <strong>Twitter</strong></a>
-      </p>
+      <div id='footer'>
+        <p class='pull-left'>
+          <a id="download-button" class="btn btn-primary" href="#">View &amp; download data</a>
+          All the data for this project is freely available to download or explore.
+        </p>
+        <p class='pull-right'>
+          <a href="http://www.facebook.com/share.php?u=#"><img alt="Facebook" src="images/facebook-lg.png" /> Share on <strong>Facebook</strong></a>
+          <a href="http://twitter.com/share?text=Where's%20the%20money%20going%3F%20Explore%20Macoupin%20County's%20budget&amp;url=#"><img alt="Twitter" src="images/twitter-lg.png" /> Share on <strong>Twitter</strong></a>
+        </p>
+      </div>
     </div>
 
     <!-- loading javascript at the bottom of the page for performance -->
