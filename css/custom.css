@@ -2,6 +2,9 @@ body {
   background: #213b57 url(../images/bg.jpg);
 }
 
+a { color: #f85204; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
 #header, #footer { color: #93a4b8; }
 #header a, #footer a { color: #c8ced5; }
 #header h1 a, #footer h1 a { color: #fff; }

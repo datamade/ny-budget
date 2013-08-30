@@ -180,7 +180,8 @@ var BudgetLib = {
         ],
         "bFilter": false,
         "bInfo": false,
-        "bPaginate": false
+        "bPaginate": false,
+        "bAutoWidth": false
       });
     }).fadeIn('fast');
   },
