@@ -1,0 +1,28 @@
+#readme { 
+  display: none; 
+  left: 0px; 
+  position: absolute; 
+  top: 320px; 
+}
+
+#search-form {
+  margin-top: 20px;
+}
+
+#timeline-chart { height: 300px; }
+
+/* Expanded rows */
+#breakdown .expanded-content td {
+  border-top: 0;
+  padding-top: 20px;
+}
+
+#breakdown .expanded-head td {
+  font-weight: bold;
+}
+
+.expanded-primary { float: left; width: 48%; }
+.expanded-secondary { float: right; width: 48%; }
+
+/* Sparklines */
+.sparkline { height: 120px; margin-bottom: 15px; }

@@ -24,9 +24,6 @@ app_router.on('route:defaultRoute', function (actions) {
 // Start Backbone history a necessary step for bookmarkable URL's
 Backbone.history.start();  
 
-// Additional setup
-$("#search-query").ezpz_hint();
-
 //cookies for first time visitors
 $("body").bind("click", function(e){
   $.cookie("budgetbreakdownreadme", "read", { expires: 7 });
@@ -50,4 +47,5 @@ $('#search').click(function(){
   var query = $('#search-query').val();
   app_router.navigate("search/" + query, {trigger: false});
   BudgetLib.renderSearch(query); 
+  return false;
 });
