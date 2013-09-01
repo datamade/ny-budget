@@ -12,8 +12,6 @@ var BudgetHighcharts = {
 
   //displays main graph using highcharts (http://www.highcharts.com)
   updateMainChart: function() {
-      console.log(BudgetLib.appropTotalArray);
-      console.log(BudgetLib.expendTotalArray);
       var minValuesArray = $.grep(BudgetLib.appropTotalArray.concat(BudgetLib.expendTotalArray),
         function(val) { return val != null; });
 
