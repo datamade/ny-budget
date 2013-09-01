@@ -20,11 +20,28 @@ BudgetColl.getTotalExp = function(year){
     return total.reduce(function(a,b){return a + b});
 }
 
+BudgetColl.getTotalApprop = function(year){
+    var total = [];
+    this.forEach(function(item){
+        var amount = item.get('Appropriations ' + year);
+        total.push(accounting.unformat(amount));
+    });
+    return total.reduce(function(a,b){return a + b});
+}
+
 var app_router = new AppRouter;
 app_router.on('route:defaultRoute', function (actions) {
     d3.csv('data/macoupin_budget_cleaned.csv', function(rows){
         BudgetColl.reset(rows);
-        BudgetLib.updateView('home', 'default', 2013, 'list', true);
+        BudgetLib.appropTotalArray = []
+        BudgetLib.expendTotalArray = []
+        var year = BudgetLib.startYear;
+        while (year <= BudgetLib.endYear){
+            BudgetLib.expendTotalArray.push(BudgetColl.getTotalExp(year));
+            BudgetLib.appropTotalArray.push(BudgetColl.getTotalApprop(year));
+            year ++;
+        }
+        BudgetHighcharts.updateMainChart();
     })
 });
 

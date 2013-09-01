@@ -27,12 +27,9 @@ var BudgetLib = BudgetLib || {};
 var BudgetLib = {
 
   //IDs used to reference Fusion Tables, where we store our data
-  FusionTableApiKey: "AIzaSyDgYMq5VzeWQdYNpvYfP0W3NuCKYOAB5_Y",
-  BUDGET_TABLE_ID: "1lkIgEa1qFZiBEdxFgwWdIdHMzJ9vQN1nJEK_jcY", //main budget table with Actual/Nominal per Agency per year
-  FUND_DESCRIPTION_TABLE_ID: "1-lAUWw46nAfziDTfGjKRpRY2L4QKWHC0Lfekz_Q",
 
-  title: "State of Washington Budget",
-  startYear: 2002,
+  title: "Macoupin County, IL Budget",
+  startYear: 1995,
   endYear: 2012,
 
   // keep track of our state

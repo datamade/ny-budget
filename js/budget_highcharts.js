@@ -1,24 +1,22 @@
-var BudgetHighcharts = BudgetHighcharts || {};  
-var BudgetHighcharts = {  
+var BudgetHighcharts = BudgetHighcharts || {};
+var BudgetHighcharts = {
 
   pointInterval: 365 * 24 * 3600 * 1000, //one year in ms
   apropColor:   '#13345a',
   apropSymbol:  'circle',
-  apropTitle:   'Real (Inflation-adjusted)',
-  
+  apropTitle:   'Appropriations',
+
   expendColor:  '#405c7d',
   expendSybmol: 'square',
-  expendTitle:  'Nominal (Unadjusted)',
-  
+  expendTitle:  'Expenditures',
+
   //displays main graph using highcharts (http://www.highcharts.com)
   updateMainChart: function() {
-    BudgetLib.arraysLoaded++;
-    if (BudgetLib.arraysLoaded >= 2) //hack to wait for both expend and approp data callbacks to return
-    {
-      BudgetLib.arraysLoaded = 0;
-      var minValuesArray = $.grep(BudgetLib.appropTotalArray.concat(BudgetLib.expendTotalArray), 
+      console.log(BudgetLib.appropTotalArray);
+      console.log(BudgetLib.expendTotalArray);
+      var minValuesArray = $.grep(BudgetLib.appropTotalArray.concat(BudgetLib.expendTotalArray),
         function(val) { return val != null; });
-        
+
       // Highcharts
       mainChart = new Highcharts.Chart({
       chart: {
@@ -61,7 +59,7 @@ var BudgetHighcharts = {
                 selected = !this.selected,
                 index = this.series.index;
                 this.select(selected, false);
-    
+
                 $.each(this.series.chart.series, function(i, serie) {
                   if (serie.index !== index) {
                     $(serie.data).each(function(j, point){
@@ -71,10 +69,10 @@ var BudgetHighcharts = {
                     });
                   }
                 });
-                var clickedYear = new Date(x).getFullYear();
+                //var clickedYear = new Date(x).getFullYear();
                 // hack to prevent chart from re-loading while updating the url
-                app_router.navigate((BudgetLib.viewMode + '/' + BudgetLib.viewName + '/' + clickedYear + '/' + BudgetLib.viewChart), {trigger: false});
-                BudgetLib.updateView(BudgetLib.viewMode, BudgetLib.viewName, clickedYear, BudgetLib.viewChart, false);
+                // app_router.navigate((BudgetLib.viewMode + '/' + BudgetLib.viewName + '/' + clickedYear + '/' + BudgetLib.viewChart), {trigger: false});
+                // BudgetLib.updateView(BudgetLib.viewMode, BudgetLib.viewName, clickedYear, BudgetLib.viewChart, false);
               }
             }
           },
@@ -136,9 +134,8 @@ var BudgetHighcharts = {
       mainChart.series[0].data[selectedYearIndex].select(true,true);
     if (mainChart.series[1].data[selectedYearIndex].y != null)
       mainChart.series[1].data[selectedYearIndex].select(true,true);
-    }
   },
-    
+
   //displays detail sparkling using high charts (http://www.highcharts.com)
   updateSparkline: function() {
     BudgetLib.arraysLoaded++;
@@ -166,9 +163,9 @@ var BudgetHighcharts = {
                   var x = this.x;
                   if (BudgetLib.viewMode == 'home')
                   {
-                    var clickedYear = new Date(x).getFullYear();  
+                    var clickedYear = new Date(x).getFullYear();
                     app_router.navigate(('minor/' + BudgetHelpers.convertToQueryString($('.expanded-primary h2').html()) + '/' + clickedYear + '/' + BudgetLib.viewChart), {trigger: false});
-                    BudgetLib.updateView('minor', BudgetHelpers.convertToQueryString($('.expanded-primary h2').html()), clickedYear, BudgetLib.viewChart, true);        
+                    BudgetLib.updateView('minor', BudgetHelpers.convertToQueryString($('.expanded-primary h2').html()), clickedYear, BudgetLib.viewChart, true);
                   }
                 }
               }
@@ -254,8 +251,8 @@ var BudgetHighcharts = {
             plotBorderWidth: null,
             plotShadow: false
         },
-        credits: { 
-          enabled: false 
+        credits: {
+          enabled: false
         },
         title: {
             text: null
@@ -300,7 +297,7 @@ var BudgetHighcharts = {
         }]
     });
   },
-  
+
   formatAmount: function(value) {
     if (value >= 1000000000)
       return "$" + value / 1000000000 + "B";
