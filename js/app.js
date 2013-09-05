@@ -11,37 +11,53 @@ var AppRouter = Backbone.Router.extend({
 
 var BudgetColl = new Backbone.Collection;
 
-BudgetColl.getTotalExp = function(year){
-    var total = []
-    this.forEach(function(item){
-        var amount = item.get('Expenditures ' + year);
-        total.push(accounting.unformat(amount));
-    })
+BudgetColl.getTotals = function(dept_id, year, category){
+    var total = [];
+    if (dept_id == 'all'){
+        this.forEach(function(item){
+            var amount = item.get(category + ' ' + year);
+            total.push(accounting.unformat(amount));
+        });
+    } else {
+        this.where({'Department ID': dept_id}).forEach(function(item){
+            var amount = item.get(category + ' ' + year);
+            total.push(accounting.unformat(amount));
+        })
+    }
     return total.reduce(function(a,b){return a + b});
 }
 
-BudgetColl.getTotalApprop = function(year){
-    var total = [];
-    this.forEach(function(item){
-        var amount = item.get('Appropriations ' + year);
-        total.push(accounting.unformat(amount));
+BudgetColl.getDeptSummary = function(dept_id){
+    var dept_full = this.where({'Department ID': dept_id});
+    var summary = {};
+    var self = this;
+    dept_full.forEach(function(item){
+        summary['Department'] = item.get('Department');
+        summary['Expenditures'] = self.getTotals(dept_id, '2012', 'Expenditures');
+        summary['Appropriations'] = self.getTotals(dept_id, '2012', 'Appropriations');
+        summary['Department ID'] = dept_id;
     });
-    return total.reduce(function(a,b){return a + b});
+    return summary;
 }
 
 var app_router = new AppRouter;
 app_router.on('route:defaultRoute', function (actions) {
     d3.csv('data/macoupin_budget_cleaned.csv', function(rows){
         BudgetColl.reset(rows);
-        BudgetLib.appropTotalArray = []
-        BudgetLib.expendTotalArray = []
-        var year = BudgetLib.startYear;
-        while (year <= BudgetLib.endYear){
-            BudgetLib.expendTotalArray.push(BudgetColl.getTotalExp(year));
-            BudgetLib.appropTotalArray.push(BudgetColl.getTotalApprop(year));
-            year ++;
-        }
+        BudgetLib.appropTotalArray = [];
+        BudgetLib.expendTotalArray = [];
+        $.each(BudgetLib.getYearRange(), function(i,year){
+            BudgetLib.expendTotalArray.push(BudgetColl.getTotals('all', year, 'Expenditures'));
+            BudgetLib.appropTotalArray.push(BudgetColl.getTotals('all', year, 'Appropriations'));
+        });
+        var expTotal = BudgetLib.expendTotalArray.slice();
+        var appropTotal = BudgetLib.appropTotalArray.slice();
+        var currentApprop = appropTotal[appropTotal.length - 1];
+        var currentExp = expTotal[expTotal.length - 1];
         BudgetHighcharts.updateMainChart();
+        BudgetLib.updateHeader(BudgetLib.title, 'Fund');
+        BudgetLib.updateScorecardDescription([]);
+        BudgetLib.updateScorecard(currentExp, currentApprop);
     })
 });
 

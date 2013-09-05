@@ -39,6 +39,10 @@ var BudgetLib = {
   viewChart: 'list',
   arraysLoaded: 0,
 
+  getYearRange: function(){
+      return Number.range(this.startYear, this.endYear + 1);
+  },
+
   //-------------front end display functions-------------------
 
   //primary load for graph and table
@@ -248,41 +252,32 @@ var BudgetLib = {
   },
 
   //shows totals and percentage changes of the current view below the main chart
-  updateScorecard: function(json) {
-    var rows = json["rows"];
-    var cols = json["columns"];
-    if (rows.length > 0) {
-      var nominalCurrent = rows[0][0];
-      var actualCurrent = rows[0][1];
-      var nominalCompare = rows[0][2];
-      var actualCompare = rows[0][3];
+  updateScorecard: function(expenditures, appropriations) {
+    $('#scorecard .appropriations').fadeOut('fast', function(){
+      $('#scorecard .appropriations').html(appropriations);
+      $('#scorecard .appropriations').formatCurrency();
+    }).fadeIn('fast');
 
-      $('#scorecard .nominal').fadeOut('fast', function(){
-        $('#scorecard .nominal').html(nominalCurrent);
-        $('#scorecard .nominal').formatCurrency();
-      }).fadeIn('fast');
+    $('#scorecard .expenditures').fadeOut('fast', function(){
+      $('#scorecard .expenditures').html(expenditures);
+      $('#scorecard .expenditures').formatCurrency();
 
-      $('#scorecard .actual').fadeOut('fast', function(){
-        $('#scorecard .actual').html(actualCurrent);
-        $('#scorecard .actual').formatCurrency();
+    //if (BudgetLib.viewYear == BudgetLib.endYear && actualCurrent == 0) {
+    //  $('#scorecard .expenditures').append("<sup class='ref'>&dagger;</sup>");
+    //  $('#f-zero2011').show();
+    //}
+    //else $('#f-zero2011').hide();
+    }).fadeIn();
 
-        if (BudgetLib.viewYear == BudgetLib.endYear && actualCurrent == 0) {
-          $('#scorecard .actual').append("<sup class='ref'>&dagger;</sup>");
-          $('#f-zero2011').show();
-        }
-        else $('#f-zero2011').hide();
-      }).fadeIn();
+   //if (cols.length > 2) {
+   //   if (actualCompare > 0 && actualCurrent > 0) {
+   //     var actualPercent = (((actualCompare / actualCurrent) - 1) * 100).toFixed(1);
+   //               if (actualPercent > 0) actualPercent = '+' + actualPercent;
 
-     if (cols.length > 2) {
-        if (actualCompare > 0 && actualCurrent > 0) {
-          var actualPercent = (((actualCompare / actualCurrent) - 1) * 100).toFixed(1);
-		            if (actualPercent > 0) actualPercent = '+' + actualPercent;
-
-          $('#actual-change-percent').hide().html('<strong>' + actualPercent + '% </strong>change from '  + (BudgetLib.viewYear) + ' to ' + (BudgetLib.endYear) + ' (Real)').fadeIn();
-        }
-        else $('#actual-change-percent').fadeOut();
-      }
-    }
+   //     $('#actual-change-percent').hide().html('<strong>' + actualPercent + '% </strong>change from '  + (BudgetLib.viewYear) + ' to ' + (BudgetLib.endYear) + ' (Real)').fadeIn();
+   //   }
+   //   else $('#actual-change-percent').fadeOut();
+   // }
   },
 
   //builds out budget breakdown (secondary) table
