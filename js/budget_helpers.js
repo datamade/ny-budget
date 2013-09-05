@@ -64,14 +64,14 @@ var BudgetHelpers = {
   	return ("<a href='" + BudgetHelpers.getAddressHref(mode, name, year, chart) + "'>" + linkTitle + "</a>");
   },
 
-  generateTableRow: function(rowId, detailLoadFunction, rowName, nominal, actual) {
+  generateTableRow: function(rowId, detailLoadFunction, rowName, appropriations, expenditures) {
     return "\
       <tr id='" + rowId + "'>\
         <td>\
         <a onclick='" + detailLoadFunction + "'><img class='budget-expand-img' src='images/expand.png' /></a>&nbsp;<a onclick='" + detailLoadFunction + "'>" + rowName + "</a>\
         </td>\
-        <td class='num actual'>" + actual + "</td>\
-        <td class='num nominal'>" + nominal + "</td>\
+        <td class='num appropriations'>" + appropriations + "</td>\
+        <td class='num expenditures'>" + expenditures + "</td>\
       </tr>";
   },
 

@@ -11,33 +11,42 @@ var AppRouter = Backbone.Router.extend({
 
 var BudgetColl = new Backbone.Collection;
 
-BudgetColl.getTotals = function(dept_id, year, category){
+BudgetColl.getTotals = function(category, year, dept){
     var total = [];
-    if (dept_id == 'all'){
-        this.forEach(function(item){
+    if (typeof dept === 'undefined'){
+        var all = this.pluck(category + ' ' + year);
+        total = all.reduce(function(a,b){return accounting.unformat(a) + accounting.unformat(b)});
+    } else {
+        dept.forEach(function(item){
             var amount = item.get(category + ' ' + year);
             total.push(accounting.unformat(amount));
         });
-    } else {
-        this.where({'Department ID': dept_id}).forEach(function(item){
-            var amount = item.get(category + ' ' + year);
-            total.push(accounting.unformat(amount));
-        })
+        total = total.reduce(function(a,b){return a + b});
     }
-    return total.reduce(function(a,b){return a + b});
+    return total;
 }
 
 BudgetColl.getDeptSummary = function(dept_id){
-    var dept_full = this.where({'Department ID': dept_id});
+    var dept = this.where({'Department ID': dept_id});
     var summary = {};
     var self = this;
-    dept_full.forEach(function(item){
-        summary['Department'] = item.get('Department');
-        summary['Expenditures'] = self.getTotals(dept_id, '2012', 'Expenditures');
-        summary['Appropriations'] = self.getTotals(dept_id, '2012', 'Appropriations');
-        summary['Department ID'] = dept_id;
+    var exp = self.getTotals('Expenditures', '2012', dept);
+    var approp = self.getTotals('Appropriations', '2012', dept);
+    dept.forEach(function(item){
+        if (exp > 0 || approp > 0){
+            summary['Department'] = item.get('Department');
+            summary['Expenditures'] = exp;
+            summary['Appropriations'] = approp;
+            summary['Department ID'] = dept_id;
+        } else {
+            summary = null;
+        }
     });
     return summary;
+}
+
+BudgetColl.getDeptIDs = function(){
+    return this.pluck('Department ID').getUnique();
 }
 
 var app_router = new AppRouter;
@@ -47,17 +56,25 @@ app_router.on('route:defaultRoute', function (actions) {
         BudgetLib.appropTotalArray = [];
         BudgetLib.expendTotalArray = [];
         $.each(BudgetLib.getYearRange(), function(i,year){
-            BudgetLib.expendTotalArray.push(BudgetColl.getTotals('all', year, 'Expenditures'));
-            BudgetLib.appropTotalArray.push(BudgetColl.getTotals('all', year, 'Appropriations'));
+            BudgetLib.expendTotalArray.push(BudgetColl.getTotals('Expenditures', year));
+            BudgetLib.appropTotalArray.push(BudgetColl.getTotals('Appropriations', year));
         });
         var expTotal = BudgetLib.expendTotalArray.slice();
         var appropTotal = BudgetLib.appropTotalArray.slice();
         var currentApprop = appropTotal[appropTotal.length - 1];
         var currentExp = expTotal[expTotal.length - 1];
         BudgetHighcharts.updateMainChart();
-        BudgetLib.updateHeader(BudgetLib.title, 'Fund');
+        BudgetLib.updateHeader(BudgetLib.title, 'Department');
         BudgetLib.updateScorecardDescription([]);
         BudgetLib.updateScorecard(currentExp, currentApprop);
+        var summaries = [];
+        $.each(BudgetColl.getDeptIDs(), function(i, id){
+            var summary = BudgetColl.getDeptSummary(id);
+            if (summary){
+                summaries.push(BudgetColl.getDeptSummary(id));
+            }
+        });
+        BudgetLib.getDataAsBudgetTable(summaries);
     })
 });
 
