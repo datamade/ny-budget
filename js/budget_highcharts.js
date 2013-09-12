@@ -11,8 +11,8 @@ var BudgetHighcharts = {
   expendTitle:  'Expenditures',
 
   //displays main graph using highcharts (http://www.highcharts.com)
-  updateMainChart: function() {
-      var minValuesArray = $.grep(BudgetLib.appropTotalArray.concat(BudgetLib.expendTotalArray),
+  updateMainChart: function(data) {
+      var minValuesArray = $.grep(data.appropriations.concat(data.expenditures),
         function(val) { return val != null; });
 
       // Highcharts
@@ -82,7 +82,7 @@ var BudgetHighcharts = {
       series: [
         {
           color: this.apropColor,
-          data: BudgetLib.appropTotalArray,
+          data: data.appropriations,
           marker: {
             radius: 6,
             symbol: this.apropSymbol
@@ -90,7 +90,7 @@ var BudgetHighcharts = {
           name: this.apropTitle
         }, {
           color: this.expendColor,
-          data: BudgetLib.expendTotalArray,
+          data: data.expenditures,
           marker: {
             radius: 6,
             symbol: this.expendSybmol
@@ -135,19 +135,15 @@ var BudgetHighcharts = {
   },
 
   //displays detail sparkling using high charts (http://www.highcharts.com)
-  updateSparkline: function() {
-    BudgetLib.arraysLoaded++;
-     if (BudgetLib.arraysLoaded >= 2)
-     {
-       var minValuesArray = $.grep(BudgetLib.sparkAppropTotalArray.concat(BudgetLib.sparkExpendTotalArray), function(val) { return val != null; });
-       BudgetLib.arraysLoaded = 0;
+  updateSparkline: function(data) {
+      var minValuesArray = $.grep(data.appropriations.concat(data.expenditures), function(val) { return val != null; });
       // Small chart
-      BudgetLib.sparkChart = new Highcharts.Chart({
+      new Highcharts.Chart({
         chart: {
           defaultSeriesType: "area",
           marginBottom: 15,
           marginRight: 0,
-          renderTo: "selected-chart"
+          renderTo: data.rowId + "-selected-chart"
         },
         legend: { enabled: false },
         credits: { enabled: false },
@@ -158,13 +154,14 @@ var BudgetHighcharts = {
             point: {
               events: {
                 click: function() {
-                  var x = this.x;
-                  if (BudgetLib.viewMode == 'home')
-                  {
-                    var clickedYear = new Date(x).getFullYear();
-                    app_router.navigate(('minor/' + BudgetHelpers.convertToQueryString($('.expanded-primary h2').html()) + '/' + clickedYear + '/' + BudgetLib.viewChart), {trigger: false});
-                    BudgetLib.updateView('minor', BudgetHelpers.convertToQueryString($('.expanded-primary h2').html()), clickedYear, BudgetLib.viewChart, true);
-                  }
+                  // TODO: Make this do something
+                  //var x = this.x;
+                  //  if (BudgetLib.viewMode == 'home')
+                  //  {
+                  //    var clickedYear = new Date(x).getFullYear();
+                  //    app_router.navigate(('minor/' + BudgetHelpers.convertToQueryString($('.expanded-primary h2').html()) + '/' + clickedYear + '/' + BudgetLib.viewChart), {trigger: false});
+                  //    BudgetLib.updateView('minor', BudgetHelpers.convertToQueryString($('.expanded-primary h2').html()), clickedYear, BudgetLib.viewChart, true);
+                  //  }
                 }
               }
             },
@@ -176,7 +173,7 @@ var BudgetHighcharts = {
         series: [
           {
             color: this.apropColor,
-            data: BudgetLib.sparkAppropTotalArray,
+            data: data.appropriations,
             marker: {
               radius: 4,
               symbol: this.apropSymbol
@@ -184,7 +181,7 @@ var BudgetHighcharts = {
             name: this.apropTitle
           }, {
             color: this.expendColor,
-            data: BudgetLib.sparkExpendTotalArray,
+            data: data.expenditures,
             marker: {
               radius: 5,
               symbol: this.expendSybmol
@@ -219,12 +216,12 @@ var BudgetHighcharts = {
           title: { text: null }
         }
       });
-    var selectedYearIndex = BudgetLib.viewYear - BudgetLib.startYear;
-    if (BudgetLib.sparkChart.series[0].data[selectedYearIndex].y != null)
-      BudgetLib.sparkChart.series[0].data[selectedYearIndex].select(true,true);
-    if (BudgetLib.sparkChart.series[1].data[selectedYearIndex].y != null)
-      BudgetLib.sparkChart.series[1].data[selectedYearIndex].select(true,true);
-    }
+    // TODO: Make this do something
+  // var selectedYearIndex = BudgetLib.viewYear - BudgetLib.startYear;
+  // if (BudgetLib.sparkChart.series[0].data[selectedYearIndex].y != null)
+  //   BudgetLib.sparkChart.series[0].data[selectedYearIndex].select(true,true);
+  // if (BudgetLib.sparkChart.series[1].data[selectedYearIndex].y != null)
+  //   BudgetLib.sparkChart.series[1].data[selectedYearIndex].select(true,true);
   },
 
   updatePie: function(element, pieData, sliceTitle) {

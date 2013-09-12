@@ -28,7 +28,6 @@ var BudgetLib = {
 
   //IDs used to reference Fusion Tables, where we store our data
 
-  title: "Macoupin County, IL Budget",
   startYear: 1995,
   endYear: 2012,
 
@@ -39,9 +38,6 @@ var BudgetLib = {
   viewChart: 'list',
   arraysLoaded: 0,
 
-  getYearRange: function(){
-      return Number.range(this.startYear, this.endYear + 1);
-  },
 
   //-------------front end display functions-------------------
 
@@ -130,17 +126,6 @@ var BudgetLib = {
     }
   },
 
-  updateHeader: function(view, subtype){
-    $('#budget-title').html(view);
-    if (view != BudgetLib.title) {
-      $('#breadcrumbs').html(BudgetHelpers.getAddressLink('home', 'default', null, null, "&laquo back to " + BudgetLib.title));
-    }
-    else
-      $('#breadcrumbs').html("");
-
-    $('#secondary-title').html(BudgetLib.viewYear + ' ' + view);
-    $('#breakdown-item-title span').html(subtype);
-  },
 
   //displays secondary datatables fund/Agency listing
   updateTable: function() {

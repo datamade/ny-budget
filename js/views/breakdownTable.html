@@ -1,0 +1,42 @@
+<thead>
+  <tr>
+    <th id='breakdown-item-title'><span id="secondary-title">Minor Function</span></th>
+    <th class="num"><span>Budgeted</span></th>
+    <th class="num"><span>Spent</span></th>
+  </tr>
+</thead>
+<tbody>
+    <% rows.forEach(function(row){ %>
+        <tr id="<%= row.rowId %>">
+            <td>
+                <a href="javascript://" class="fund-details">
+                    <img class='budget-expand-img' src='images/expand.png' />
+                </a>
+                &nbsp;
+                <a href="javascript://" class="fund-details"><%= row.rowName %></a>
+            </td>
+            <td class='num appropriations'><%= accounting.formatMoney(row.appropriations) %></td>
+            <td class='num expenditures'><%= accounting.formatMoney(row.expenditures) %></td>
+        </tr>
+
+        <tr class='expanded-content' id='<%= row.rowId %>-expanded' style="display:none;">
+            <td colspan='4'>
+                <div class='expanded-primary'>
+                    <h2><%= row.rowName %></h2>
+                    <p id='expanded-description'>
+                        <%= row.description %>
+                    </p>
+                    <ul class='stats'>
+                        <li>link goes here</li>
+                    </ul>
+                </div>
+                <div class='expanded-secondary'>
+                    <div class='sparkline' id='<%= row.rowId %>-selected-chart'></div>
+                    <ul class='stats'>
+                      <li id='sparkline-actual'></li>
+                    </ul>
+                </div>
+            </td>
+        </tr>
+    <% }) %>
+</tbody>

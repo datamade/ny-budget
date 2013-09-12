@@ -1,117 +1,207 @@
-// Backbone app routing
+(function(){
+    var app = {}
 
-// main application handler
-var AppRouter = Backbone.Router.extend({
-    routes: {
-        "search/:query": "routeSearch",
-        ":mode/:name/:year(/:viewChart)": "routeView",
-        "*actions": "defaultRoute"
+    function template_cache(tmpl_name, tmpl_data){
+        if ( !template_cache.tmpl_cache ) {
+            template_cache.tmpl_cache = {};
+        }
+
+        if ( ! template_cache.tmpl_cache[tmpl_name] ) {
+            var tmpl_dir = '/js/views';
+            var tmpl_url = tmpl_dir + '/' + tmpl_name + '.html';
+
+            var tmpl_string;
+            $.ajax({
+                url: tmpl_url,
+                method: 'GET',
+                async: false,
+                success: function(data) {
+                    tmpl_string = data;
+                }
+            });
+
+            template_cache.tmpl_cache[tmpl_name] = _.template(tmpl_string);
+        }
+
+        return template_cache.tmpl_cache[tmpl_name](tmpl_data);
     }
-});
 
-var BudgetColl = new Backbone.Collection;
+    // Backbone app routing
 
-BudgetColl.getTotals = function(category, year, dept){
-    var total = [];
-    if (typeof dept === 'undefined'){
-        var all = this.pluck(category + ' ' + year);
-        total = all.reduce(function(a,b){return accounting.unformat(a) + accounting.unformat(b)});
-    } else {
-        dept.forEach(function(item){
-            var amount = item.get(category + ' ' + year);
-            total.push(accounting.unformat(amount));
-        });
-        total = total.reduce(function(a,b){return a + b});
-    }
-    return total;
-}
-
-BudgetColl.getDeptSummary = function(dept_id){
-    var dept = this.where({'Department ID': dept_id});
-    var summary = {};
-    var self = this;
-    var exp = self.getTotals('Expenditures', '2012', dept);
-    var approp = self.getTotals('Appropriations', '2012', dept);
-    dept.forEach(function(item){
-        if (exp > 0 || approp > 0){
-            summary['Department'] = item.get('Department');
-            summary['Expenditures'] = exp;
-            summary['Appropriations'] = approp;
-            summary['Department ID'] = dept_id;
-        } else {
-            summary = null;
+    // main application handler
+    app.AppRouter = Backbone.Router.extend({
+        routes: {
+            "search/:query": "routeSearch",
+            ":mode/:name/:year(/:viewChart)": "routeView",
+            "*actions": "defaultRoute"
         }
     });
-    return summary;
-}
 
-BudgetColl.getDeptIDs = function(){
-    return this.pluck('Department ID').getUnique();
-}
+    app.BudgetModel = Backbone.Model.extend({});
 
-var app_router = new AppRouter;
-app_router.on('route:defaultRoute', function (actions) {
-    d3.csv('data/macoupin_budget_cleaned.csv', function(rows){
-        BudgetColl.reset(rows);
-        BudgetLib.appropTotalArray = [];
-        BudgetLib.expendTotalArray = [];
-        $.each(BudgetLib.getYearRange(), function(i,year){
-            BudgetLib.expendTotalArray.push(BudgetColl.getTotals('Expenditures', year));
-            BudgetLib.appropTotalArray.push(BudgetColl.getTotals('Appropriations', year));
-        });
-        var expTotal = BudgetLib.expendTotalArray.slice();
-        var appropTotal = BudgetLib.appropTotalArray.slice();
-        var currentApprop = appropTotal[appropTotal.length - 1];
-        var currentExp = expTotal[expTotal.length - 1];
-        BudgetHighcharts.updateMainChart();
-        BudgetLib.updateHeader(BudgetLib.title, 'Department');
-        BudgetLib.updateScorecardDescription([]);
-        BudgetLib.updateScorecard(currentExp, currentApprop);
-        var summaries = [];
-        $.each(BudgetColl.getDeptIDs(), function(i, id){
-            var summary = BudgetColl.getDeptSummary(id);
-            if (summary){
-                summaries.push(BudgetColl.getDeptSummary(id));
+    app.BudgetColl = Backbone.Collection.extend({
+        model: app.BudgetModel,
+        startYear: 1995,
+        endYear: 2012,
+        initialize: function(models, options){
+            var self = this;
+        },
+        getYearRange: function(){
+            return Number.range(this.startYear, this.endYear + 1);
+        },
+        reduceTotals: function(totals){
+            var total = [];
+            totals.forEach(function(item){
+                total.push(accounting.unformat(item));
+            });
+            return total.reduce(function(a,b){return a + b});
+        },
+        getTotals: function(category, year){
+            var all = this.pluck(category + ' ' + year);
+            return this.reduceTotals(all);
+        },
+        getFundTotals: function(category, fund, year){
+            var totals = [];
+            var rows = this.where({'Fund ID': fund});
+            var self = this;
+            rows.forEach(function(row){
+                totals.push(row.get(category + ' ' + year));
+            });
+            return totals;
+        },
+        getFundSummary: function(fund, year){
+            if (typeof year === 'undefined'){
+                year = this.endYear;
             }
-        });
-        BudgetLib.getDataAsBudgetTable(summaries);
+            var dept = this.where({'Fund ID': fund});
+            var summary = {};
+            var self = this;
+            var exp = self.getFundTotals('Expenditures', fund, year);
+            var approp = self.getFundTotals('Appropriations', fund, year);
+            var self = this;
+            dept.forEach(function(item){
+                summary['rowName'] = item.get('Fund');
+                summary['description'] = item.get('Fund Description');
+                summary['expenditures'] = self.reduceTotals(exp);
+                summary['appropriations'] = self.reduceTotals(approp);
+                summary['rowId'] = item.get('Fund ID');
+            });
+            return summary;
+        },
+        getFunds: function(){
+            return this.pluck('Fund ID').getUnique();
+        }
+    });
+
+    app.MainChartView = Backbone.View.extend({
+        el: $('#main-chart'),
+        initialize: function(){
+            this.render();
+        },
+        render: function(){
+            this.$el.html(template_cache('mainChart', this.model))
+            BudgetHighcharts.updateMainChart(this.model);
+            return this;
+        },
     })
-});
+
+     app.BreakdownView = Backbone.View.extend({
+        el: $('#breakdown'),
+        initialize: function(){
+            this.render();
+        },
+        events: {
+            'click .fund-details': 'fundDetails'
+        },
+        render: function(){
+            this.$el.html(template_cache('breakdownTable', this.model));
+            return this;
+        },
+        fundDetails: function(e){
+            $('.expanded-content').hide();
+            var row = $(e.target).parent().parent();
+            var fundId = row.attr('id');
+            var data = {
+                expenditures: [],
+                appropriations: [],
+                rowId: fundId
+            }
+            BudgetHighcharts.updateSparkline(data);
+            row.next().toggle();
+        }
+    });
+
+    var app_router = new app.AppRouter;
+    var collection = new app.BudgetColl();
+    app_router.on('route:defaultRoute', function (actions) {
+        d3.csv('data/macoupin_budget_cleaned.csv', function(rows){
+            collection.add(rows);
+            var main_chart_data = {
+                expenditures: [],
+                appropriations: [],
+                title: "Macoupin County, IL Budget",
+                viewMode: "home",
+                subtype: "Description",
+                viewYear: 2012,
+            };
+            var breakdown_data = {rows: []};
+            var funds = collection.getFunds();
+            $.each(collection.getYearRange(), function(i, year){
+                var exp = collection.getTotals('Expenditures', year);
+                main_chart_data.expenditures.push(exp);
+                var approp = collection.getTotals('Appropriations', year);
+                main_chart_data.appropriations.push(approp);
+            });
+            $.each(collection.getFunds(), function(i, fund){
+                breakdown_data['rows'].push(collection.getFundSummary(fund))
+            });
+            var main_chart = new app.MainChartView({
+                model: main_chart_data
+            });
+            var breakdown_table = new app.BreakdownView({
+                model:breakdown_data
+            });
+        });
+      //var summaries = [];
+      //BudgetLib.getDataAsBudgetTable(summaries);
+      //})
+    });
 
 
-// Instantiate the router
-//  app_router.on('route:routeSearch', function (query) {
-//      BudgetLib.renderSearch(query);
-//  });
-//  app_router.on('route:routeView', function (mode, name, year, viewChart) {
-//      BudgetLib.updateView(mode, name, year, viewChart, true);
-//  });
-//
-//  // Start Backbone history a necessary step for bookmarkable URL's
-Backbone.history.start();
+    // Instantiate the router
+    //  app_router.on('route:routeSearch', function (query) {
+    //      BudgetLib.renderSearch(query);
+    //  });
+    //  app_router.on('route:routeView', function (mode, name, year, viewChart) {
+    //      BudgetLib.updateView(mode, name, year, viewChart, true);
+    //  });
+    //
+    //  // Start Backbone history a necessary step for bookmarkable URL's
+    Backbone.history.start();
 
-//cookies for first time visitors
-$("body").bind("click", function(e){
-  $.cookie("budgetbreakdownreadme", "read", { expires: 7 });
-  $("#readme").fadeOut("fast");
-});
+    //cookies for first time visitors
+    $("body").bind("click", function(e){
+      $.cookie("budgetbreakdownreadme", "read", { expires: 7 });
+      $("#readme").fadeOut("fast");
+    });
 
-if ($.cookie("budgetbreakdownreadme") != "read") {
-  $("#readme").fadeIn("fast");
-}
+    if ($.cookie("budgetbreakdownreadme") != "read") {
+      $("#readme").fadeIn("fast");
+    }
 
-// Firing events for search
-$("#search-query").keydown(function(e){
-  var key =  e.keyCode ? e.keyCode : e.which;
-  if(key == 13) {
-      $('#search').click();
+    // Firing events for search
+    $("#search-query").keydown(function(e){
+      var key =  e.keyCode ? e.keyCode : e.which;
+      if(key == 13) {
+          $('#search').click();
+          return false;
+      }
+    });
+
+    $('#search').click(function(){
+      var query = $('#search-query').val();
+      app_router.navigate("search/" + query, {trigger: false});
+      BudgetLib.renderSearch(query);
       return false;
-  }
-});
-
-$('#search').click(function(){
-  var query = $('#search-query').val();
-  app_router.navigate("search/" + query, {trigger: false});
-  BudgetLib.renderSearch(query);
-  return false;
-});
+    });
+})()
