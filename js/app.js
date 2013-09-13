@@ -65,7 +65,7 @@
             var rows = this.where({'Fund ID': fund});
             var self = this;
             rows.forEach(function(row){
-                totals.push(row.get(category + ' ' + year));
+                totals.push(accounting.unformat(row.get(category + ' ' + year)));
             });
             return totals;
         },
@@ -119,15 +119,31 @@
         },
         fundDetails: function(e){
             $('.expanded-content').hide();
-            var row = $(e.target).parent().parent();
+            var row = $(e.currentTarget).parent().parent();
+            $.each(row.parent().find('img'), function(i,img){
+                $(img).attr('src', 'images/expand.png');
+            })
             var fundId = row.attr('id');
             var data = {
                 expenditures: [],
                 appropriations: [],
                 rowId: fundId
             }
+            $.each(collection.getYearRange(), function(i, year){
+                var exp = collection.getFundTotals('Expenditures', fundId, year)
+                data.expenditures.push(collection.reduceTotals(exp));
+                var approp = collection.getFundTotals('Appropriations', fundId, year);
+                data.appropriations.push(collection.reduceTotals(approp));
+            });
             BudgetHighcharts.updateSparkline(data);
-            row.next().toggle();
+            console.log(row.next().is(':visible'))
+            if(row.next().is(':visible')){
+                row.next().hide();
+                row.find('img').attr('src', 'images/expand.png')
+            } else {
+                row.next().show();
+                row.find('img').attr('src', 'images/collapse.png')
+            }
         }
     });
 
