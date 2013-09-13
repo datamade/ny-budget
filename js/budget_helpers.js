@@ -139,7 +139,7 @@ var BudgetHelpers = {
   //converts text to a formatted query string
   convertToQueryString: function(text) {
   	if (text == undefined) return '';
-  	return (text+'').replace(/\-+/g, '+').replace(/\s+/g, '+');
+  	return text.replace(' ', '-');
   },
 
   //converts a slug or query string in to readable text

@@ -9,11 +9,11 @@
     <% rows.forEach(function(row){ %>
         <tr id="<%= row.rowId %>">
             <td>
-                <a href="javascript://" class="fund-details">
+                <a href="javascript://" class="details">
                     <img class='budget-expand-img' src='images/expand.png' />
                 </a>
                 &nbsp;
-                <a href="javascript://" class="fund-details"><%= row.rowName %></a>
+                <a href="javascript://" class="details"><%= row.rowName %></a>
             </td>
             <td class='num appropriations'><%= accounting.formatMoney(row.appropriations) %></td>
             <td class='num expenditures'><%= accounting.formatMoney(row.expenditures) %></td>
@@ -27,7 +27,10 @@
                         <%= row.description %>
                     </p>
                     <ul class='stats'>
-                        <li>link goes here</li>
+                        <li>
+                            <% var slug = BudgetHelpers.convertToSlug(row.rowName) %>
+                            <a href="javascript://" class="breakdown" data-slug="<%= slug %>" data-type="<%= type %>">Breakdown by Department &raquo;</a>
+                        </li>
                     </ul>
                 </div>
                 <div class='expanded-secondary'>
