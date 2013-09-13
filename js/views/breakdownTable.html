@@ -21,20 +21,22 @@
 
         <tr class='expanded-content' id='<%= row.rowId %>-expanded' style="display:none;">
             <td colspan='4'>
-                <div class='expanded-primary'>
-                    <h2><%= row.rowName %></h2>
-                    <p id='expanded-description'>
-                        <%= row.description %>
-                    </p>
-                    <ul class='stats'>
-                        <li>link goes here</li>
-                    </ul>
-                </div>
-                <div class='expanded-secondary'>
-                    <div class='sparkline' id='<%= row.rowId %>-selected-chart'></div>
-                    <ul class='stats'>
-                      <li id='sparkline-actual'></li>
-                    </ul>
+                <div class='row'>
+                    <div class='col-md-5'>
+                        <h2><%= row.rowName %></h2>
+                        <p id='expanded-description'>
+                            <%= row.description %>
+                        </p>
+                        <ul class='stats'>
+                            <li>link goes here</li>
+                        </ul>
+                    </div>
+                    <div class='col-md-7'>
+                        <div class='sparkline' id='<%= row.rowId %>-selected-chart'></div>
+                        <ul class='stats'>
+                          <li id='sparkline-actual'></li>
+                        </ul>
+                    </div>
                 </div>
             </td>
         </tr>
