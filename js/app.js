@@ -31,7 +31,8 @@
     app.AppRouter = Backbone.Router.extend({
         routes: {
             "search/:query": "routeSearch",
-            "fund/:slug(/:year)": "fundBreakdown",
+            "drilldown/:slug(/:year)": "drillDown",
+            "year/:year": "yearDetail",
             "*actions": "defaultRoute"
         }
     });
@@ -241,7 +242,12 @@
               }
             });
             var clickedYear = new Date(x).getFullYear();
-            console.log(clickedYear);
+            var hash = window.location.hash.replace('#', '');
+            if(hash){
+                app_router.navigate(hash + '/' + clickedYear, {trigger: true});
+            } else {
+                app_router.navigate('year' + '/' + clickedYear, {trigger: true});
+            }
             // hack to prevent chart from re-loading while updating the url
             // app_router.navigate((BudgetLib.viewMode + '/' + BudgetLib.viewName + '/' + clickedYear + '/' + BudgetLib.viewChart), {trigger: false});
             // BudgetLib.updateView(BudgetLib.viewMode, BudgetLib.viewName, clickedYear, BudgetLib.viewChart, false);
@@ -312,7 +318,7 @@
         breakdownNav: function(e){
             var slug = $(e.target).data('slug');
             var type = $(e.target).data('type');
-            app_router.navigate('fund/' + type + '/' + slug, {trigger: true});
+            app_router.navigate('drilldown/' + type + '/' + slug, {trigger: true});
         },
 
         // Updates the detail chart in a lot the same way as the main chart one
@@ -415,13 +421,17 @@
         });
     });
 
+    app_router.on('router:yearDetail', function(year){
+        console.log(year);
+    })
+
     // This is for the fund breakdown. Works a lot the same as above
     // but fetches the summary versions of the data so they don't
     // need to be recomputed.
     // TODO: One issue is that if you visit a route directly, the collection
     // has not been populated yet. So, we need to check and load if necessary
     // I suppose.
-    app_router.on('route:fundBreakdown', function(type, slug, year){
+    app_router.on('route:drillDown', function(type, slug, year){
         var name = slug.split('-').join(' ');
         if (!year){
             year = 2012
