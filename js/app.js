@@ -43,6 +43,8 @@
         model: app.BudgetModel,
         startYear: 1995,
         endYear: 2012,
+        mainChartData: {},
+        breakdownChartData: {},
         initialize: function(models, options){
             var self = this;
         },
@@ -93,7 +95,7 @@
         },
         getDeptTotals: function(category, dept, year){
             var totals = [];
-            var rows = this.where({'Department Id': dept});
+            var rows = this.where({'Department ID': String(dept)});
             rows.forEach(function(row){
                 totals.push(accounting.unformat(row.get(category + ' ' + year)));
             });
@@ -103,7 +105,7 @@
             if (typeof year === 'undefined'){
                 year = this.endYear;
             }
-            var depts = this.where({'Department ID': dept_id});
+            var depts = this.where({'Department ID': String(dept_id)});
             var summary = {};
             var self = this;
             var exp = self.getDeptTotals('Expenditures', dept_id, year);
@@ -116,11 +118,9 @@
                 summary['appropriations'] = self.reduceTotals(approp);
                 summary['rowId'] = item.get('Department ID');
             });
-            console.log(summary);
             return summary;
         },
         getDepartments: function(fund){
-            console.log(fund)
             var depts = this.where({'Fund': fund});
             var all_depts = [];
             depts.forEach(function(dept){
@@ -231,18 +231,17 @@
                 $(img).attr('src', 'images/expand.png');
             })
             var fundId = row.attr('id');
-            var data = {
-                expenditures: [],
-                appropriations: [],
-                rowId: fundId
-            }
+            this.model.expenditures = [];
+            this.model.appropriations = [];
+            this.model.rowId = fundId;
+            var self = this
             $.each(collection.getYearRange(), function(i, year){
                 var exp = collection.getFundTotals('Expenditures', fundId, year)
-                data.expenditures.push(collection.reduceTotals(exp));
+                self.model.expenditures.push(collection.reduceTotals(exp));
                 var approp = collection.getFundTotals('Appropriations', fundId, year);
-                data.appropriations.push(collection.reduceTotals(approp));
+                self.model.appropriations.push(collection.reduceTotals(approp));
             });
-            this.updateChart(data)
+            this.updateChart(this.model)
             if(row.next().is(':visible')){
                 row.next().hide();
                 row.find('img').attr('src', 'images/expand.png')
@@ -320,28 +319,28 @@
     var collection = new app.BudgetColl();
     app_router.on('route:defaultRoute', function (actions) {
         d3.csv('data/macoupin_budget_cleaned.csv', function(rows){
-            collection.add(rows);
-            var main_chart_data = {
+            collection.reset(rows);
+            collection.mainChartData = {
                 expenditures: [],
                 appropriations: [],
                 title: "Macoupin County, IL Budget",
                 viewYear: collection.endYear,
             };
-            var breakdown_data = {rows: [], type:'Fund'};
+            collection.breakdownChartData = {rows: [], type:'Fund'};
             $.each(collection.getYearRange(), function(i, year){
                 var exp = collection.getTotals('Expenditures', year);
-                main_chart_data.expenditures.push(exp);
+                collection.mainChartData.expenditures.push(exp);
                 var approp = collection.getTotals('Appropriations', year);
-                main_chart_data.appropriations.push(approp);
+                collection.mainChartData.appropriations.push(approp);
             });
             $.each(collection.getFunds(), function(i, fund){
-                breakdown_data['rows'].push(collection.getFundSummary(fund))
+                collection.breakdownChartData['rows'].push(collection.getFundSummary(fund))
             });
             var main_chart = new app.MainChartView({
-                model: main_chart_data
+                model: collection.mainChartData
             });
             var breakdown_table = new app.BreakdownView({
-                model: breakdown_data
+                model: collection.breakdownChartData
             });
         });
     });
@@ -353,30 +352,20 @@
         if (!year){
             year = 2012
         }
-        var main_chart_data = {
-            expenditures: [],
-            appropriations: [],
-            title: name,
-            viewYear: parseInt(year),
-        };
-        var breakdown_data = {rows: [], type:'Expense'};
-        var depts = collection.getDepartments(name);
-        $.each(collection.getYearRange(), function(i, year){
-            $.each(depts, function(i, dept){
-                var exp = collection.getDeptTotals('Expenditures', dept, year);
-                main_chart_data.expenditures.push(exp);
-                var approp = collection.getDeptTotals('Appropriations', dept, year);
-                main_chart_data.appropriations.push(approp);
-            });
+        collection.mainChartData['expenditures'] = collection.breakdownChartData['expenditures'];
+        collection.mainChartData['appropriations'] = collection.breakdownChartData['appropriations'];
+        collection.mainChartData['title'] = name;
+        collection.breakdownChartData = {rows: [], type:'Fund'};
+        $.each(collection.getDepartments(name), function(dept){
+            collection.breakdownChartData['rows'].push(collection.getDeptSummary(dept));
         });
-        $.each(depts, function(i, dept){
-            breakdown_data['rows'].push(collection.getDeptSummary(dept));
-        });
+        $('#main-chart').empty();
+        $('#breakdown').empty();
         var main_chart = new app.MainChartView({
-            model: main_chart_data
+            model: collection.mainChartData
         });
         var breakdown_table = new app.BreakdownView({
-            model: breakdown_data
+            model: collection.breakdownChartData
         });
     })
 

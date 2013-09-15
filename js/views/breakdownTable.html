@@ -28,7 +28,10 @@
                             <%= row.description %>
                         </p>
                         <ul class='stats'>
-                            <li>link goes here</li>
+                            <li>
+                                <% var slug = BudgetHelpers.convertToSlug(row.rowName) %>
+                                <a href="javascript://" class="breakdown" data-slug="<%= slug %>" data-type="<%= type %>">Breakdown by Department &raquo;</a>
+                            </li>
                         </ul>
                     </div>
                     <div class='col-md-7'>
