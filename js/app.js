@@ -1,6 +1,7 @@
 (function(){
     var app = {}
 
+    // Builds a cache of templates that get fetched and rendered by views
     function template_cache(tmpl_name, tmpl_data){
         if ( !template_cache.tmpl_cache ) {
             template_cache.tmpl_cache = {};
@@ -26,9 +27,7 @@
         return template_cache.tmpl_cache[tmpl_name](tmpl_data);
     }
 
-    // Backbone app routing
-
-    // main application handler
+    // Define routes. Only the "fund/:slug" and "*actions" are in use right now
     app.AppRouter = Backbone.Router.extend({
         routes: {
             "search/:query": "routeSearch",
@@ -37,20 +36,27 @@
         }
     });
 
+    // Give the collection a model to render. Not entirely necessary but stubbing it
+    // out so that we can define model methods but who knows.
     app.BudgetModel = Backbone.Model.extend({});
 
+    // Main collection.
     app.BudgetColl = Backbone.Collection.extend({
+        // Setup defaults
         model: app.BudgetModel,
         startYear: 1995,
         endYear: 2012,
+
+        // Placeholders for summarized versions of data that gets rendered into charts
         mainChartData: {},
         breakdownChartData: {},
-        initialize: function(models, options){
-            var self = this;
-        },
+
+        // Returns an array of valid years.
         getYearRange: function(){
             return Number.range(this.startYear, this.endYear + 1);
         },
+
+        // Returns the sum of an array
         reduceTotals: function(totals){
             var total = [];
             totals.forEach(function(item){
@@ -58,10 +64,15 @@
             });
             return total.reduce(function(a,b){return a + b});
         },
+
+        // Returns a total for a given category and year
+        // Example: "Expenditures 1995"
         getTotals: function(category, year){
             var all = this.pluck(category + ' ' + year);
             return this.reduceTotals(all);
         },
+
+        // Returns an array of totals for a given fund. Used by the summary method below
         getFundTotals: function(category, fund, year){
             var totals = [];
             var rows = this.where({'Fund ID': fund});
@@ -71,6 +82,8 @@
             });
             return totals;
         },
+
+        // Returns a summary of funds that is used to render the breakdown table
         getFundSummary: function(fund, year){
             if (typeof year === 'undefined'){
                 year = this.endYear;
@@ -90,9 +103,14 @@
             });
             return summary;
         },
+
+        // Returns an array of all unique Fund IDs
         getFunds: function(){
             return this.pluck('Fund ID').getUnique();
         },
+
+        // Pretty much the same as the getFundTotals.
+        // TODO: These two should probably be combined cause they are pretty much the same.
         getDeptTotals: function(category, dept, year){
             var totals = [];
             var rows = this.where({'Department ID': String(dept)});
@@ -101,6 +119,9 @@
             });
             return totals;
         },
+
+        // Pretty much the same as the getFundSummary but for departments.
+        // TODO: Should probably come up with an abstraction for both since they are largely the same.
         getDeptSummary: function(dept_id, year){
             if (typeof year === 'undefined'){
                 year = this.endYear;
@@ -120,6 +141,8 @@
             });
             return summary;
         },
+
+        // Returns an array of unique Department IDs given a Fund.
         getDepartments: function(fund){
             var depts = this.where({'Fund': fund});
             var all_depts = [];
@@ -130,6 +153,7 @@
         }
     });
 
+    // Common chart settings.
     app.GlobalChartOpts = {
         pointInterval: 365 * 24 * 3600 * 1000, //one year in ms
         apropColor:   '#13345a',
@@ -140,17 +164,28 @@
         expendTitle:  'Expenditures',
     }
 
+    // Um, Main Chart View.
     app.MainChartView = Backbone.View.extend({
         el: $('#main-chart'),
+
+        // The bulk of the chart options are defined in the budget_highcharts.js file
+        // and attached to the window over there. Dunno if that's the best approach but it works
         chartOpts: window.mainChartOpts,
+
+        // Render the view when you initialize it.
         initialize: function(){
             this.render();
         },
+
+        // This is where the magic happens. Grab the template from the template_cache function
+        // at the top of this file and then update the chart with what's passed in as the model.
         render: function(){
             this.$el.html(template_cache('mainChart', this.model))
             this.updateChart(this.model, 2012);
             return this;
         },
+
+        // Append and customize the chart options for the given model passed into the view.
         updateChart: function(data, year){
             var minValuesArray = $.grep(data.appropriations.concat(data.expenditures),
               function(val) { return val != null; });
@@ -184,6 +219,9 @@
               this.chartOpts.series[1].data[selectedYearIndex].select(true,true);
             new Highcharts.Chart(this.chartOpts);
         },
+
+        // This is the event handler for click events for the points in the chart.
+        // TODO: Make it do something.
         pointClick: function(e){
             $("#readme").fadeOut("fast");
             $.cookie("budgetbreakdownreadme", "read", { expires: 7 });
@@ -210,20 +248,32 @@
         }
     })
 
+    // Breakdown Chart view. Does a lot the same kind of things as the main chart view
      app.BreakdownView = Backbone.View.extend({
         el: $('#breakdown'),
+
+        // Bound to the window from the budget_highcharts.js file (as above)
         chartOpts: window.sparkLineOpts,
+
+        // Render the view when you initialize it
         initialize: function(){
             this.render();
         },
+
+        // What to do with click events. So, when someone clicks on something
+        // with a class of ".details", have the "details" method handle the event, etc
         events: {
             'click .details': 'details',
             'click .breakdown': 'breakdownNav'
         },
+
+        // Grab the template from the template cache, bind the model to it and render it
         render: function(){
             this.$el.html(template_cache('breakdownTable', this.model));
             return this;
         },
+
+        // Gets fired when a user clicks the links to view the detail charts
         details: function(e){
             e.preventDefault();
             var row = $(e.currentTarget).parent().parent();
@@ -231,6 +281,10 @@
                 $(img).attr('src', 'images/expand.png');
             })
             var fundId = row.attr('id');
+
+            // The "model" here is a summary of the collection that gets passed in to the
+            // view when the view is initialized. This makes it so we don't have to
+            // re iterate the collection every time we want to summarize.
             this.model.expenditures = [];
             this.model.appropriations = [];
             this.model.rowId = fundId;
@@ -241,7 +295,9 @@
                 var approp = collection.getFundTotals('Appropriations', fundId, year);
                 self.model.appropriations.push(collection.reduceTotals(approp));
             });
-            this.updateChart(this.model)
+
+            // Update the detail chart.
+            this.updateChart(this.model);
             if(row.next().is(':visible')){
                 row.next().hide();
                 row.find('img').attr('src', 'images/expand.png')
@@ -250,11 +306,16 @@
                 row.find('img').attr('src', 'images/collapse.png')
             }
         },
+
+        // This gets fired when a user clicks the "breakdown" link in the detail
+        // Triggers the router to update the URL and fires the appropriate function
         breakdownNav: function(e){
             var slug = $(e.target).data('slug');
             var type = $(e.target).data('type');
             app_router.navigate('fund/' + type + '/' + slug, {trigger: true});
         },
+
+        // Updates the detail chart in a lot the same way as the main chart one
         updateChart: function(data){
             var minValuesArray = $.grep(data.appropriations.concat(data.expenditures),
               function(val) { return val != null; });
@@ -289,6 +350,9 @@
               this.chartOpts.series[1].data[selectedYearIndex].select(true,true);
             new Highcharts.Chart(this.chartOpts);
         },
+
+        // Handler for the click events on the points on the chart
+        // TODO: make it do something
         pointClick: function(e){
             $("#readme").fadeOut("fast");
             $.cookie("budgetbreakdownreadme", "read", { expires: 7 });
@@ -308,15 +372,21 @@
               }
             });
             var clickedYear = new Date(x).getFullYear();
-            console.log(clickedYear);
             // hack to prevent chart from re-loading while updating the url
             // app_router.navigate((BudgetLib.viewMode + '/' + BudgetLib.viewName + '/' + clickedYear + '/' + BudgetLib.viewChart), {trigger: false});
             // BudgetLib.updateView(BudgetLib.viewMode, BudgetLib.viewName, clickedYear, BudgetLib.viewChart, false);
         }
     });
 
+    // Make the router
     var app_router = new app.AppRouter;
+
+    // initialize the main collection
     var collection = new app.BudgetColl();
+
+    // Default route. Loads the CSV file and populates the summarized "models" which get rendered
+    // into the views. Those then get stashed as properties on the main collection so that we
+    // don't have to recompute them
     app_router.on('route:defaultRoute', function (actions) {
         d3.csv('data/macoupin_budget_cleaned.csv', function(rows){
             collection.reset(rows);
@@ -345,9 +415,13 @@
         });
     });
 
+    // This is for the fund breakdown. Works a lot the same as above
+    // but fetches the summary versions of the data so they don't
+    // need to be recomputed.
+    // TODO: One issue is that if you visit a route directly, the collection
+    // has not been populated yet. So, we need to check and load if necessary
+    // I suppose.
     app_router.on('route:fundBreakdown', function(type, slug, year){
-        // TODO: Make sure that data is available when visiting the
-        // path directly.
         var name = slug.split('-').join(' ');
         if (!year){
             year = 2012
@@ -369,15 +443,7 @@
         });
     })
 
-    // Instantiate the router
-    //  app_router.on('route:routeSearch', function (query) {
-    //      BudgetLib.renderSearch(query);
-    //  });
-    //  app_router.on('route:routeView', function (mode, name, year, viewChart) {
-    //      BudgetLib.updateView(mode, name, year, viewChart, true);
-    //  });
-    //
-    //  // Start Backbone history a necessary step for bookmarkable URL's
+    // Start Backbone history a necessary step for bookmarkable URL's
     Backbone.history.start();
 
     //cookies for first time visitors
