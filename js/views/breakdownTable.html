@@ -5,37 +5,36 @@
     <th class="num"><span>Spent</span></th>
   </tr>
 </thead>
-<tbody>
-    <% rows.forEach(function(row){ %>
-        <tr id="<%= row.rowId %>">
+<tbody id="breakdown-table-body">
+    <% data.get('rows').forEach(function(row){ %>
+        <tr class="rowId" id="<%= row.get('rowId') %>">
             <td>
                 <a href="javascript://" class="details">
                     <img class='budget-expand-img' src='images/expand.png' />
                 </a>
                 &nbsp;
-                <a href="javascript://" class="details"><%= row.rowName %></a>
+                <a href="javascript://" class="details rowName"><%= row.get('rowName') %></a>
             </td>
-            <td class='num appropriations'><%= accounting.formatMoney(row.appropriations) %></td>
-            <td class='num expenditures'><%= accounting.formatMoney(row.expenditures) %></td>
+            <td class='num appropriations'><%= accounting.formatMoney(row.get('appropriations')) %></td>
+            <td class='num expenditures'><%= accounting.formatMoney(row.get('expenditures')) %></td>
         </tr>
 
-        <tr class='expanded-content' id='<%= row.rowId %>-expanded' style="display:none;">
+        <tr class='expanded-content' id='<%= row.get('rowId') %>-expanded' style="display:none;">
             <td colspan='4'>
                 <div class='row'>
                     <div class='col-md-5'>
-                        <h2><%= row.rowName %></h2>
-                        <p id='expanded-description'>
-                            <%= row.description %>
+                        <h2 class="rowName"><%= row.get('rowName') %></h2>
+                        <p class='expanded-description'>
+                            <%= row.get('description') %>
                         </p>
                         <ul class='stats'>
                             <li>
-                                <% var slug = BudgetHelpers.convertToSlug(row.rowName) %>
-                                <a href="javascript://" class="breakdown" data-slug="<%= slug %>">Breakdown by Department &raquo;</a>
+                                <a href="javascript://" class="breakdown" data-slug="<%= row.get('slug') %>">Breakdown by Department &raquo;</a>
                             </li>
                         </ul>
                     </div>
                     <div class='col-md-7'>
-                        <div class='sparkline' id='<%= row.rowId %>-selected-chart' data-objid='<%= row.rowId %>' data-objtype='<%= row.type %>'></div>
+                        <div class='sparkline' id='<%= row.get('rowId') %>-selected-chart' data-objid='<%= row.get('rowId') %>' data-objtype='<%= row.get('type') %>'></div>
                         <ul class='stats'>
                           <li id='sparkline-actual'></li>
                         </ul>

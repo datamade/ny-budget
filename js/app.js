@@ -27,59 +27,77 @@
         return template_cache.tmpl_cache[tmpl_name](tmpl_data);
     }
     
+    app.MainChartModel = Backbone.Model.extend({
+        setYear: function(year, index){
+            var exp = this.get('expenditures');
+            var approp = this.get('appropriations');
+            this.set({
+                'selectedExp': accounting.formatMoney(exp[index]),
+                'selectedApprop': accounting.formatMoney(approp[index]),
+                'viewYear': year
+            });
+        }
+    });
+    
+    app.BreakdownRow = Backbone.Model.extend({})
+    
+    app.BreakdownModel = Backbone.Model.extend({
+        setRows: function(year){
+            this.get('rows').forEach(function(row){
+                row.set(collection.getFundSummary(row.get('rowId'), year))
+            })
+            // var rows = []
+            // $.each(fund, function(i, f){
+            //     bd.rows.push(new app.BreakdownRow(inner_self.getFundSummary(fund, year)));
+            // });
+            // var rows = new app.BreakdownRow(collection.getFundSummary(fund,year));
+            // this.set({'rows': rows});
+        }
+    });
+    
     app.BudgetColl = Backbone.Collection.extend({
         startYear: 1995,
         endYear: 2012,
         updateYear: function(year, yearIndex){
-            var exp = this.mainChartData.expenditures;
-            var approp = this.mainChartData.appropriations;
-            this.mainChartData.selectedExp = exp[yearIndex];
-            this.mainChartData.selectedApprop = approp[yearIndex];
-            this.mainChartData.viewYear = year;
-            // this.mainChartData.chart.destroy();
-            this.breakdownChartData = {rows:[]};
-            var self = this;
-            $.each(this.funds, function(i, fund){
-                self.breakdownChartData.rows.push(self.getFundSummary(fund, year));
-            });
-            this.breakdownView.undelegateEvents();
-            this.mainChartView.undelegateEvents();
-            this.mainChartView = new app.MainChartView({
-                model: this.mainChartData
-            });
-            this.breakdownView = new app.BreakdownView({
-                model: this.breakdownChartData
-            });
+            this.mainChartData.setYear(year, yearIndex);
+            this.breakdownChartData.setRows(year);
         },
-        bootstrap: function(data){
-            this.reset(data);
-            this.funds = this.pluck('Fund ID').getUnique();
-            this.depts = this.pluck('Department ID').getUnique();
+        bootstrap: function(){
             var self = this;
-            var exp = [];
-            var approp = [];
-            $.each(this.getYearRange(), function(i, year){
-                exp.push(self.getTotals('Expenditures', year));
-                approp.push(self.getTotals('Appropriations', year));
-            });
-            this.mainChartData = {
-                expenditures: exp,
-                appropriations: approp,
-                title: "Macoupin County, IL Budget",
-                viewYear: this.endYear,
-                selectedExp: exp[exp.length - 1],
-                selectedApprop: approp[approp.length - 1]
-            };
-            this.breakdownChartData = {rows:[]};
-            $.each(this.funds, function(i, fund){
-                self.breakdownChartData.rows.push(self.getFundSummary(fund));
-            });
-            this.mainChartView = new app.MainChartView({
-                model: this.mainChartData
-            });
-            this.breakdownView = new app.BreakdownView({
-                model: this.breakdownChartData
-            });
+            $.when($.get('/data/macoupin_budget_cleaned.csv')).then(
+                function(data){
+                    var json = $.csv.toObjects(data);
+                    self.add(json);
+                    self.funds = self.pluck('Fund ID').getUnique();
+                    self.depts = self.pluck('Department ID').getUnique();
+                    var inner_self = self;
+                    var exp = [];
+                    var approp = [];
+                    $.each(self.getYearRange(), function(i, year){
+                        exp.push(inner_self.getTotals('Expenditures', year));
+                        approp.push(inner_self.getTotals('Appropriations', year));
+                    });
+                    self.mainChartData = new app.MainChartModel({
+                        expenditures: exp,
+                        appropriations: approp,
+                        title: "Macoupin County, IL Budget",
+                        viewYear: self.endYear,
+                        selectedExp: accounting.formatMoney(exp[exp.length - 1]),
+                        selectedApprop: accounting.formatMoney(approp[approp.length - 1])
+                    });
+                    var bd = {rows:[]};
+                    $.each(self.funds, function(i, fund){
+                        bd.rows.push(new app.BreakdownRow(inner_self.getFundSummary(fund)));
+                    });
+                    self.breakdownChartData = new app.BreakdownModel(bd);
+                    self.mainChartView = new app.MainChartView({
+                        model: self.mainChartData
+                    });
+                    self.breakdownView = new app.BreakdownView({
+                        model: self.breakdownChartData
+                    });
+                }
+            );
         },
         // Returns an array of valid years.
         getYearRange: function(){
@@ -125,6 +143,7 @@
                 summary['appropriations'] = self.reduceTotals(approp);
                 summary['rowId'] = item.get('Fund ID');
                 summary['type'] = 'Fund'
+                summary['slug'] = BudgetHelpers.convertToSlug(item.get('Fund'))
             });
             return summary;
         },
@@ -139,18 +158,27 @@
 
         // Render the view when you initialize it.
         initialize: function(){
+            // this.listenTo(this.model, 'change', this.renderUpdate);
+            this._modelBinder = new Backbone.ModelBinder();
             this.render();
         },
 
         // This is where the magic happens. Grab the template from the template_cache function
         // at the top of this file and then update the chart with what's passed in as the model.
         render: function(){
-            this.$el.html(template_cache('mainChart', this.model));
+            this.$el.html(template_cache('mainChart', {model: this.model}));
+            this._modelBinder.bind(this.model, this.el, {
+                viewYear: '#secondary-title .viewYear',
+                selectedExp: '.expenditures',
+                selectedApprop: '.appropriations'
+            });
             this.updateChart(this.model, this.model.viewYear);
             return this;
         },
         updateChart: function(data, year){
-            var minValuesArray = $.grep(data.appropriations.concat(data.expenditures),
+            var exp = jQuery.extend(true, [], data.get('expenditures'));
+            var approp = jQuery.extend(true, [], data.get('appropriations'));
+            var minValuesArray = $.grep(approp.concat(exp),
               function(val) { return val != null; });
             var globalOpts = app.GlobalChartOpts;
             this.chartOpts.plotOptions.area.pointInterval = globalOpts.pointInterval;
@@ -158,7 +186,7 @@
             this.chartOpts.plotOptions.series.point.events.click = this.pointClick;
             this.chartOpts.series = [{
                 color: globalOpts.apropColor,
-                data: data.appropriations,
+                data: approp,
                 marker: {
                     radius: 6,
                     symbol: globalOpts.apropSymbol
@@ -166,7 +194,7 @@
                 name: globalOpts.apropTitle
               }, {
                 color: globalOpts.expendColor,
-                data: data.expenditures,
+                data: exp,
                 marker: {
                     radius: 6,
                     symbol: globalOpts.expendSybmol
@@ -188,20 +216,20 @@
             $("#readme").fadeOut("fast");
             $.cookie("budgetbreakdownreadme", "read", { expires: 7 });
             var x = this.x,
-            y = this.y;//,
-            // selected = !this.selected,
-            // index = this.series.index;
-            // this.select(selected, false);
-            // 
-            // $.each(this.series.chart.series, function(i, serie) {
-            //   if (serie.index !== index) {
-            //     $(serie.data).each(function(j, point){
-            //       if(x === point.x && point.y != null) {
-            //         point.select(selected, true);
-            //       }
-            //     });
-            //   }
-            // });
+            y = this.y,
+            selected = !this.selected,
+            index = this.series.index;
+            this.select(selected, false);
+            
+            $.each(this.series.chart.series, function(i, serie) {
+              if (serie.index !== index) {
+                $(serie.data).each(function(j, point){
+                  if(x === point.x && point.y != null) {
+                    point.select(selected, true);
+                  }
+                });
+              }
+            });
             var clickedYear = new Date(x).getFullYear();
             var yearIndex = this.series.processedYData.indexOf(y);
             collection.updateYear(clickedYear, yearIndex);
@@ -224,12 +252,14 @@
 
         // Render the view when you initialize it
         initialize: function(){
+            // Get the binder thingy working!!!!
+            this._modelBinder = new Backbone.ModelBinder();
             this.render();
         },
 
         // Grab the template from the template cache, bind the model to it and render it
         render: function(){
-            this.$el.html(template_cache('breakdownTable', this.model));
+            this.$el.html(template_cache('breakdownTable', {data: this.model}));
             return this;
         },
 
@@ -361,12 +391,7 @@
         },
         defaultRoute: function(actions){
             var self = this;
-            $.when($.get('/data/macoupin_budget_cleaned.csv')).then(
-                function(data){
-                    var json = $.csv.toObjects(data);
-                    self.collection.bootstrap(json);
-                }
-            )
+            self.collection.bootstrap();
         }
     });
     var collection = new app.BudgetColl();

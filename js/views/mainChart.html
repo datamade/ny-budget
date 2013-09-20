@@ -1,6 +1,6 @@
 <div class='row'>
   <div class='col-md-8'>
-    <h2 id='budget-title'><%= title %></h2>
+    <h2 id='budget-title'><%= model.get('title') %></h2>
     <span id="breadcrumbs">
         <% var bc = BudgetHelpers.getAddressLink('home', 'default', null, null, "&laquo back to " + BudgetLib.title) %>
         <% if (!bc.indexOf('undefined')){ %> 
@@ -35,15 +35,18 @@
       <tbody>
         <tr>
           <td id="scorecard-desc">
-            <h2 id="secondary-title"><%= viewYear %> <%= title %></h2>
+            <h2 id="secondary-title">
+                <span class="viewYear"><%= model.get('viewYear') %></span> 
+                <span class="title"><%= model.get('title') %></span>
+            </h2>
             <p id='actual-change-percent'></p>
           </td>
           <td>
-            <h2 class="appropriations"><%= accounting.formatMoney(selectedApprop) %></h2>
+            <h2 class="appropriations"><%= model.get('selectedApprop') %></h2>
             <p>Budgeted</p>
           </td>
           <td>
-            <h2 class="expenditures"><%= accounting.formatMoney(selectedExp) %></h2>
+            <h2 class="expenditures"><%= model.get('selectedExp') %></h2>
             <p>Spent</p>
           </td>
         </tr>
