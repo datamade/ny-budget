@@ -177,6 +177,7 @@
             //   this.chartOpts.series[0].data[selectedYearIndex].select(true,true);
             // if (this.chartOpts.series[1].data[selectedYearIndex].y != null)
             //   this.chartOpts.series[1].data[selectedYearIndex].select(true,true);
+            console.log(this.chartOpts)
             new Highcharts.Chart(this.chartOpts);
         },
         // This is the event handler for click events for the points in the chart.
