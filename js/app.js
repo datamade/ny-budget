@@ -33,18 +33,21 @@
         updateYear: function(year, yearIndex){
             var exp = this.mainChartData.expenditures;
             var approp = this.mainChartData.appropriations;
-            this.mainChartData.selectedExp = exp[yearIndex].y;
-            this.mainChartData.selectedApprop = approp[yearIndex].y;
+            this.mainChartData.selectedExp = exp[yearIndex];
+            this.mainChartData.selectedApprop = approp[yearIndex];
             this.mainChartData.viewYear = year;
+            // this.mainChartData.chart.destroy();
             this.breakdownChartData = {rows:[]};
             var self = this;
             $.each(this.funds, function(i, fund){
                 self.breakdownChartData.rows.push(self.getFundSummary(fund, year));
             });
-            var main_chart = new app.MainChartView({
+            this.breakdownView.undelegateEvents();
+            this.mainChartView.undelegateEvents();
+            this.mainChartView = new app.MainChartView({
                 model: this.mainChartData
             });
-            var breakdown_table = new app.BreakdownView({
+            this.breakdownView = new app.BreakdownView({
                 model: this.breakdownChartData
             });
         },
@@ -71,10 +74,10 @@
             $.each(this.funds, function(i, fund){
                 self.breakdownChartData.rows.push(self.getFundSummary(fund));
             });
-            var main_chart = new app.MainChartView({
+            this.mainChartView = new app.MainChartView({
                 model: this.mainChartData
             });
-            var breakdown_table = new app.BreakdownView({
+            this.breakdownView = new app.BreakdownView({
                 model: this.breakdownChartData
             });
         },
@@ -177,7 +180,6 @@
             //   this.chartOpts.series[0].data[selectedYearIndex].select(true,true);
             // if (this.chartOpts.series[1].data[selectedYearIndex].y != null)
             //   this.chartOpts.series[1].data[selectedYearIndex].select(true,true);
-            console.log(this.chartOpts)
             new Highcharts.Chart(this.chartOpts);
         },
         // This is the event handler for click events for the points in the chart.
@@ -186,20 +188,20 @@
             $("#readme").fadeOut("fast");
             $.cookie("budgetbreakdownreadme", "read", { expires: 7 });
             var x = this.x,
-            y = this.y,
-            selected = !this.selected,
-            index = this.series.index;
-            this.select(selected, false);
-
-            $.each(this.series.chart.series, function(i, serie) {
-              if (serie.index !== index) {
-                $(serie.data).each(function(j, point){
-                  if(x === point.x && point.y != null) {
-                    point.select(selected, true);
-                  }
-                });
-              }
-            });
+            y = this.y;//,
+            // selected = !this.selected,
+            // index = this.series.index;
+            // this.select(selected, false);
+            // 
+            // $.each(this.series.chart.series, function(i, serie) {
+            //   if (serie.index !== index) {
+            //     $(serie.data).each(function(j, point){
+            //       if(x === point.x && point.y != null) {
+            //         point.select(selected, true);
+            //       }
+            //     });
+            //   }
+            // });
             var clickedYear = new Date(x).getFullYear();
             var yearIndex = this.series.processedYData.indexOf(y);
             collection.updateYear(clickedYear, yearIndex);
