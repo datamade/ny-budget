@@ -39,11 +39,11 @@
             <p id='actual-change-percent'></p>
           </td>
           <td>
-            <h2 class="appropriations"><%= accounting.formatMoney(appropriations[appropriations.length -1]) %></h2>
+            <h2 class="appropriations"><%= accounting.formatMoney(selectedApprop) %></h2>
             <p>Budgeted</p>
           </td>
           <td>
-            <h2 class="expenditures"><%= accounting.formatMoney(expenditures[expenditures.length -1]) %></h2>
+            <h2 class="expenditures"><%= accounting.formatMoney(selectedExp) %></h2>
             <p>Spent</p>
           </td>
         </tr>

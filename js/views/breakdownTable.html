@@ -30,12 +30,12 @@
                         <ul class='stats'>
                             <li>
                                 <% var slug = BudgetHelpers.convertToSlug(row.rowName) %>
-                                <a href="javascript://" class="breakdown" data-slug="<%= slug %>" data-type="<%= type %>">Breakdown by Department &raquo;</a>
+                                <a href="javascript://" class="breakdown" data-slug="<%= slug %>">Breakdown by Department &raquo;</a>
                             </li>
                         </ul>
                     </div>
                     <div class='col-md-7'>
-                        <div class='sparkline' id='<%= row.rowId %>-selected-chart'></div>
+                        <div class='sparkline' id='<%= row.rowId %>-selected-chart' data-objid='<%= row.rowId %>' data-objtype='<%= row.type %>'></div>
                         <ul class='stats'>
                           <li id='sparkline-actual'></li>
                         </ul>

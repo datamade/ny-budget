@@ -26,38 +26,62 @@
 
         return template_cache.tmpl_cache[tmpl_name](tmpl_data);
     }
-
-    // Define routes. Only the "fund/:slug" and "*actions" are in use right now
-    app.AppRouter = Backbone.Router.extend({
-        routes: {
-            "search/:query": "routeSearch",
-            "drilldown/:slug(/:year)": "drillDown",
-            "year/:year": "yearDetail",
-            "*actions": "defaultRoute"
-        }
-    });
-
-    // Give the collection a model to render. Not entirely necessary but stubbing it
-    // out so that we can define model methods but who knows.
-    app.BudgetModel = Backbone.Model.extend({});
-
-    // Main collection.
+    
     app.BudgetColl = Backbone.Collection.extend({
-        // Setup defaults
-        model: app.BudgetModel,
         startYear: 1995,
         endYear: 2012,
-
-        // Placeholders for summarized versions of data that gets rendered into charts
-        mainChartData: {},
-        breakdownChartData: {},
-
+        updateYear: function(year, yearIndex){
+            var exp = this.mainChartData.expenditures;
+            var approp = this.mainChartData.appropriations;
+            this.mainChartData.selectedExp = exp[yearIndex].y;
+            this.mainChartData.selectedApprop = approp[yearIndex].y;
+            this.mainChartData.viewYear = year;
+            this.breakdownChartData = {rows:[]};
+            var self = this;
+            $.each(this.funds, function(i, fund){
+                self.breakdownChartData.rows.push(self.getFundSummary(fund, year));
+            });
+            var main_chart = new app.MainChartView({
+                model: this.mainChartData
+            });
+            var breakdown_table = new app.BreakdownView({
+                model: this.breakdownChartData
+            });
+        },
+        bootstrap: function(data){
+            this.reset(data);
+            this.funds = this.pluck('Fund ID').getUnique();
+            this.depts = this.pluck('Department ID').getUnique();
+            var self = this;
+            var exp = [];
+            var approp = [];
+            $.each(this.getYearRange(), function(i, year){
+                exp.push(self.getTotals('Expenditures', year));
+                approp.push(self.getTotals('Appropriations', year));
+            });
+            this.mainChartData = {
+                expenditures: exp,
+                appropriations: approp,
+                title: "Macoupin County, IL Budget",
+                viewYear: this.endYear,
+                selectedExp: exp[exp.length - 1],
+                selectedApprop: approp[approp.length - 1]
+            };
+            this.breakdownChartData = {rows:[]};
+            $.each(this.funds, function(i, fund){
+                self.breakdownChartData.rows.push(self.getFundSummary(fund));
+            });
+            var main_chart = new app.MainChartView({
+                model: this.mainChartData
+            });
+            var breakdown_table = new app.BreakdownView({
+                model: this.breakdownChartData
+            });
+        },
         // Returns an array of valid years.
         getYearRange: function(){
             return Number.range(this.startYear, this.endYear + 1);
         },
-
-        // Returns the sum of an array
         reduceTotals: function(totals){
             var total = [];
             totals.forEach(function(item){
@@ -72,8 +96,6 @@
             var all = this.pluck(category + ' ' + year);
             return this.reduceTotals(all);
         },
-
-        // Returns an array of totals for a given fund. Used by the summary method below
         getFundTotals: function(category, fund, year){
             var totals = [];
             var rows = this.where({'Fund ID': fund});
@@ -83,8 +105,6 @@
             });
             return totals;
         },
-
-        // Returns a summary of funds that is used to render the breakdown table
         getFundSummary: function(fund, year){
             if (typeof year === 'undefined'){
                 year = this.endYear;
@@ -101,71 +121,12 @@
                 summary['expenditures'] = self.reduceTotals(exp);
                 summary['appropriations'] = self.reduceTotals(approp);
                 summary['rowId'] = item.get('Fund ID');
+                summary['type'] = 'Fund'
             });
             return summary;
         },
-
-        // Returns an array of all unique Fund IDs
-        getFunds: function(){
-            return this.pluck('Fund ID').getUnique();
-        },
-
-        // Pretty much the same as the getFundTotals.
-        // TODO: These two should probably be combined cause they are pretty much the same.
-        getDeptTotals: function(category, dept, year){
-            var totals = [];
-            var rows = this.where({'Department ID': String(dept)});
-            rows.forEach(function(row){
-                totals.push(accounting.unformat(row.get(category + ' ' + year)));
-            });
-            return totals;
-        },
-
-        // Pretty much the same as the getFundSummary but for departments.
-        // TODO: Should probably come up with an abstraction for both since they are largely the same.
-        getDeptSummary: function(dept_id, year){
-            if (typeof year === 'undefined'){
-                year = this.endYear;
-            }
-            var depts = this.where({'Department ID': String(dept_id)});
-            var summary = {};
-            var self = this;
-            var exp = self.getDeptTotals('Expenditures', dept_id, year);
-            var approp = self.getDeptTotals('Appropriations', dept_id, year);
-            var self = this;
-            depts.forEach(function(item){
-                summary['rowName'] = item.get('Department');
-                summary['description'] = item.get('Department Description');
-                summary['expenditures'] = self.reduceTotals(exp);
-                summary['appropriations'] = self.reduceTotals(approp);
-                summary['rowId'] = item.get('Department ID');
-            });
-            return summary;
-        },
-
-        // Returns an array of unique Department IDs given a Fund.
-        getDepartments: function(fund){
-            var depts = this.where({'Fund': fund});
-            var all_depts = [];
-            depts.forEach(function(dept){
-                all_depts.push(dept.get('Department ID'))
-            });
-            return all_depts.getUnique();
-        }
     });
-
-    // Common chart settings.
-    app.GlobalChartOpts = {
-        pointInterval: 365 * 24 * 3600 * 1000, //one year in ms
-        apropColor:   '#13345a',
-        apropSymbol:  'circle',
-        apropTitle:   'Appropriations',
-        expendColor:  '#405c7d',
-        expendSybmol: 'square',
-        expendTitle:  'Expenditures',
-    }
-
-    // Um, Main Chart View.
+    
     app.MainChartView = Backbone.View.extend({
         el: $('#main-chart'),
 
@@ -181,12 +142,10 @@
         // This is where the magic happens. Grab the template from the template_cache function
         // at the top of this file and then update the chart with what's passed in as the model.
         render: function(){
-            this.$el.html(template_cache('mainChart', this.model))
-            this.updateChart(this.model, 2012);
+            this.$el.html(template_cache('mainChart', this.model));
+            this.updateChart(this.model, this.model.viewYear);
             return this;
         },
-
-        // Append and customize the chart options for the given model passed into the view.
         updateChart: function(data, year){
             var minValuesArray = $.grep(data.appropriations.concat(data.expenditures),
               function(val) { return val != null; });
@@ -213,14 +172,13 @@
             }];
             this.chartOpts.yAxis.min = Math.min.apply( Math, minValuesArray )
             // select current year
-            var selectedYearIndex = year - collection.startYear;
-            if (this.chartOpts.series[0].data[selectedYearIndex].y != null)
-              this.chartOpts.series[0].data[selectedYearIndex].select(true,true);
-            if (this.chartOpts.series[1].data[selectedYearIndex].y != null)
-              this.chartOpts.series[1].data[selectedYearIndex].select(true,true);
+            // var selectedYearIndex = year - collection.startYear;
+            // if (this.chartOpts.series[0].data[selectedYearIndex].y != null)
+            //   this.chartOpts.series[0].data[selectedYearIndex].select(true,true);
+            // if (this.chartOpts.series[1].data[selectedYearIndex].y != null)
+            //   this.chartOpts.series[1].data[selectedYearIndex].select(true,true);
             new Highcharts.Chart(this.chartOpts);
         },
-
         // This is the event handler for click events for the points in the chart.
         // TODO: Make it do something.
         pointClick: function(e){
@@ -242,35 +200,28 @@
               }
             });
             var clickedYear = new Date(x).getFullYear();
-            var hash = window.location.hash.replace('#', '');
-            if(hash){
-                app_router.navigate(hash + '/' + clickedYear, {trigger: true});
-            } else {
-                app_router.navigate('year' + '/' + clickedYear, {trigger: true});
-            }
-            // hack to prevent chart from re-loading while updating the url
-            // app_router.navigate((BudgetLib.viewMode + '/' + BudgetLib.viewName + '/' + clickedYear + '/' + BudgetLib.viewChart), {trigger: false});
-            // BudgetLib.updateView(BudgetLib.viewMode, BudgetLib.viewName, clickedYear, BudgetLib.viewChart, false);
+            var yearIndex = this.series.processedYData.indexOf(y);
+            collection.updateYear(clickedYear, yearIndex);
         }
     })
 
     // Breakdown Chart view. Does a lot the same kind of things as the main chart view
-     app.BreakdownView = Backbone.View.extend({
+    app.BreakdownView = Backbone.View.extend({
         el: $('#breakdown'),
 
         // Bound to the window from the budget_highcharts.js file (as above)
         chartOpts: window.sparkLineOpts,
-
-        // Render the view when you initialize it
-        initialize: function(){
-            this.render();
-        },
-
+        
         // What to do with click events. So, when someone clicks on something
         // with a class of ".details", have the "details" method handle the event, etc
         events: {
             'click .details': 'details',
             'click .breakdown': 'breakdownNav'
+        },
+
+        // Render the view when you initialize it
+        initialize: function(){
+            this.render();
         },
 
         // Grab the template from the template cache, bind the model to it and render it
@@ -287,23 +238,23 @@
                 $(img).attr('src', 'images/expand.png');
             })
             var fundId = row.attr('id');
-
+            this.model.fundId = fundId;
             // The "model" here is a summary of the collection that gets passed in to the
             // view when the view is initialized. This makes it so we don't have to
             // re iterate the collection every time we want to summarize.
-            this.model.expenditures = [];
-            this.model.appropriations = [];
-            this.model.rowId = fundId;
+            var expenditures = [];
+            var appropriations = [];
             var self = this
             $.each(collection.getYearRange(), function(i, year){
                 var exp = collection.getFundTotals('Expenditures', fundId, year)
-                self.model.expenditures.push(collection.reduceTotals(exp));
+                expenditures.push(collection.reduceTotals(exp));
                 var approp = collection.getFundTotals('Appropriations', fundId, year);
-                self.model.appropriations.push(collection.reduceTotals(approp));
+                appropriations.push(collection.reduceTotals(approp));
             });
-
+            this.model.allExpenditures = expenditures;
+            this.model.allAppropriations = appropriations;
             // Update the detail chart.
-            this.updateChart(this.model);
+            this.updateChart();
             if(row.next().is(':visible')){
                 row.next().hide();
                 row.find('img').attr('src', 'images/expand.png')
@@ -316,24 +267,26 @@
         // This gets fired when a user clicks the "breakdown" link in the detail
         // Triggers the router to update the URL and fires the appropriate function
         breakdownNav: function(e){
+            // START HERE FIGURE OUT EVENT HANDLING
             var slug = $(e.target).data('slug');
-            var type = $(e.target).data('type');
-            app_router.navigate('drilldown/' + type + '/' + slug, {trigger: true});
+            var model_id = $(e.target).data('obj-id');
+            // app_router.navigate('drilldown/' + type + '/' + slug, {trigger: true});
         },
 
         // Updates the detail chart in a lot the same way as the main chart one
-        updateChart: function(data){
-            var minValuesArray = $.grep(data.appropriations.concat(data.expenditures),
+        updateChart: function(){
+            var data = this.model;
+            var minValuesArray = $.grep(data.allAppropriations.concat(data.allExpenditures),
               function(val) { return val != null; });
             var globalOpts = app.GlobalChartOpts;
-            this.chartOpts.chart.renderTo = data.rowId + "-selected-chart";
+            this.chartOpts.chart.renderTo = data.fundId + "-selected-chart";
             this.chartOpts.plotOptions.area.pointInterval = globalOpts.pointInterval
             this.chartOpts.plotOptions.area.pointStart = Date.UTC(collection.startYear, 1, 1)
             this.chartOpts.yAxis.min = Math.min.apply( Math, minValuesArray )
             this.chartOpts.plotOptions.series.point.events.click = this.pointClick;
             this.chartOpts.series = [{
                 color: globalOpts.apropColor,
-                data: data.appropriations,
+                data: data.allAppropriations,
                 marker: {
                   radius: 4,
                   symbol: globalOpts.apropSymbol
@@ -341,7 +294,7 @@
                 name: globalOpts.apropTitle
               }, {
                 color: globalOpts.expendColor,
-                data: data.expenditures,
+                data: data.allExpenditures,
                 marker: {
                   radius: 5,
                   symbol: globalOpts.expendSybmol
@@ -349,11 +302,11 @@
                 name: globalOpts.expendTitle
               }]
             // select current year
-            var selectedYearIndex = 2012 - collection.startYear;
-            if (this.chartOpts.series[0].data[selectedYearIndex].y != null)
-              this.chartOpts.series[0].data[selectedYearIndex].select(true,true);
-            if (this.chartOpts.series[1].data[selectedYearIndex].y != null)
-              this.chartOpts.series[1].data[selectedYearIndex].select(true,true);
+            // var selectedYearIndex = 2012 - collection.startYear;
+            // if (this.chartOpts.series[0].data[selectedYearIndex].y != null)
+            //   this.chartOpts.series[0].data[selectedYearIndex].select(true,true);
+            // if (this.chartOpts.series[1].data[selectedYearIndex].y != null)
+            //   this.chartOpts.series[1].data[selectedYearIndex].select(true,true);
             new Highcharts.Chart(this.chartOpts);
         },
 
@@ -378,107 +331,42 @@
               }
             });
             var clickedYear = new Date(x).getFullYear();
+            var yearIndex = this.series.processedYData.indexOf(y);
+            collection.updateYear(clickedYear, yearIndex);
             // hack to prevent chart from re-loading while updating the url
             // app_router.navigate((BudgetLib.viewMode + '/' + BudgetLib.viewName + '/' + clickedYear + '/' + BudgetLib.viewChart), {trigger: false});
             // BudgetLib.updateView(BudgetLib.viewMode, BudgetLib.viewName, clickedYear, BudgetLib.viewChart, false);
         }
     });
 
-    // Make the router
-    var app_router = new app.AppRouter;
-
-    // initialize the main collection
-    var collection = new app.BudgetColl();
-
-    // Default route. Loads the CSV file and populates the summarized "models" which get rendered
-    // into the views. Those then get stashed as properties on the main collection so that we
-    // don't have to recompute them
-    app_router.on('route:defaultRoute', function (actions) {
-        d3.csv('data/macoupin_budget_cleaned.csv', function(rows){
-            collection.reset(rows);
-            collection.mainChartData = {
-                expenditures: [],
-                appropriations: [],
-                title: "Macoupin County, IL Budget",
-                viewYear: collection.endYear,
-            };
-            collection.breakdownChartData = {rows: [], type:'Fund'};
-            $.each(collection.getYearRange(), function(i, year){
-                var exp = collection.getTotals('Expenditures', year);
-                collection.mainChartData.expenditures.push(exp);
-                var approp = collection.getTotals('Appropriations', year);
-                collection.mainChartData.appropriations.push(approp);
-            });
-            $.each(collection.getFunds(), function(i, fund){
-                collection.breakdownChartData['rows'].push(collection.getFundSummary(fund))
-            });
-            var main_chart = new app.MainChartView({
-                model: collection.mainChartData
-            });
-            var breakdown_table = new app.BreakdownView({
-                model: collection.breakdownChartData
-            });
-        });
-    });
-
-    app_router.on('router:yearDetail', function(year){
-        console.log(year);
-    })
-
-    // This is for the fund breakdown. Works a lot the same as above
-    // but fetches the summary versions of the data so they don't
-    // need to be recomputed.
-    // TODO: One issue is that if you visit a route directly, the collection
-    // has not been populated yet. So, we need to check and load if necessary
-    // I suppose.
-    app_router.on('route:drillDown', function(type, slug, year){
-        var name = slug.split('-').join(' ');
-        if (!year){
-            year = 2012
-        }
-        collection.mainChartData['expenditures'] = collection.breakdownChartData['expenditures'];
-        collection.mainChartData['appropriations'] = collection.breakdownChartData['appropriations'];
-        collection.mainChartData['title'] = name;
-        collection.breakdownChartData = {rows: [], type:'Fund'};
-        $.each(collection.getDepartments(name), function(dept){
-            collection.breakdownChartData['rows'].push(collection.getDeptSummary(dept));
-        });
-        $('#main-chart').empty();
-        $('#breakdown').empty();
-        var main_chart = new app.MainChartView({
-            model: collection.mainChartData
-        });
-        var breakdown_table = new app.BreakdownView({
-            model: collection.breakdownChartData
-        });
-    })
-
-    // Start Backbone history a necessary step for bookmarkable URL's
-    Backbone.history.start();
-
-    //cookies for first time visitors
-    $("body").bind("click", function(e){
-      $.cookie("budgetbreakdownreadme", "read", { expires: 7 });
-      $("#readme").fadeOut("fast");
-    });
-
-    if ($.cookie("budgetbreakdownreadme") != "read") {
-      $("#readme").fadeIn("fast");
+    app.GlobalChartOpts = {
+        pointInterval: 365 * 24 * 3600 * 1000, //one year in ms
+        apropColor:   '#13345a',
+        apropSymbol:  'circle',
+        apropTitle:   'Appropriations',
+        expendColor:  '#405c7d',
+        expendSybmol: 'square',
+        expendTitle:  'Expenditures',
     }
-
-    // Firing events for search
-    $("#search-query").keydown(function(e){
-      var key =  e.keyCode ? e.keyCode : e.which;
-      if(key == 13) {
-          $('#search').click();
-          return false;
-      }
+    
+    app.Router = Backbone.Router.extend({
+        routes: {
+            "*actions": "defaultRoute"
+        },
+        initialize: function(options){
+            this.collection = options.collection;
+        },
+        defaultRoute: function(actions){
+            var self = this;
+            $.when($.get('/data/macoupin_budget_cleaned.csv')).then(
+                function(data){
+                    var json = $.csv.toObjects(data);
+                    self.collection.bootstrap(json);
+                }
+            )
+        }
     });
-
-    $('#search').click(function(){
-      var query = $('#search-query').val();
-      app_router.navigate("search/" + query, {trigger: false});
-      BudgetLib.renderSearch(query);
-      return false;
-    });
+    var collection = new app.BudgetColl();
+    var app_router = new app.Router({collection: collection});
+    Backbone.history.start();
 })()
