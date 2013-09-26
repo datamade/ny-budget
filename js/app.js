@@ -240,7 +240,7 @@
     app.BreakdownSummary = Backbone.View.extend({
         tagName: 'tr',
         className: 'rowId',
-        // id: this.model.get('rowId'),
+        detailShowing: false,
         events: {
             'click .details': 'details'
         },
@@ -249,7 +249,6 @@
         },
         render: function(){
             this.$el.html(template_cache('breakdownSummary', {model:this.model}));
-            console.log(this.model);
             this._modelBinder.bind(this.model, this.el, {
                 expenditures: {selector: '[name="expenditures"]', converter: this.moneyChanger},
                 appropriations: {selector: '[name="appropriations"]', converter: this.moneyChanger} 
@@ -261,34 +260,31 @@
         },
         details: function(e){
             e.preventDefault();
-            var row = $(e.currentTarget).parent().parent();
-            $.each(row.parent().find('img'), function(i,img){
-                $(img).attr('src', 'images/expand.png');
-            })
-            var fundId = row.attr('id');
-            this.model.fundId = fundId;
-            // The "model" here is a summary of the collection that gets passed in to the
-            // view when the view is initialized. This makes it so we don't have to
-            // re iterate the collection every time we want to summarize.
-            var expenditures = [];
-            var appropriations = [];
-            var self = this
-            $.each(collection.getYearRange(), function(i, year){
-                var exp = collection.getFundTotals('Expenditures', fundId, year)
-                expenditures.push(collection.reduceTotals(exp));
-                var approp = collection.getFundTotals('Appropriations', fundId, year);
-                appropriations.push(collection.reduceTotals(approp));
-            });
-            this.model.allExpenditures = expenditures;
-            this.model.allAppropriations = appropriations;
-            // Update the detail chart.
-            this.updateChart();
-            if(row.next().is(':visible')){
-                row.next().hide();
-                row.find('img').attr('src', 'images/expand.png')
+            if (this.detailShowing){
+                this.$el.next().remove();
+                this.$el.find('img').attr('src', 'images/expand.png')
+                this.detailShowing = false;
             } else {
-                row.next().show();
-                row.find('img').attr('src', 'images/collapse.png')
+                var row = $(e.currentTarget).parent().parent();
+                $.each(row.parent().find('img'), function(i,img){
+                    $(img).attr('src', 'images/expand.png');
+                })
+                var fundId = this.model.get('rowId');
+                var expenditures = [];
+                var appropriations = [];
+                $.each(collection.getYearRange(), function(i, year){
+                    var exp = collection.getFundTotals('Expenditures', fundId, year)
+                    expenditures.push(collection.reduceTotals(exp));
+                    var approp = collection.getFundTotals('Appropriations', fundId, year);
+                    appropriations.push(collection.reduceTotals(approp));
+                });
+                this.model.allExpenditures = expenditures;
+                this.model.allAppropriations = appropriations;
+                var detailView = new app.BreakdownDetail({model:this.model});
+                detailView.render().$el.insertAfter(this.$el);
+                detailView.updateChart();
+                this.detailShowing = true;
+                this.$el.find('img').attr('src', 'images/collapse.png')
             }
         },
     })
@@ -304,26 +300,12 @@
             'click .breakdown': 'breakdownNav'
         },
 
-        // Render the view when you initialize it
-        initialize: function(){
-            this.render();
-        },
-
         // Grab the template from the template cache, bind the model to it and render it
         render: function(){
-            this.$el.html(template_cache('breakdownTable', {data: this.model}));
-            var self = this;
-            $.each(this.model.get('rows'), function(i, row){
-                self._modelBinder.bind(row, self.el)
-            })
-            // this._modelBinder.bind(this.model, this.el);
+            this.$el.html(template_cache('breakdownDetail', {model: this.model}));
             return this;
         },
 
-        // Gets fired when a user clicks the links to view the detail charts
-
-        // This gets fired when a user clicks the "breakdown" link in the detail
-        // Triggers the router to update the URL and fires the appropriate function
         breakdownNav: function(e){
             // START HERE FIGURE OUT EVENT HANDLING
             var slug = $(e.target).data('slug');
@@ -337,7 +319,7 @@
             var minValuesArray = $.grep(data.allAppropriations.concat(data.allExpenditures),
               function(val) { return val != null; });
             var globalOpts = app.GlobalChartOpts;
-            this.chartOpts.chart.renderTo = data.fundId + "-selected-chart";
+            this.chartOpts.chart.renderTo = data.get('rowId') + "-selected-chart";
             this.chartOpts.plotOptions.area.pointInterval = globalOpts.pointInterval
             this.chartOpts.plotOptions.area.pointStart = Date.UTC(collection.startYear, 1, 1)
             this.chartOpts.yAxis.min = Math.min.apply( Math, minValuesArray )
