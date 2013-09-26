@@ -1,0 +1,21 @@
+<td colspan='4'>
+    <div class='row'>
+        <div class='col-md-5'>
+            <h2 class="rowName"><%= rowName %></h2>
+            <p class='expanded-description'>
+                <%= description %>
+            </p>
+            <ul class='stats'>
+                <li>
+                    <a href="javascript://" class="breakdown" data-slug="<%= slug %>">Breakdown by Department &raquo;</a>
+                </li>
+            </ul>
+        </div>
+        <div class='col-md-7'>
+            <div class='sparkline' id='<%= rowId %>-selected-chart' data-objid='<%= rowId %>' data-objtype='<%= type %>'></div>
+            <ul class='stats'>
+              <li id='sparkline-actual'></li>
+            </ul>
+        </div>
+    </div>
+</td>
