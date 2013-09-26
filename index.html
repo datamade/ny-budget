@@ -33,7 +33,16 @@
       <div class='well'>
         <div id='main-chart'></div>
 
-        <table id="breakdown" class='table table-condensed table-bordered'></table>
+        <table id="breakdown" class='table table-condensed table-bordered'>
+            <thead>
+              <tr>
+                <th id='breakdown-item-title'><span id="secondary-title">Minor Function</span></th>
+                <th class="num"><span>Budgeted</span></th>
+                <th class="num"><span>Spent</span></th>
+              </tr>
+            </thead>
+            <tbody id="breakdown-table-body"></tbody>
+        </table>
 
         <div id="pie" style="display:none;"></div>
 

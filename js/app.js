@@ -41,17 +41,12 @@
     
     app.BreakdownRow = Backbone.Model.extend({})
     
-    app.BreakdownModel = Backbone.Model.extend({
+    app.BreakdownModel = Backbone.Collection.extend({
         setRows: function(year){
-            this.get('rows').forEach(function(row){
+            var self = this;
+            this.models.forEach(function(row){
                 row.set(collection.getFundSummary(row.get('rowId'), year))
-            })
-            // var rows = []
-            // $.each(fund, function(i, f){
-            //     bd.rows.push(new app.BreakdownRow(inner_self.getFundSummary(fund, year)));
-            // });
-            // var rows = new app.BreakdownRow(collection.getFundSummary(fund,year));
-            // this.set({'rows': rows});
+            });
         }
     });
     
@@ -74,8 +69,8 @@
                     var exp = [];
                     var approp = [];
                     $.each(self.getYearRange(), function(i, year){
-                        exp.push(inner_self.getTotals('Expenditures', year));
-                        approp.push(inner_self.getTotals('Appropriations', year));
+                        exp.push(self.getTotals('Expenditures', year));
+                        approp.push(self.getTotals('Appropriations', year));
                     });
                     self.mainChartData = new app.MainChartModel({
                         expenditures: exp,
@@ -85,17 +80,22 @@
                         selectedExp: accounting.formatMoney(exp[exp.length - 1]),
                         selectedApprop: accounting.formatMoney(approp[approp.length - 1])
                     });
-                    var bd = {rows:[]};
+                    self.mainChartData.parent = this;
+                    var bd = []
                     $.each(self.funds, function(i, fund){
-                        bd.rows.push(new app.BreakdownRow(inner_self.getFundSummary(fund)));
+                        var row = new app.BreakdownRow(self.getFundSummary(fund));
+                        bd.push(row);
+                        var rowView = new app.BreakdownSummary({model:row});
+                        $('#breakdown-table-body').append(rowView.render().el);
                     });
                     self.breakdownChartData = new app.BreakdownModel(bd);
+                    self.breakdownChartData.parent = this;
                     self.mainChartView = new app.MainChartView({
                         model: self.mainChartData
                     });
-                    self.breakdownView = new app.BreakdownView({
-                        model: self.breakdownChartData
-                    });
+                    // self.breakdownView = new app.BreakdownView({
+                    //     model: self.breakdownChartData
+                    // });
                 }
             );
         },
@@ -237,33 +237,28 @@
     })
 
     // Breakdown Chart view. Does a lot the same kind of things as the main chart view
-    app.BreakdownView = Backbone.View.extend({
-        el: $('#breakdown'),
-
-        // Bound to the window from the budget_highcharts.js file (as above)
-        chartOpts: window.sparkLineOpts,
-        
-        // What to do with click events. So, when someone clicks on something
-        // with a class of ".details", have the "details" method handle the event, etc
+    app.BreakdownSummary = Backbone.View.extend({
+        tagName: 'tr',
+        className: 'rowId',
+        // id: this.model.get('rowId'),
         events: {
-            'click .details': 'details',
-            'click .breakdown': 'breakdownNav'
+            'click .details': 'details'
         },
-
-        // Render the view when you initialize it
         initialize: function(){
-            // Get the binder thingy working!!!!
             this._modelBinder = new Backbone.ModelBinder();
-            this.render();
         },
-
-        // Grab the template from the template cache, bind the model to it and render it
         render: function(){
-            this.$el.html(template_cache('breakdownTable', {data: this.model}));
+            this.$el.html(template_cache('breakdownSummary', {model:this.model}));
+            console.log(this.model);
+            this._modelBinder.bind(this.model, this.el, {
+                expenditures: {selector: '[name="expenditures"]', converter: this.moneyChanger},
+                appropriations: {selector: '[name="appropriations"]', converter: this.moneyChanger} 
+            });
             return this;
         },
-
-        // Gets fired when a user clicks the links to view the detail charts
+        moneyChanger: function(direction, value){
+            return accounting.formatMoney(value);
+        },
         details: function(e){
             e.preventDefault();
             var row = $(e.currentTarget).parent().parent();
@@ -296,6 +291,36 @@
                 row.find('img').attr('src', 'images/collapse.png')
             }
         },
+    })
+
+    app.BreakdownDetail = Backbone.View.extend({
+        tagName: 'tr',
+        className: 'expanded-content',
+        chartOpts: window.sparkLineOpts,
+        
+        // What to do with click events. So, when someone clicks on something
+        // with a class of ".details", have the "details" method handle the event, etc
+        events: {
+            'click .breakdown': 'breakdownNav'
+        },
+
+        // Render the view when you initialize it
+        initialize: function(){
+            this.render();
+        },
+
+        // Grab the template from the template cache, bind the model to it and render it
+        render: function(){
+            this.$el.html(template_cache('breakdownTable', {data: this.model}));
+            var self = this;
+            $.each(this.model.get('rows'), function(i, row){
+                self._modelBinder.bind(row, self.el)
+            })
+            // this._modelBinder.bind(this.model, this.el);
+            return this;
+        },
+
+        // Gets fired when a user clicks the links to view the detail charts
 
         // This gets fired when a user clicks the "breakdown" link in the detail
         // Triggers the router to update the URL and fires the appropriate function
