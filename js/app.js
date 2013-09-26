@@ -39,13 +39,16 @@
         }
     });
     
-    app.BreakdownRow = Backbone.Model.extend({})
+    app.BreakdownRow = Backbone.Model.extend({
+        yearIndex: null
+    });
     
-    app.BreakdownModel = Backbone.Collection.extend({
-        setRows: function(year){
+    app.BreakdownColl = Backbone.Collection.extend({
+        setRows: function(year, index){
             var self = this;
             this.models.forEach(function(row){
-                row.set(collection.getFundSummary(row.get('rowId'), year))
+                row.set(collection.getSummary(row.get('type'), row.get('rowId'), year));
+                row.yearIndex = index;
             });
         }
     });
@@ -55,49 +58,52 @@
         endYear: 2012,
         updateYear: function(year, yearIndex){
             this.mainChartData.setYear(year, yearIndex);
-            this.breakdownChartData.setRows(year);
+            this.breakdownChartData.setRows(year, yearIndex);
+        },
+        updateTables: function(view, title){
+            var exp = [];
+            var approp = [];
+            var self = this;
+            $.each(this.getYearRange(), function(i, year){
+                exp.push(self.getTotals('Expenditures', year));
+                approp.push(self.getTotals('Appropriations', year));
+            });
+            this.mainChartData = new app.MainChartModel({
+                expenditures: exp,
+                appropriations: approp,
+                title: title,
+                viewYear: self.endYear,
+                selectedExp: accounting.formatMoney(exp[exp.length - 1]),
+                selectedApprop: accounting.formatMoney(approp[approp.length - 1])
+            });
+            var bd = []
+            $.each(this.funds, function(i, fund){
+                var row = new app.BreakdownRow(self.getSummary(view, fund));
+                bd.push(row);
+                var rowView = new app.BreakdownSummary({model:row});
+                $('#breakdown-table-body').append(rowView.render().el);
+            });
+            this.breakdownChartData = new app.BreakdownColl(bd);
+            this.mainChartView = new app.MainChartView({
+                model: self.mainChartData
+            });
         },
         bootstrap: function(){
             var self = this;
+            this.spin('#main-chart', 'large');
             $.when($.get('/data/macoupin_budget_cleaned.csv')).then(
                 function(data){
                     var json = $.csv.toObjects(data);
                     self.add(json);
                     self.funds = self.pluck('Fund ID').getUnique();
                     self.depts = self.pluck('Department ID').getUnique();
-                    var inner_self = self;
-                    var exp = [];
-                    var approp = [];
-                    $.each(self.getYearRange(), function(i, year){
-                        exp.push(self.getTotals('Expenditures', year));
-                        approp.push(self.getTotals('Appropriations', year));
-                    });
-                    self.mainChartData = new app.MainChartModel({
-                        expenditures: exp,
-                        appropriations: approp,
-                        title: "Macoupin County, IL Budget",
-                        viewYear: self.endYear,
-                        selectedExp: accounting.formatMoney(exp[exp.length - 1]),
-                        selectedApprop: accounting.formatMoney(approp[approp.length - 1])
-                    });
-                    self.mainChartData.parent = this;
-                    var bd = []
-                    $.each(self.funds, function(i, fund){
-                        var row = new app.BreakdownRow(self.getFundSummary(fund));
-                        bd.push(row);
-                        var rowView = new app.BreakdownSummary({model:row});
-                        $('#breakdown-table-body').append(rowView.render().el);
-                    });
-                    self.breakdownChartData = new app.BreakdownModel(bd);
-                    self.breakdownChartData.parent = this;
-                    self.mainChartView = new app.MainChartView({
-                        model: self.mainChartData
-                    });
-                    // self.breakdownView = new app.BreakdownView({
-                    //     model: self.breakdownChartData
-                    // });
+                    self.updateTables('Fund', 'Macoupin County, IL Budget')
                 }
             );
+        },
+        spin: function(element, option){
+            // option is either size of spinner or false to cancel it
+            $(element).spin(option);
         },
         // Returns an array of valid years.
         getYearRange: function(){
@@ -117,36 +123,40 @@
             var all = this.pluck(category + ' ' + year);
             return this.reduceTotals(all);
         },
-        getFundTotals: function(category, fund, year){
+        getChartTotals: function(category, key, value, year){
             var totals = [];
-            var rows = this.where({'Fund ID': fund});
+            var query = {};
+            query[key + ' ID'] = value
+            var rows = this.where(query);
             var self = this;
             rows.forEach(function(row){
                 totals.push(accounting.unformat(row.get(category + ' ' + year)));
             });
             return totals;
         },
-        getFundSummary: function(fund, year){
+        getSummary: function(key, value, year){
             if (typeof year === 'undefined'){
                 year = this.endYear;
             }
-            var funds = this.where({'Fund ID': fund});
+            var query = {};
+            query[key + ' ID'] = value
+            var funds = this.where(query);
             var summary = {};
             var self = this;
-            var exp = self.getFundTotals('Expenditures', fund, year);
-            var approp = self.getFundTotals('Appropriations', fund, year);
+            var exp = self.getChartTotals('Expenditures', key, value, year);
+            var approp = self.getChartTotals('Appropriations', key, value, year);
             var self = this;
             funds.forEach(function(item){
-                summary['rowName'] = item.get('Fund');
-                summary['description'] = item.get('Fund Description');
+                summary['rowName'] = item.get(key);
+                summary['description'] = item.get(key + ' Description');
                 summary['expenditures'] = self.reduceTotals(exp);
                 summary['appropriations'] = self.reduceTotals(approp);
-                summary['rowId'] = item.get('Fund ID');
-                summary['type'] = 'Fund'
-                summary['slug'] = BudgetHelpers.convertToSlug(item.get('Fund'))
+                summary['rowId'] = item.get(key + ' ID');
+                summary['type'] = key
+                summary['slug'] = BudgetHelpers.convertToSlug(item.get(key))
             });
             return summary;
-        },
+        }
     });
     
     app.MainChartView = Backbone.View.extend({
@@ -269,13 +279,14 @@
                 $.each(row.parent().find('img'), function(i,img){
                     $(img).attr('src', 'images/expand.png');
                 })
-                var fundId = this.model.get('rowId');
+                var objId = this.model.get('rowId');
+                var objType = this.model.get('type');
                 var expenditures = [];
                 var appropriations = [];
                 $.each(collection.getYearRange(), function(i, year){
-                    var exp = collection.getFundTotals('Expenditures', fundId, year)
+                    var exp = collection.getChartTotals('Expenditures', objType, objId, year)
                     expenditures.push(collection.reduceTotals(exp));
-                    var approp = collection.getFundTotals('Appropriations', fundId, year);
+                    var approp = collection.getChartTotals('Appropriations', objType, objId, year);
                     appropriations.push(collection.reduceTotals(approp));
                 });
                 this.model.allExpenditures = expenditures;
@@ -294,26 +305,20 @@
         className: 'expanded-content',
         chartOpts: window.sparkLineOpts,
         
-        // What to do with click events. So, when someone clicks on something
-        // with a class of ".details", have the "details" method handle the event, etc
         events: {
             'click .breakdown': 'breakdownNav'
         },
 
-        // Grab the template from the template cache, bind the model to it and render it
         render: function(){
             this.$el.html(template_cache('breakdownDetail', {model: this.model}));
             return this;
         },
 
         breakdownNav: function(e){
-            // START HERE FIGURE OUT EVENT HANDLING
-            var slug = $(e.target).data('slug');
-            var model_id = $(e.target).data('obj-id');
+            collection.updateTables('Department', this.model.get('rowName'));
             // app_router.navigate('drilldown/' + type + '/' + slug, {trigger: true});
         },
 
-        // Updates the detail chart in a lot the same way as the main chart one
         updateChart: function(){
             var data = this.model;
             var minValuesArray = $.grep(data.allAppropriations.concat(data.allExpenditures),
@@ -351,7 +356,6 @@
         },
 
         // Handler for the click events on the points on the chart
-        // TODO: make it do something
         pointClick: function(e){
             $("#readme").fadeOut("fast");
             $.cookie("budgetbreakdownreadme", "read", { expires: 7 });
@@ -373,9 +377,6 @@
             var clickedYear = new Date(x).getFullYear();
             var yearIndex = this.series.processedYData.indexOf(y);
             collection.updateYear(clickedYear, yearIndex);
-            // hack to prevent chart from re-loading while updating the url
-            // app_router.navigate((BudgetLib.viewMode + '/' + BudgetLib.viewName + '/' + clickedYear + '/' + BudgetLib.viewChart), {trigger: false});
-            // BudgetLib.updateView(BudgetLib.viewMode, BudgetLib.viewName, clickedYear, BudgetLib.viewChart, false);
         }
     });
 

@@ -23,6 +23,10 @@ a:hover { text-decoration: underline; }
 
 #timeline-chart { height: 300px; }
 
+#main-chart {
+    min-height: 300px;
+}
+
 /* Expanded rows */
 #breakdown .expanded-content td {
   border-top: 0;
