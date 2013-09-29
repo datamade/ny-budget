@@ -454,7 +454,6 @@
                 init['name'] = dept;
                 init['filter'] = {'Fund': fund, 'Department': dept}
             }
-            console.log(init);
             this.collection.bootstrap(init);
         }
     });
