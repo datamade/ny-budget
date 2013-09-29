@@ -7,7 +7,13 @@
             </p>
             <ul class='stats'>
                 <li>
-                    <a href="javascript://" class="breakdown" data-slug="<%= model.get('slug') %>">Breakdown by Department &raquo;</a>
+                  <a href="javascript://" class="breakdown"
+                      data-type="<%= model.get('type')%>"
+                      data-slug="<%= model.get('slug') %>"
+                      data-child="<%= model.get('child') %>"
+                  >
+                      Breakdown by <%= model.get('child') %> &raquo;
+                    </a>
                 </li>
             </ul>
         </div>

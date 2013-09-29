@@ -26,7 +26,7 @@
 
         return template_cache.tmpl_cache[tmpl_name](tmpl_data);
     }
-    
+
     app.MainChartModel = Backbone.Model.extend({
         setYear: function(year, index){
             var exp = this.get('expenditures');
@@ -38,11 +38,11 @@
             });
         }
     });
-    
+
     app.BreakdownRow = Backbone.Model.extend({
         yearIndex: null
     });
-    
+
     app.BreakdownColl = Backbone.Collection.extend({
         setRows: function(year, index){
             var self = this;
@@ -52,7 +52,7 @@
             });
         }
     });
-    
+
     app.BudgetColl = Backbone.Collection.extend({
         startYear: 1995,
         endYear: 2012,
@@ -60,13 +60,17 @@
             this.mainChartData.setYear(year, yearIndex);
             this.breakdownChartData.setRows(year, yearIndex);
         },
-        updateTables: function(view, title){
+        updateTables: function(view, title, filter){
             var exp = [];
             var approp = [];
             var self = this;
+            var values = this.toJSON()
+            if (typeof filter !== 'undefined'){
+                values = _.where(this.toJSON(), filter);
+            }
             $.each(this.getYearRange(), function(i, year){
-                exp.push(self.getTotals('Expenditures', year));
-                approp.push(self.getTotals('Appropriations', year));
+                exp.push(self.getTotals(values, 'Expenditures', year));
+                approp.push(self.getTotals(values, 'Appropriations', year));
             });
             this.mainChartData = new app.MainChartModel({
                 expenditures: exp,
@@ -77,8 +81,10 @@
                 selectedApprop: accounting.formatMoney(approp[approp.length - 1])
             });
             var bd = []
-            $.each(this.funds, function(i, fund){
-                var row = new app.BreakdownRow(self.getSummary(view, fund));
+            var chartGuts = this.pluck(view).getUnique();
+            $('#breakdown-table-body').empty();
+            $.each(chartGuts, function(i, name){
+                var row = new app.BreakdownRow(self.getSummary(view, name));
                 bd.push(row);
                 var rowView = new app.BreakdownSummary({model:row});
                 $('#breakdown-table-body').append(rowView.render().el);
@@ -88,16 +94,27 @@
                 model: self.mainChartData
             });
         },
-        bootstrap: function(){
+        bootstrap: function(init){
             var self = this;
             this.spin('#main-chart', 'large');
             $.when($.get('/data/macoupin_budget_cleaned.csv')).then(
                 function(data){
                     var json = $.csv.toObjects(data);
                     self.add(json);
-                    self.funds = self.pluck('Fund ID').getUnique();
-                    self.depts = self.pluck('Department ID').getUnique();
-                    self.updateTables('Fund', 'Macoupin County, IL Budget')
+                  //self.funds = self.pluck('Fund').getUnique();
+                  //self.depts = self.pluck('Department').getUnique();
+                  //self.expenses = self.pluck('Expense Line').getUnique();
+                    self.hierarchy = {
+                        Fund: 'Department',
+                        Department: 'Expense Line'
+                    }
+                    if (typeof init === 'undefined'){
+                        self.updateTables('Fund', 'Macoupin County, IL Budget');
+                    } else {
+                        var filter = {}
+                        filter[init['mainView']] = init['name'];
+                        self.updateTables(init['bdView'], init['name'], filter);
+                    }
                 }
             );
         },
@@ -119,14 +136,14 @@
 
         // Returns a total for a given category and year
         // Example: "Expenditures 1995"
-        getTotals: function(category, year){
-            var all = this.pluck(category + ' ' + year);
+        getTotals: function(values, category, year){
+            var all = _.pluck(values, category + ' ' + year);
             return this.reduceTotals(all);
         },
         getChartTotals: function(category, key, value, year){
             var totals = [];
             var query = {};
-            query[key + ' ID'] = value
+            query[key] = value
             var rows = this.where(query);
             var self = this;
             rows.forEach(function(row){
@@ -139,26 +156,27 @@
                 year = this.endYear;
             }
             var query = {};
-            query[key + ' ID'] = value
-            var funds = this.where(query);
+            query[key] = value
+            var guts = this.where(query);
             var summary = {};
             var self = this;
             var exp = self.getChartTotals('Expenditures', key, value, year);
             var approp = self.getChartTotals('Appropriations', key, value, year);
             var self = this;
-            funds.forEach(function(item){
+            guts.forEach(function(item){
                 summary['rowName'] = item.get(key);
                 summary['description'] = item.get(key + ' Description');
                 summary['expenditures'] = self.reduceTotals(exp);
                 summary['appropriations'] = self.reduceTotals(approp);
                 summary['rowId'] = item.get(key + ' ID');
                 summary['type'] = key
+                summary['child'] = self.hierarchy[key]
                 summary['slug'] = BudgetHelpers.convertToSlug(item.get(key))
             });
             return summary;
         }
     });
-    
+
     app.MainChartView = Backbone.View.extend({
         el: $('#main-chart'),
 
@@ -230,7 +248,7 @@
             selected = !this.selected,
             index = this.series.index;
             this.select(selected, false);
-            
+
             $.each(this.series.chart.series, function(i, serie) {
               if (serie.index !== index) {
                 $(serie.data).each(function(j, point){
@@ -261,7 +279,7 @@
             this.$el.html(template_cache('breakdownSummary', {model:this.model}));
             this._modelBinder.bind(this.model, this.el, {
                 expenditures: {selector: '[name="expenditures"]', converter: this.moneyChanger},
-                appropriations: {selector: '[name="appropriations"]', converter: this.moneyChanger} 
+                appropriations: {selector: '[name="appropriations"]', converter: this.moneyChanger}
             });
             return this;
         },
@@ -279,14 +297,14 @@
                 $.each(row.parent().find('img'), function(i,img){
                     $(img).attr('src', 'images/expand.png');
                 })
-                var objId = this.model.get('rowId');
+                var objName = this.model.get('rowName');
                 var objType = this.model.get('type');
                 var expenditures = [];
                 var appropriations = [];
                 $.each(collection.getYearRange(), function(i, year){
-                    var exp = collection.getChartTotals('Expenditures', objType, objId, year)
+                    var exp = collection.getChartTotals('Expenditures', objType, objName, year)
                     expenditures.push(collection.reduceTotals(exp));
-                    var approp = collection.getChartTotals('Appropriations', objType, objId, year);
+                    var approp = collection.getChartTotals('Appropriations', objType, objName, year);
                     appropriations.push(collection.reduceTotals(approp));
                 });
                 this.model.allExpenditures = expenditures;
@@ -304,7 +322,7 @@
         tagName: 'tr',
         className: 'expanded-content',
         chartOpts: window.sparkLineOpts,
-        
+
         events: {
             'click .breakdown': 'breakdownNav'
         },
@@ -315,8 +333,11 @@
         },
 
         breakdownNav: function(e){
-            collection.updateTables('Department', this.model.get('rowName'));
-            // app_router.navigate('drilldown/' + type + '/' + slug, {trigger: true});
+            // Need to append something to DOM to get filter and view name
+            var filter = {}
+            filter[this.model.get('type')] = this.model.get('rowName')
+            collection.updateTables(this.model.get('child'), this.model.get('rowName'), filter);
+            app_router.navigate(this.model.get('type').toLowerCase() + '/' + this.model.get('slug'));
         },
 
         updateChart: function(){
@@ -389,17 +410,26 @@
         expendSybmol: 'square',
         expendTitle:  'Expenditures',
     }
-    
+
     app.Router = Backbone.Router.extend({
         routes: {
+            "fund/:fundName": "fundRoute",
+            "department/:deptName": "deptRoute",
             "*actions": "defaultRoute"
         },
         initialize: function(options){
             this.collection = options.collection;
         },
         defaultRoute: function(actions){
-            var self = this;
-            self.collection.bootstrap();
+            this.collection.bootstrap();
+        },
+        fundRoute: function(fundName){
+            var name = fundName.replace('-', ' ');
+            this.collection.bootstrap({mainView: 'Fund', bdView: 'Department', name: name});
+        },
+        deptRoute: function(deptName){
+            var name = deptName.replace('-', ' ');
+            this.collection.bootstrap({mainView: 'Department', bdView: 'Expense Line', name: name});
         }
     });
     var collection = new app.BudgetColl();
