@@ -176,7 +176,7 @@
                     summary['parent_type'] = self.hierarchy[view]['parent'];
                     summary['parent'] = self.mainChartData.get('title')
                 }
-                summary['slug'] = item.get(view).replace(' ', '-');
+                summary['slug'] = item.get(view).split(' ').join('-');
             });
             if (typeof summary['expenditures'] !== 'undefined'){
                 return summary
@@ -351,7 +351,7 @@
             if (this.model.get('parent')){
                 var parent_type = collection.hierarchy[this.model.get('type')]['parent']
                 filter[parent_type] = this.model.get('parent');
-                path = this.model.get('parent').replace(' ', '-') + '/' + this.model.get('slug')
+                path = this.model.get('parent').split(' ').join('-') + '/' + this.model.get('slug')
             }
             collection.updateTables(this.model.get('child'), this.model.get('rowName'), filter);
             app_router.navigate('detail/' + path);
@@ -362,7 +362,7 @@
             var minValuesArray = $.grep(data.allAppropriations.concat(data.allExpenditures),
               function(val) { return val != null; });
             var globalOpts = app.GlobalChartOpts;
-            this.chartOpts.chart.renderTo = data.get('rowId') + "-selected-chart";
+            this.chartOpts.chart.renderTo = data.get('slug') + "-selected-chart";
             this.chartOpts.plotOptions.area.pointInterval = globalOpts.pointInterval
             this.chartOpts.plotOptions.area.pointStart = Date.UTC(collection.startYear, 1, 1)
             this.chartOpts.yAxis.min = Math.min.apply( Math, minValuesArray )
@@ -441,14 +441,14 @@
         },
         detailRoute: function(fundName, deptName){
             var init = {}
-            var fund = fundName.replace('-', ' ');
+            var fund = fundName.split('-').join('-');
             if (!deptName){
                 init['mainView'] = 'Fund';
                 init['bdView'] = 'Department';
                 init['name'] = fund;
                 init['filter'] = {'Fund': fund};
             } else {
-                var dept = deptName.replace('-', ' ');
+                var dept = deptName.split('-').join(' ');
                 init['mainView'] = 'Department';
                 init['bdView'] = 'Expense Line';
                 init['name'] = dept;
