@@ -7,13 +7,18 @@
             </p>
             <ul class='stats'>
                 <li>
+                  <% if (model.get('child')){ %>
                   <a href="javascript://" class="breakdown"
                       data-type="<%= model.get('type')%>"
                       data-slug="<%= model.get('slug') %>"
+                      <% if (model.get('parent')){ %>
+                          data-parent="<%= model.get('parent') %>"
+                      <% } %>
                       data-child="<%= model.get('child') %>"
                   >
                       Breakdown by <%= model.get('child') %> &raquo;
                     </a>
+                    <% } %>
                 </li>
             </ul>
         </div>

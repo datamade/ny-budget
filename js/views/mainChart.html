@@ -1,9 +1,10 @@
 <div class='row'>
   <div class='col-md-8'>
     <h2 id='budget-title'><%= model.get('title') %></h2>
+    <!-- Actually need to implement this!! -->
     <span id="breadcrumbs">
         <% var bc = BudgetHelpers.getAddressLink('home', 'default', null, null, "&laquo back to " + BudgetLib.title) %>
-        <% if (!bc.indexOf('undefined')){ %> 
+        <% if (!bc.indexOf('undefined')){ %>
             <%= bc %>
         <% } %>
     </span>
@@ -36,7 +37,7 @@
         <tr>
           <td id="scorecard-desc">
             <h2 id="secondary-title">
-                <span class="viewYear"><%= model.get('viewYear') %></span> 
+                <span class="viewYear"><%= model.get('viewYear') %></span>
                 <span class="title"><%= model.get('title') %></span>
             </h2>
             <p id='actual-change-percent'></p>
