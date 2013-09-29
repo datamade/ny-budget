@@ -430,8 +430,8 @@
 
     app.Router = Backbone.Router.extend({
         routes: {
-            "detail/:fundName('/:deptName')": "detailRoute",
-            "*actions": "defaultRoute"
+            "detail/:fundName(/:deptName)": "detailRoute",
+            "": "defaultRoute"
         },
         initialize: function(options){
             this.collection = options.collection;
@@ -441,7 +441,7 @@
         },
         detailRoute: function(fundName, deptName){
             var init = {}
-            var fund = fundName.split('-').join('-');
+            var fund = fundName.split('-').join(' ');
             if (!deptName){
                 init['mainView'] = 'Fund';
                 init['bdView'] = 'Department';
@@ -454,6 +454,7 @@
                 init['name'] = dept;
                 init['filter'] = {'Fund': fund, 'Department': dept}
             }
+            console.log(init);
             this.collection.bootstrap(init);
         }
     });
