@@ -9,17 +9,17 @@
  * Date: 3/24/2012
  *
  * Helpers called by BudgetLib
- * 
+ *
  */
 
-var BudgetHelpers = BudgetHelpers || {};  
+var BudgetHelpers = BudgetHelpers || {};
 var BudgetHelpers = {
 
-  query: function(sql, callback) {  
+  query: function(sql, callback) {
     var sql = encodeURIComponent(sql);
     //console.log("https://www.googleapis.com/fusiontables/v1/query?sql="+sql+"&key="+BudgetLib.FusionTableApiKey);
     $.ajax({
-      url: "https://www.googleapis.com/fusiontables/v1/query?sql="+sql+"&callback="+callback+"&key="+BudgetLib.FusionTableApiKey, 
+      url: "https://www.googleapis.com/fusiontables/v1/query?sql="+sql+"&callback="+callback+"&key="+BudgetLib.FusionTableApiKey,
       dataType: "jsonp"
     });
   },
@@ -28,19 +28,18 @@ var BudgetHelpers = {
     if (json["error"] != undefined)
       console.log("Error in Fusion Table call: " + json["error"]["message"]);
   },
-	
+
   //converts SQL query to URL
   getQuery: function(query) {
     //console.log('http://www.google.com/fusiontables/gvizdata?tq='  + encodeURIComponent(query));
     return query = new google.visualization.Query('http://www.google.com/fusiontables/gvizdata?tq='  + encodeURIComponent(query));
   },
-  	
+
   //converts a Fusion Table json response in to an array for passing in to highcharts
-  getDataAsArray: function(json) {
-    var data = json["rows"][0]; 
+  getDataAsArray: function(data) {
     var dataArray = [];
     var lastItem = 0;
-    for(var i=0; i<data.length; i++) { 
+    for(var i=0; i<data.length; i++) {
       dataArray[i] = +data[i];
       lastItem = i;
     }
@@ -48,6 +47,7 @@ var BudgetHelpers = {
     //For the most recent year, we are sometimes missing data.
     //By setting the last year to null when 0, Highcharts just truncates the line.
     if (dataArray[lastItem] == 0) dataArray[lastItem] = null;
+    console.log(dataArray);
     return dataArray;
   },
 
@@ -63,15 +63,15 @@ var BudgetHelpers = {
   getAddressLink: function(mode, name, year, chart, linkTitle) {
   	return ("<a href='" + BudgetHelpers.getAddressHref(mode, name, year, chart) + "'>" + linkTitle + "</a>");
   },
-  
-  generateTableRow: function(rowId, detailLoadFunction, rowName, nominal, actual) {
+
+  generateTableRow: function(rowId, detailLoadFunction, rowName, appropriations, expenditures) {
     return "\
       <tr id='" + rowId + "'>\
         <td>\
         <a onclick='" + detailLoadFunction + "'><img class='budget-expand-img' src='images/expand.png' /></a>&nbsp;<a onclick='" + detailLoadFunction + "'>" + rowName + "</a>\
         </td>\
-        <td class='num actual'>" + actual + "</td>\
-        <td class='num nominal'>" + nominal + "</td>\
+        <td class='num appropriations'>" + appropriations + "</td>\
+        <td class='num expenditures'>" + expenditures + "</td>\
       </tr>";
   },
 
@@ -83,7 +83,7 @@ var BudgetHelpers = {
         <td class='num nominal'></td>\
       </tr>";
   },
-  
+
   generateExpandedRow: function(itemId, type) {
     var breakdownLink = BudgetHelpers.getAddressLink(type, BudgetHelpers.convertToQueryString(itemId), BudgetLib.viewYear, null, "Breakdown by agency&nbsp;&raquo;");
 
@@ -106,9 +106,9 @@ var BudgetHelpers = {
         </td>\
       </tr>";
   },
-  
+
   generateExpandedDeptRow: function(departmentId, department, description, linkToWebsite, majorFunction, minorFunction) {
-      
+
     if (linkToWebsite != '')
       linkToWebsite = "<a href='" + linkToWebsite + "'>More&nbsp;information&nbsp;&raquo;</a>";
 
@@ -129,37 +129,37 @@ var BudgetHelpers = {
         </td>\
       </tr>";
   },
-  
+
   //converts a text in to a URL slug
   convertToSlug: function(text) {
     if (text == undefined) return '';
   	return (text+'').replace(/ /g,'-').replace(/[^\w-]+/g,'');
   },
-  
+
   //converts text to a formatted query string
   convertToQueryString: function(text) {
   	if (text == undefined) return '';
-  	return (text+'').replace(/\-+/g, '+').replace(/\s+/g, '+');
+  	return text.replace(' ', '-');
   },
-  
+
   //converts a slug or query string in to readable text
   convertToPlainString: function(text) {
     if (text == undefined) return '';
   	return (text+'').replace(/\++/g, ' ').replace(/\-+/g, ' ');
   },
-  
+
   //NOT USED for debugging - prints out data in a table
   getDataAsTable: function(json) {
     var rows = json["rows"];
     var cols = json["columns"];
-    
+
     //concatenate the results into a string, you can build a table here
     var fusiontabledata = "<table><tr>";
     for(i = 0; i < cols.length; i++) {
       fusiontabledata += "<td>" + cols[i] + "</td>";
     }
     fusiontabledata += "</tr>";
-    
+
     for(i = 0; i < rows.length; i++) {
     	fusiontabledata += "<tr>";
       for(j = 0; j < cols.length; j++) {
@@ -167,7 +167,7 @@ var BudgetHelpers = {
       }
       fusiontabledata += "</tr>";
     }
-    fusiontabledata += "</table>";  
+    fusiontabledata += "</table>";
     console.log(fusiontabledata);
   }
 }

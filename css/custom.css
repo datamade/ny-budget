@@ -10,11 +10,11 @@ a:hover { text-decoration: underline; }
 #header h1 a, #footer h1 a { color: #fff; }
 #footer .btn { color: #fff; }
 
-#readme { 
-  display: none; 
-  left: 0px; 
-  position: absolute; 
-  top: 320px; 
+#readme {
+  display: none;
+  left: 0px;
+  position: absolute;
+  top: 320px;
 }
 
 #search-form {
@@ -22,6 +22,10 @@ a:hover { text-decoration: underline; }
 }
 
 #timeline-chart { height: 300px; }
+
+#main-chart {
+    min-height: 300px;
+}
 
 /* Expanded rows */
 #breakdown .expanded-content td {
@@ -34,8 +38,8 @@ a:hover { text-decoration: underline; }
   font-weight: bold;
 }
 
-.expanded-primary { float: left; width: 48%; }
-.expanded-secondary { float: right; width: 48%; }
+.expanded-primary { float: left; width: 48%; margin-left: 10px; }
+.expanded-secondary { float: left; width: 48%; }
 
 /* Nav */
 #breakdown-nav { margin-top: -1px; }
@@ -49,7 +53,7 @@ a:hover { text-decoration: underline; }
 #scorecard h2 { font-size: 20px; }
 #scorecard h2, #scorecard p { margin: 0; }
 #scorecard td { border: 1px solid #ddd; border-bottom: 0; padding: 0.8em 10px; width: 25%; }
-#scorecard td#scorecard-desc { width: 50%; }  
+#scorecard td#scorecard-desc { width: 50%; }
 
 /* Stats */
 .stats { list-style: none; margin: 0 0 0.5em 0; }

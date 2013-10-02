@@ -1,0 +1,55 @@
+<div class='row'>
+  <div class='col-md-8'>
+    <h2 id='budget-title'><%= model.get('title') %></h2>
+    <!-- Actually need to implement this!! -->
+    <span id="breadcrumbs">
+        <% var bc = BudgetHelpers.getAddressLink('home', 'default', null, null, "&laquo back to " + BudgetLib.title) %>
+        <% if (!bc.indexOf('undefined')){ %>
+            <%= bc %>
+        <% } %>
+    </span>
+  </div>
+  <div class='col-md-4'>
+    <form class='form-inline' id="search-form">
+      <div class="form-group">
+        <input type="text" id="search-query" class='form-control' placeholder="Department search ..."/>
+      </div>
+      <a href='#' id="search" class='btn btn-primary'>
+        <span class="glyphicon glyphicon-search"></span>
+        Search
+      </a>
+    </form>
+  </div>
+</div>
+<div class='clearfix' ></div>
+<div id="main-chart">
+    <div id="timeline">
+      <h2></h2>
+      <div id="timeline-chart"></div>
+      <div id="readme"><img class='visible-lg' alt="Click points to see annual budgets below" src="images/readme.png" /></div>
+    </div>
+
+    <div id="breakdown-nav"></div>
+    <div class='clear'></div>
+
+    <table id="scorecard" class='table'>
+      <tbody>
+        <tr>
+          <td id="scorecard-desc">
+            <h2 id="secondary-title">
+                <span class="viewYear"><%= model.get('viewYear') %></span>
+                <span class="title"><%= model.get('title') %></span>
+            </h2>
+            <p id='actual-change-percent'></p>
+          </td>
+          <td>
+            <h2 class="appropriations"><%= model.get('selectedApprop') %></h2>
+            <p>Budgeted</p>
+          </td>
+          <td>
+            <h2 class="expenditures"><%= model.get('selectedExp') %></h2>
+            <p>Spent</p>
+          </td>
+        </tr>
+    </table>
+</div>

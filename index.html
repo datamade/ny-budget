@@ -21,6 +21,7 @@
 
   <body>
     <a href="#content" class="sr-only">Skip to content</a>
+    <div id="readme" style="display: none;"><img src="images/readme.png" alt="Click points to see annual budgets below"></div>
     <div class="container">
       <div id='header'>
         <h1><a href='/'>Look at Macoupin</a></h1>
@@ -30,64 +31,17 @@
 
       </div>
       <div class='well'>
-        <div class='row'>
-          <div class='col-md-8'>
-            <h2 id='budget-title'></h2>
-            <span id="breadcrumbs"></span>
-          </div>
-          <div class='col-md-4'>
-            <form class='form-inline' id="search-form">
-              <div class="form-group">
-                <input type="text" id="search-query" class='form-control' placeholder="Department search ..."/>
-              </div>
-              <a href='#' id="search" class='btn btn-primary'>
-                <span class="glyphicon glyphicon-search"></span>
-                Search
-              </a>
-            </form>
-          </div>
-        </div>
-
-        <div class='clearfix' ></div>
-        <div id='main-chart'>
-          <div id="timeline">
-            <h2></h2>
-            <div id="timeline-chart"></div>
-            <div id="readme"><img class='visible-lg' alt="Click points to see annual budgets below" src="images/readme.png" /></div>
-          </div>
-
-          <div id="breakdown-nav"></div>
-          <div class='clear'></div>
-
-          <table id="scorecard" class='table'>
-            <tbody>
-              <tr>
-                <td id="scorecard-desc">
-                  <h2 id="secondary-title"></h2>
-                  <p id='actual-change-percent'></p>
-                </td>
-                <td>
-                  <h2 class="actual"></h2>
-                  <p>Real (Inflation-adjusted)</p>
-                </td>
-                <td>
-                  <h2 class="nominal"></h2>
-                  <p>Nominal (Unadjusted)</p>
-                </td>
-              </tr>
-          </table>
-        </div>
+        <div id='main-chart'></div>
 
         <table id="breakdown" class='table table-condensed table-bordered'>
-          <thead>
-            <tr>
-              <th id='breakdown-item-title'><span id="secondary-title">Minor Function</span></th>
-              <th class="num"><span>Real (Inflation-adjusted)</span></th>
-              <th class="num"><span>Nominal (Unadjusted)</span></th>
-            </tr>
-          </thead>
-          <tbody>
-          </tbody>
+            <thead>
+              <tr>
+                <th id='breakdown-item-title'><span id="secondary-title">Minor Function</span></th>
+                <th class="num"><span>Budgeted</span></th>
+                <th class="num"><span>Spent</span></th>
+              </tr>
+            </thead>
+            <tbody id="breakdown-table-body"></tbody>
         </table>
 
         <div id="pie" style="display:none;"></div>
@@ -110,18 +64,25 @@
         </p>
       </div>
     </div>
-
     <!-- loading javascript at the bottom of the page for performance -->
+    <!-- HTML templates for Backbone views -->
     <!-- javascript libraries -->
-    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
     <script src="lib/jquery.min.js" type="text/javascript"></script>
+    <script src="lib/spin.min.js" type="text/javascript"></script>
+    <script src="lib/jquery.spin.js" type="text/javascript"></script>
+    <script src="lib/accounting.min.js" type="text/javascript"></script>
+    <script src="lib/reduce.js" type="text/javascript"></script>
+    <script src="lib/range.js" type="text/javascript"></script>
+    <script src="lib/array_indexof.js" type="text/javascript"></script>
+    <script src="lib/array_getunique.js" type="text/javascript"></script>
+    <script src="lib/jquery.csv.min.js" type="text/javascript"></script>
     <script src="lib/bootstrap.min.js" type="text/javascript"></script>
     <script src="lib/highcharts.js" type="text/javascript"></script>
     <script src="lib/jquery.dataTables.js" type="text/javascript"></script>
-    <script src="lib/jquery.formatCurrency-1.4.0.min.js" type="text/javascript"></script>
     <script src="lib/jquery.cookie.js" type="text/javascript"></script>
     <script src="lib/underscore.min.js" type="text/javascript"></script>
     <script src="lib/backbone.min.js" type="text/javascript"></script>
+    <script src="lib/Backbone.ModelBinder.min.js" type="text/javascript"></script>
 
     <!-- custom javascript -->
     <script src="js/dataTables.sorting.js" type="text/javascript"></script>
