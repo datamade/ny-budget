@@ -19,20 +19,13 @@ window.mainChartOpts = {
           }
         },
         defaultSeriesType: "area",
-        marginBottom: 30,
-        marginLeft: 60,
-        marginRight: 15,
         marginTop: 20,
         renderTo: "timeline-chart"
       },
       credits: { enabled: false },
       legend: {
         backgroundColor: "#ffffff",
-        borderColor: "#cccccc",
-        floating: true,
-        verticalAlign: "top",
-        x: -280,
-        y: 20
+        borderColor: "#cccccc"
       },
       plotOptions: {
         area: { fillOpacity: 0.25 },

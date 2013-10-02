@@ -116,7 +116,7 @@
                         "Expense Line": {child: null, parent: 'Department'}
                     }
                     if (typeof init === 'undefined'){
-                        self.updateTables('Fund', 'Macoupin County, IL Budget');
+                        self.updateTables('Fund', 'Macoupin County budget');
                     } else {
                         self.updateTables(init['bdView'], init['name'], init['filter']);
                     }
