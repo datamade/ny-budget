@@ -218,7 +218,7 @@
         render: function(){
             this.$el.html(template_cache('mainChart', {model: this.model}));
             this._modelBinder.bind(this.model, this.el, {
-                viewYear: '#secondary-title .viewYear',
+                viewYear: '.viewYear',
                 selectedExp: '.expenditures',
                 selectedApprop: '.appropriations'
             });
@@ -368,6 +368,7 @@
             }
             collection.updateTables(this.model.get('child'), this.model.get('rowName'), filter);
             document.title = document.title + ' | ' + this.model.get('rowName');
+            $('#secondary-title').text(this.model.get('child'));
             app_router.navigate('detail/' + path);
         },
 
@@ -451,6 +452,7 @@
             this.collection = options.collection;
         },
         defaultRoute: function(actions){
+            $('#secondary-title').text('Fund');
             this.collection.bootstrap();
         },
         detailRoute: function(fundName, deptName){
@@ -461,12 +463,14 @@
                 init['bdView'] = 'Department';
                 init['name'] = fund;
                 init['filter'] = {'Fund': fund};
+                $('#secondary-title').text('Department');
             } else {
                 var dept = deptName.split('-').join(' ');
                 init['mainView'] = 'Department';
                 init['bdView'] = 'Expense Line';
                 init['name'] = dept;
                 init['filter'] = {'Fund': fund, 'Department': dept}
+                $('#secondary-title').text('Expense Line');
             }
             this.collection.bootstrap(init);
         }
