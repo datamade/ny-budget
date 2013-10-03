@@ -211,8 +211,22 @@
             // this.listenTo(this.model, 'change', this.renderUpdate);
             this._modelBinder = new Backbone.ModelBinder();
             this.render();
+            this.updateCrumbs();
         },
-
+        updateCrumbs: function(){
+            if(Backbone.history.fragment){
+                var parts = Backbone.history.fragment.split('/');
+                var crumbs = parts.slice(1, parts.length);
+                var links = ['<a href="/">Home</a>'];
+                $.each(crumbs, function(i, crumb){
+                    var link = '<a href="#' + parts.slice(0,i+2).join('/') + '">';
+                    link += crumb.split('-').join(' ');
+                    link += '</a>';
+                    links.push(link);
+                });
+                $('#breadcrumbs').html(links.join(' >> '));
+            }
+        },
         // This is where the magic happens. Grab the template from the template_cache function
         // at the top of this file and then update the chart with what's passed in as the model.
         render: function(){
@@ -260,8 +274,6 @@
             //   this.chartOpts.series[1].data[selectedYearIndex].select(true,true);
             new Highcharts.Chart(this.chartOpts);
         },
-        // This is the event handler for click events for the points in the chart.
-        // TODO: Make it do something.
         pointClick: function(e){
             $("#readme").fadeOut("fast");
             $.cookie("budgetbreakdownreadme", "read", { expires: 7 });
@@ -370,6 +382,7 @@
             document.title = document.title + ' | ' + this.model.get('rowName');
             $('#secondary-title').text(this.model.get('child'));
             app_router.navigate('detail/' + path);
+            collection.mainChartView.updateCrumbs();
         },
 
         updateChart: function(){
