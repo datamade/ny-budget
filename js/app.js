@@ -357,6 +357,7 @@
                 path = this.model.get('parent').split(' ').join('-') + '/' + this.model.get('slug')
             }
             collection.updateTables(this.model.get('child'), this.model.get('rowName'), filter);
+            document.title = document.title + ' | ' + this.model.get('rowName');
             app_router.navigate('detail/' + path);
         },
 
