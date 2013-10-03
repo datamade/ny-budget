@@ -44,14 +44,6 @@
     });
 
     app.BreakdownColl = Backbone.Collection.extend({
-        comparator: function(a,b){
-            if(a.get('appropriations') > b.get('appropriations')){
-                return -1
-            } else if(a.get('appropriations') < b.get('appropriations'))  {
-                return 1
-            }
-            return 0;
-        },
         setRows: function(year, index){
             var self = this;
             this.models.forEach(function(row){
@@ -95,7 +87,10 @@
             });
             var bd = []
             var chartGuts = this.pluck(view).getUnique();
-            $('#breakdown-table-body').empty();
+            if(typeof this.dataTable !== 'undefined'){
+                this.dataTable.fnClearTable();
+                this.dataTable.fnDestroy();
+            }
             $.each(chartGuts, function(i, name){
                 if (!incomingFilter){
                     filter = {}
@@ -114,6 +109,18 @@
             });
             this.mainChartView = new app.MainChartView({
                 model: self.mainChartData
+            });
+            this.dataTable = $("#breakdown").dataTable({
+                "aaSorting": [[1, "desc"]],
+                "aoColumns": [
+                    null,
+                    {'sType': 'currency'},
+                    {'sType': 'currency'}
+                ],
+                "bFilter": false,
+                "bInfo": false,
+                "bPaginate": false,
+                "bRetrieve": true
             });
         },
         bootstrap: function(init){
