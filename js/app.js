@@ -112,7 +112,7 @@
             $.when($.get('/data/macoupin_budget_cleaned.csv')).then(
                 function(data){
                     var json = $.csv.toObjects(data);
-                    self.add(json);
+                    self.reset(json);
                     self.hierarchy = {
                         Fund: {child: 'Department', parent: null},
                         Department: {child: 'Expense Line', parent: 'Fund'},
