@@ -44,10 +44,21 @@
     });
 
     app.BreakdownColl = Backbone.Collection.extend({
+        comparator: function(a,b){
+            if(a.get('appropriations') > b.get('appropriations')){
+                return -1
+            } else if(a.get('appropriations') < b.get('appropriations'))  {
+                return 1
+            }
+            return 0;
+        },
         setRows: function(year, index){
             var self = this;
             this.models.forEach(function(row){
-                row.set(collection.getSummary(row.get('type'), row.get('rowId'), year));
+                var query = {}
+                query[row.get('type')] = row.get('rowName')
+                var summ = collection.getSummary(row.get('type'), query, year)
+                row.set(summ);
                 row.yearIndex = index;
             });
         }
@@ -94,11 +105,13 @@
                 if (summary){
                     var row = new app.BreakdownRow(summary);
                     bd.push(row);
-                    var rowView = new app.BreakdownSummary({model:row});
-                    $('#breakdown-table-body').append(rowView.render().el);
                 }
             });
             this.breakdownChartData = new app.BreakdownColl(bd);
+            this.breakdownChartData.forEach(function(row){
+                var rowView = new app.BreakdownSummary({model:row});
+                $('#breakdown-table-body').append(rowView.render().el);
+            });
             this.mainChartView = new app.MainChartView({
                 model: self.mainChartData
             });
@@ -109,7 +122,7 @@
             $.when($.get('/data/macoupin_budget_cleaned.csv')).then(
                 function(data){
                     var json = $.csv.toObjects(data);
-                    self.add(json);
+                    self.reset(json);
                     self.hierarchy = {
                         Fund: {child: 'Department', parent: null},
                         Department: {child: 'Expense Line', parent: 'Fund'},
@@ -198,14 +211,28 @@
             // this.listenTo(this.model, 'change', this.renderUpdate);
             this._modelBinder = new Backbone.ModelBinder();
             this.render();
+            this.updateCrumbs();
         },
-
+        updateCrumbs: function(){
+            if(Backbone.history.fragment){
+                var parts = Backbone.history.fragment.split('/');
+                var crumbs = parts.slice(1, parts.length);
+                var links = ['<a href="/">Home</a>'];
+                $.each(crumbs, function(i, crumb){
+                    var link = '<a href="#' + parts.slice(0,i+2).join('/') + '">';
+                    link += crumb.split('-').join(' ');
+                    link += '</a>';
+                    links.push(link);
+                });
+                $('#breadcrumbs').html(links.join(' >> '));
+            }
+        },
         // This is where the magic happens. Grab the template from the template_cache function
         // at the top of this file and then update the chart with what's passed in as the model.
         render: function(){
             this.$el.html(template_cache('mainChart', {model: this.model}));
             this._modelBinder.bind(this.model, this.el, {
-                viewYear: '#secondary-title .viewYear',
+                viewYear: '.viewYear',
                 selectedExp: '.expenditures',
                 selectedApprop: '.appropriations'
             });
@@ -247,8 +274,6 @@
             //   this.chartOpts.series[1].data[selectedYearIndex].select(true,true);
             new Highcharts.Chart(this.chartOpts);
         },
-        // This is the event handler for click events for the points in the chart.
-        // TODO: Make it do something.
         pointClick: function(e){
             $("#readme").fadeOut("fast");
             $.cookie("budgetbreakdownreadme", "read", { expires: 7 });
@@ -286,10 +311,10 @@
         },
         render: function(){
             this.$el.html(template_cache('breakdownSummary', {model:this.model}));
-            this._modelBinder.bind(this.model, this.el, {
-                expenditures: {selector: '[name="expenditures"]', converter: this.moneyChanger},
-                appropriations: {selector: '[name="appropriations"]', converter: this.moneyChanger}
-            });
+             this._modelBinder.bind(this.model, this.el, {
+                 expenditures: {selector: '[name="expenditures"]', converter: this.moneyChanger},
+                 appropriations: {selector: '[name="appropriations"]', converter: this.moneyChanger}
+             });
             return this;
         },
         moneyChanger: function(direction, value){
@@ -354,7 +379,10 @@
                 path = this.model.get('parent').split(' ').join('-') + '/' + this.model.get('slug')
             }
             collection.updateTables(this.model.get('child'), this.model.get('rowName'), filter);
+            document.title = document.title + ' | ' + this.model.get('rowName');
+            $('#secondary-title').text(this.model.get('child'));
             app_router.navigate('detail/' + path);
+            collection.mainChartView.updateCrumbs();
         },
 
         updateChart: function(){
@@ -437,6 +465,7 @@
             this.collection = options.collection;
         },
         defaultRoute: function(actions){
+            $('#secondary-title').text('Fund');
             this.collection.bootstrap();
         },
         detailRoute: function(fundName, deptName){
@@ -447,12 +476,14 @@
                 init['bdView'] = 'Department';
                 init['name'] = fund;
                 init['filter'] = {'Fund': fund};
+                $('#secondary-title').text('Department');
             } else {
                 var dept = deptName.split('-').join(' ');
                 init['mainView'] = 'Department';
                 init['bdView'] = 'Expense Line';
                 init['name'] = dept;
                 init['filter'] = {'Fund': fund, 'Department': dept}
+                $('#secondary-title').text('Expense Line');
             }
             this.collection.bootstrap(init);
         }

@@ -2,12 +2,7 @@
   <div class='col-md-8'>
     <h2 id='budget-title'><%= model.get('title') %></h2>
     <!-- Actually need to implement this!! -->
-    <span id="breadcrumbs">
-        <% var bc = BudgetHelpers.getAddressLink('home', 'default', null, null, "&laquo back to " + BudgetLib.title) %>
-        <% if (!bc.indexOf('undefined')){ %>
-            <%= bc %>
-        <% } %>
-    </span>
+    <span id="breadcrumbs"></span>
   </div>
   <div class='col-md-4'>
     <form class='form-inline' id="search-form">
@@ -36,7 +31,7 @@
       <tbody>
         <tr>
           <td id="scorecard-desc">
-            <h2 id="secondary-title">
+            <h2>
                 <span class="viewYear"><%= model.get('viewYear') %></span>
                 <span class="title"><%= model.get('title') %></span>
             </h2>
