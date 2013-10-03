@@ -47,7 +47,10 @@
         setRows: function(year, index){
             var self = this;
             this.models.forEach(function(row){
-                row.set(collection.getSummary(row.get('type'), row.get('rowId'), year));
+                var query = {}
+                query[row.get('type')] = row.get('rowName')
+                var summ = collection.getSummary(row.get('type'), query, year)
+                row.set(summ);
                 row.yearIndex = index;
             });
         }
@@ -286,10 +289,10 @@
         },
         render: function(){
             this.$el.html(template_cache('breakdownSummary', {model:this.model}));
-            this._modelBinder.bind(this.model, this.el, {
-                expenditures: {selector: '[name="expenditures"]', converter: this.moneyChanger},
-                appropriations: {selector: '[name="appropriations"]', converter: this.moneyChanger}
-            });
+             this._modelBinder.bind(this.model, this.el, {
+                 expenditures: {selector: '[name="expenditures"]', converter: this.moneyChanger},
+                 appropriations: {selector: '[name="appropriations"]', converter: this.moneyChanger}
+             });
             return this;
         },
         moneyChanger: function(direction, value){
