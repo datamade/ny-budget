@@ -44,6 +44,14 @@
     });
 
     app.BreakdownColl = Backbone.Collection.extend({
+        comparator: function(a,b){
+            if(a.get('appropriations') > b.get('appropriations')){
+                return -1
+            } else if(a.get('appropriations') < b.get('appropriations'))  {
+                return 1
+            }
+            return 0;
+        },
         setRows: function(year, index){
             var self = this;
             this.models.forEach(function(row){
@@ -97,11 +105,13 @@
                 if (summary){
                     var row = new app.BreakdownRow(summary);
                     bd.push(row);
-                    var rowView = new app.BreakdownSummary({model:row});
-                    $('#breakdown-table-body').append(rowView.render().el);
                 }
             });
             this.breakdownChartData = new app.BreakdownColl(bd);
+            this.breakdownChartData.forEach(function(row){
+                var rowView = new app.BreakdownSummary({model:row});
+                $('#breakdown-table-body').append(rowView.render().el);
+            });
             this.mainChartView = new app.MainChartView({
                 model: self.mainChartData
             });
