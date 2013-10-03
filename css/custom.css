@@ -27,6 +27,25 @@ a:hover { text-decoration: underline; }
     min-height: 300px;
 }
 
+/* Breakdown table */
+#breakdown a { cursor: pointer; }
+#breakdown .num { text-align: right; }
+#breakdown td, #breakdown th { border: 1px solid #ddd; font-size: 14px; padding: 0.3em 10px; }
+#breakdown th { background: #e1e9f2; font-size: 12px; font-weight: bold; text-align: left; }
+#breakdown th.charts { width: 50%; }
+#breakdown th.controls { width: 20px; }
+#breakdown th span { color: #f85204; cursor: pointer; }
+
+#breakdown th.sorting_asc span {
+  background: url(../images/sort-up.png) no-repeat 100% 50%;
+  padding-right: 10px;
+}
+
+#breakdown th.sorting_desc span {
+  background: url(../images/sort-down.png) no-repeat 100% 50%;
+  padding-right: 10px;
+}
+
 /* Expanded rows */
 #breakdown .expanded-content td {
   border-top: 0;
