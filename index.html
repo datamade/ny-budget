@@ -24,10 +24,27 @@
     <div id="readme" style="display: none;"><img src="images/readme.png" alt="Click points to see annual budgets below"></div>
     <div class="container">
       <div id='header'>
-        <h1><a href='/'>Look at Macoupin</a></h1>
-
-        <p>Explore the Macoupin County, IL budget from 1995 to 2012 and learn how the money is being spent.</p>
-
+        <div class='row'>
+          <div class='col-md-8'>
+            <div id='logo'>
+              <a href='/'><img src='/images/macoupin_seal.png' alt='Look at Macoupin' /></a>
+            </div>
+            <p>Explore the Macoupin County, IL budget from 1995 to 2012 and learn how the money is being spent.</p>
+          </div>
+          <div class='col-md-4' id='department-search'>
+            <form id="search-form">
+              <div class="input-group">
+                <input type="search" class="form-control" placeholder="Department search ...">
+                <span class="input-group-btn">
+                  <a href='#' id="search" class='btn btn-primary'>
+                    <i class="glyphicon glyphicon-search"></i>
+                  </a>
+                </span>
+              </div>
+              
+            </form>
+          </div>
+        </div>
       </div>
       <div class='well'>
         <div id='main-chart'></div>

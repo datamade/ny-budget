@@ -221,18 +221,18 @@
             this.updateCrumbs();
         },
         updateCrumbs: function(){
+            var links = ['<a href="/">Macoupin County</a>'];
             if(Backbone.history.fragment){
                 var parts = Backbone.history.fragment.split('/');
                 var crumbs = parts.slice(1, parts.length);
-                var links = ['<a href="/">Home</a>'];
                 $.each(crumbs, function(i, crumb){
                     var link = '<a href="#' + parts.slice(0,i+2).join('/') + '">';
                     link += crumb.split('-').join(' ');
                     link += '</a>';
                     links.push(link);
                 });
-                $('#breadcrumbs').html(links.join(' >> '));
             }
+            $('#breadcrumbs').html(links.join(' > '));
         },
         // This is where the magic happens. Grab the template from the template_cache function
         // at the top of this file and then update the chart with what's passed in as the model.
