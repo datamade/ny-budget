@@ -67,6 +67,16 @@ a:hover { text-decoration: underline; }
   font-weight: bold;
 }
 
+.btn-primary {
+  background-color: #92021a;
+  border-color: #92021a;
+}
+
+.btn-primary:hover {
+  background-color: #730215;
+  border-color: #730215;
+}
+
 .expanded-primary { float: left; width: 48%; margin-left: 10px; }
 .expanded-secondary { float: left; width: 48%; }
 
