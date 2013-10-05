@@ -120,7 +120,8 @@
                 "bFilter": false,
                 "bInfo": false,
                 "bPaginate": false,
-                "bRetrieve": true
+                "bRetrieve": true,
+                "bAutoWidth": false
             });
         },
         bootstrap: function(init){
