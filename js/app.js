@@ -187,7 +187,7 @@
             var self = this;
             guts.forEach(function(item){
                 summary['rowName'] = item.get(view);
-                summary['description'] = item.get('Department Description');
+                summary['description'] = item.get(view + ' Description');
                 summary['expenditures'] = self.reduceTotals(exp);
                 summary['appropriations'] = self.reduceTotals(approp);
                 summary['rowId'] = item.get(view + ' ID');
