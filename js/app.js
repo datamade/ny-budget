@@ -127,7 +127,7 @@
         bootstrap: function(init){
             var self = this;
             this.spin('#main-chart', 'large');
-            $.when($.get('/data/macoupin_budget_cleaned.csv')).then(
+            $.when($.get('/data/macoupin-budget-2014-cleaned.csv')).then(
                 function(data){
                     var json = $.csv.toObjects(data);
                     self.reset(json);
@@ -187,7 +187,7 @@
             var self = this;
             guts.forEach(function(item){
                 summary['rowName'] = item.get(view);
-                summary['description'] = item.get(view + ' Description');
+                summary['description'] = item.get('Department Description');
                 summary['expenditures'] = self.reduceTotals(exp);
                 summary['appropriations'] = self.reduceTotals(approp);
                 summary['rowId'] = item.get(view + ' ID');
