@@ -31,9 +31,23 @@
         setYear: function(year, index){
             var exp = this.get('expenditures');
             var approp = this.get('appropriations');
+            var expChange = parseFloat(((exp[index] - exp[index -1]) / exp[index -1]) * 100);
+            if (expChange < 0){
+                expChange = expChange.toFixed(1) + '%';
+            } else {
+                expChange = '+' + expChange.toFixed(1) + '%';
+            }
+            var appropChange = parseFloat(((approp[index] - approp[index - 1]) / approp[index - 1]) * 100);
+            if (appropChange < 0){
+                appropChange = appropChange.toFixed(1) + '%';
+            } else {
+                appropChange = '+' + appropChange.toFixed(1) + '%';
+            }
             this.set({
                 'selectedExp': accounting.formatMoney(exp[index]),
                 'selectedApprop': accounting.formatMoney(approp[index]),
+                'expChange': expChange,
+                'appropChange': appropChange,
                 'viewYear': year
             });
         }
@@ -77,13 +91,31 @@
                 exp.push(self.getTotals(values, 'Expenditures', year));
                 approp.push(self.getTotals(values, 'Appropriations', year));
             });
+            var selExp = exp[exp.length - 1];
+            var prevExp = exp[exp.length - 2];
+            var expChange = parseFloat(((selExp - prevExp) / prevExp) * 100);
+            if (expChange < 0){
+                expChange = expChange.toFixed(1) + '%';
+            } else {
+                expChange = '+' + expChange.toFixed(1) + '%';
+            }
+            var selApprop = approp[approp.length - 1];
+            var prevApprop = approp[approp.length - 2];
+            var appropChange = parseFloat(((selApprop - prevApprop) / prevApprop) * 100);
+            if (appropChange < 0){
+                appropChange = appropChange.toFixed(1) + '%';
+            } else {
+                appropChange = '+' + appropChange.toFixed(1) + '%';
+            }
             this.mainChartData = new app.MainChartModel({
                 expenditures: exp,
                 appropriations: approp,
                 title: title,
                 viewYear: self.endYear,
-                selectedExp: accounting.formatMoney(exp[exp.length - 1]),
-                selectedApprop: accounting.formatMoney(approp[approp.length - 1])
+                selectedExp: accounting.formatMoney(selExp),
+                selectedApprop: accounting.formatMoney(selApprop),
+                appropChange: appropChange,
+                expChange: expChange
             });
             var bd = []
             var chartGuts = this.pluck(view).getUnique();
@@ -242,7 +274,9 @@
             this._modelBinder.bind(this.model, this.el, {
                 viewYear: '.viewYear',
                 selectedExp: '.expenditures',
-                selectedApprop: '.appropriations'
+                selectedApprop: '.appropriations',
+                expChange: '.expChange',
+                appropChange: '.appropChange'
             });
             this.updateChart(this.model, this.model.viewYear);
             return this;
@@ -319,10 +353,10 @@
         },
         render: function(){
             this.$el.html(template_cache('breakdownSummary', {model:this.model}));
-             this._modelBinder.bind(this.model, this.el, {
-                 expenditures: {selector: '[name="expenditures"]', converter: this.moneyChanger},
-                 appropriations: {selector: '[name="appropriations"]', converter: this.moneyChanger}
-             });
+            this._modelBinder.bind(this.model, this.el, {
+                expenditures: {selector: '[name="expenditures"]', converter: this.moneyChanger},
+                appropriations: {selector: '[name="appropriations"]', converter: this.moneyChanger}
+            });
             return this;
         },
         moneyChanger: function(direction, value){

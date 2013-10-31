@@ -26,11 +26,11 @@
           </td>
           <td>
             <h2 class="appropriations"><%= model.get('selectedApprop') %></h2>
-            <p>Budgeted</p>
+            <p><strong class="appropChange"><%= model.get('appropChange') %>%</strong> budgeted from <%= model.get('viewYear') - 1 %></p>
           </td>
           <td>
             <h2 class="expenditures"><%= model.get('selectedExp') %></h2>
-            <p>Spent</p>
+            <p><strong class="expChange"><%= model.get('appropChange') %>%</strong> spent from <%= model.get('viewYear') - 1 %></p>
           </td>
         </tr>
     </table>
