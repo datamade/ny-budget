@@ -79,7 +79,7 @@
 
     app.BudgetColl = Backbone.Collection.extend({
         startYear: 1995,
-        endYear: 2013,
+        endYear: 2012,
         updateYear: function(year, yearIndex){
             this.mainChartData.setYear(year, yearIndex);
             this.breakdownChartData.setRows(year, yearIndex);
@@ -121,6 +121,7 @@
                 this.dataTable.fnClearTable();
                 this.dataTable.fnDestroy();
             }
+            var all_nums = []
             $.each(chartGuts, function(i, name){
                 if (!incomingFilter){
                     filter = {}
@@ -130,11 +131,14 @@
                 if (summary){
                     var row = new app.BreakdownRow(summary);
                     bd.push(row);
+                    all_nums.push(summary['expenditures']);
+                    all_nums.push(summary['appropriations']);
                 }
             });
+            var maxNum = all_nums.sort(function(a,b){return b-a})[0];
             this.breakdownChartData = new app.BreakdownColl(bd);
             this.breakdownChartData.forEach(function(row){
-                var rowView = new app.BreakdownSummary({model:row});
+                var rowView = new app.BreakdownSummary({model:row, attributes: {maxNum: maxNum}});
                 $('#breakdown-table-body').append(rowView.render().el);
             });
             this.mainChartView = new app.MainChartView({
@@ -145,7 +149,8 @@
                 "aoColumns": [
                     null,
                     {'sType': 'currency'},
-                    {'sType': 'currency'}
+                    {'sType': 'currency'},
+                    null
                 ],
                 "bFilter": false,
                 "bInfo": false,
@@ -237,7 +242,12 @@
                     summary['parent_type'] = self.hierarchy[view]['parent'];
                     summary['parent'] = self.mainChartData.get('title')
                 }
-                summary['slug'] = item.get(view).split(' ').join('-');
+                summary['slug'] = item.get(view)
+                    .replace("'", "")
+                    .replace("&", "")
+                    .replace(")", "")
+                    .replace("(", "")
+                    .split(' ').join('-');
             });
             if (typeof summary['expenditures'] !== 'undefined'){
                 return summary
@@ -384,6 +394,7 @@
             });
         },
         render: function(){
+            this.model.set({maxNum: this.attributes.maxNum})
             this.$el.html(template_cache('breakdownSummary', {model:this.model}));
             this._modelBinder.bind(this.model, this.el, {
                 expenditures: {selector: '[name="expenditures"]', converter: this.moneyChanger},

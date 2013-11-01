@@ -7,3 +7,12 @@
 </td>
 <td class='num appropriations' name="appropriations"><%= model.get('appropriations') %></td>
 <td class='num expenditures' name="expenditures"><%= model.get('expenditures') %></td>
+<td>
+    <div class="bars">
+        <% var max = model.get('maxNum') %>
+        <% var exp = accounting.unformat(model.get('expenditures')) %>
+        <% var app = accounting.unformat(model.get('appropriations')) %>
+        <span class="budgeted outer" style="width: <%= parseFloat((app / max) * 100) %>%;"></span>
+        <span class="spent inner" style="width: <%= parseFloat((exp / max) * 100) %>%;"></span>
+    </div>
+</td>
