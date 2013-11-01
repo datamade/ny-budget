@@ -27,28 +27,29 @@
         return template_cache.tmpl_cache[tmpl_name](tmpl_data);
     }
 
+    function calc_change(cur, prev){
+        var change = parseFloat(((cur - prev) / prev) * 100);
+        if (change < 0){
+            change = change.toFixed(1) + '%';
+        } else {
+            change = '+' + change.toFixed(1) + '%';
+        }
+        return change
+    }
+
     app.MainChartModel = Backbone.Model.extend({
         setYear: function(year, index){
             var exp = this.get('expenditures');
             var approp = this.get('appropriations');
-            var expChange = parseFloat(((exp[index] - exp[index -1]) / exp[index -1]) * 100);
-            if (expChange < 0){
-                expChange = expChange.toFixed(1) + '%';
-            } else {
-                expChange = '+' + expChange.toFixed(1) + '%';
-            }
-            var appropChange = parseFloat(((approp[index] - approp[index - 1]) / approp[index - 1]) * 100);
-            if (appropChange < 0){
-                appropChange = appropChange.toFixed(1) + '%';
-            } else {
-                appropChange = '+' + appropChange.toFixed(1) + '%';
-            }
+            var expChange = calc_change(exp[index], exp[index -1]);
+            var appropChange = calc_change(approp[index], approp[index - 1]);
             this.set({
                 'selectedExp': accounting.formatMoney(exp[index]),
                 'selectedApprop': accounting.formatMoney(approp[index]),
                 'expChange': expChange,
                 'appropChange': appropChange,
-                'viewYear': year
+                'viewYear': year,
+                'prevYear': year - 1
             });
         }
     });
@@ -93,25 +94,16 @@
             });
             var selExp = exp[exp.length - 1];
             var prevExp = exp[exp.length - 2];
-            var expChange = parseFloat(((selExp - prevExp) / prevExp) * 100);
-            if (expChange < 0){
-                expChange = expChange.toFixed(1) + '%';
-            } else {
-                expChange = '+' + expChange.toFixed(1) + '%';
-            }
+            var expChange = calc_change(selExp, prevExp);
             var selApprop = approp[approp.length - 1];
             var prevApprop = approp[approp.length - 2];
-            var appropChange = parseFloat(((selApprop - prevApprop) / prevApprop) * 100);
-            if (appropChange < 0){
-                appropChange = appropChange.toFixed(1) + '%';
-            } else {
-                appropChange = '+' + appropChange.toFixed(1) + '%';
-            }
+            var appropChange = calc_change(selApprop, prevApprop);
             this.mainChartData = new app.MainChartModel({
                 expenditures: exp,
                 appropriations: approp,
                 title: title,
                 viewYear: self.endYear,
+                prevYear: self.endYear - 1,
                 selectedExp: accounting.formatMoney(selExp),
                 selectedApprop: accounting.formatMoney(selApprop),
                 appropChange: appropChange,
@@ -216,12 +208,19 @@
             var self = this;
             var exp = self.getChartTotals('Expenditures', query, year);
             var approp = self.getChartTotals('Appropriations', query, year);
+            var prevExp = self.getChartTotals('Expenditures', query, year - 1);
+            var prevApprop = self.getChartTotals('Appropriations', query, year - 1);
+            var expChange = calc_change(self.reduceTotals(exp), self.reduceTotals(prevExp));
+            var appropChange = calc_change(self.reduceTotals(approp), self.reduceTotals(prevApprop));
             var self = this;
             guts.forEach(function(item){
                 summary['rowName'] = item.get(view);
+                summary['prevYear'] = year - 1;
                 summary['description'] = item.get(view + ' Description');
                 summary['expenditures'] = self.reduceTotals(exp);
                 summary['appropriations'] = self.reduceTotals(approp);
+                summary['expChange'] = expChange;
+                summary['appropChange'] = appropChange;
                 summary['rowId'] = item.get(view + ' ID');
                 summary['type'] = view
                 summary['child'] = self.hierarchy[view]['child']
@@ -248,7 +247,6 @@
 
         // Render the view when you initialize it.
         initialize: function(){
-            // this.listenTo(this.model, 'change', this.renderUpdate);
             this._modelBinder = new Backbone.ModelBinder();
             this.render();
             this.updateCrumbs();
@@ -273,6 +271,7 @@
             this.$el.html(template_cache('mainChart', {model: this.model}));
             this._modelBinder.bind(this.model, this.el, {
                 viewYear: '.viewYear',
+                prevYear: '.prevYear',
                 selectedExp: '.expenditures',
                 selectedApprop: '.appropriations',
                 expChange: '.expChange',
@@ -405,9 +404,16 @@
         events: {
             'click .breakdown': 'breakdownNav'
         },
-
+        initialize: function(){
+            this._modelBinder = new Backbone.ModelBinder();
+        },
         render: function(){
             this.$el.html(template_cache('breakdownDetail', {model: this.model}));
+            this._modelBinder.bind(this.model, this.el, {
+                prevYear: '.prevYear',
+                expChange: '.expChange',
+                appropChange: '.appropChange'
+            });
             return this;
         },
 
