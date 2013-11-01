@@ -25,11 +25,11 @@
         <div class='col-md-7'>
             <div class='sparkline budget-chart' id='<%= model.get('slug') %>-selected-chart'></div>
             <ul class="stats">
-                <li id="sparkline-budgeted">
+                <li class="sparkline-budgeted">
                     <strong class="appropChange"><%= model.get('appropChange') %></strong> budgeted from
                     <span class="prevYear"><%= model.get('prevYear') %></span>
                 </li>
-                <li id="sparkline-spent">
+                <li class="sparkline-spent">
                     <strong class="expChange"><%= model.get('expChange') %></strong> spent from
                     <span class="prevYear"><%= model.get('prevYear') %></span>
                 </li>

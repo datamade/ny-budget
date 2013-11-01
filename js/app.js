@@ -28,6 +28,12 @@
     }
 
     function calc_change(cur, prev){
+        if (prev == 0){
+            return null
+        }
+        if (cur == 0 && prev == 0){
+            return null
+        }
         var change = parseFloat(((cur - prev) / prev) * 100);
         if (change < 0){
             change = change.toFixed(1) + '%';
@@ -73,7 +79,7 @@
 
     app.BudgetColl = Backbone.Collection.extend({
         startYear: 1995,
-        endYear: 2012,
+        endYear: 2013,
         updateYear: function(year, yearIndex){
             this.mainChartData.setYear(year, yearIndex);
             this.breakdownChartData.setRows(year, yearIndex);
@@ -253,6 +259,18 @@
             this._modelBinder = new Backbone.ModelBinder();
             this.render();
             this.updateCrumbs();
+            this.model.on('change', function(model){
+                if(!model.get('appropChange')){
+                    $('.main-approp').hide();
+                } else {
+                    $('.main-approp').show();
+                }
+                if(!model.get('expChange')){
+                    $('.main-exp').hide();
+                } else {
+                    $('.main-exp').show();
+                }
+            });
         },
         updateCrumbs: function(){
             var links = ['<a href="/">Macoupin County</a>'];
@@ -310,12 +328,6 @@
                 name: globalOpts.expendTitle
             }];
             this.chartOpts.yAxis.min = Math.min.apply( Math, minValuesArray )
-            // select current year
-            // var selectedYearIndex = year - collection.startYear;
-            // if (this.chartOpts.series[0].data[selectedYearIndex].y != null)
-            //   this.chartOpts.series[0].data[selectedYearIndex].select(true,true);
-            // if (this.chartOpts.series[1].data[selectedYearIndex].y != null)
-            //   this.chartOpts.series[1].data[selectedYearIndex].select(true,true);
             new Highcharts.Chart(this.chartOpts);
         },
         pointClick: function(e){
@@ -356,6 +368,20 @@
         },
         initialize: function(){
             this._modelBinder = new Backbone.ModelBinder();
+            var self = this;
+            this.model.on('change', function(model){
+                var sel = '#' + model.get('slug') + '-selected-chart';
+                if(!model.get('appropChange')){
+                    $(sel).parent().find('.sparkline-budgeted').hide();
+                } else {
+                    $(sel).parent().find('.sparkline-budgeted').show();
+                }
+                if(!model.get('expChange')){
+                    $(sel).parent().find('.sparkline-spent').hide();
+                } else {
+                    $(sel).parent().find('.sparkline-spent').show();
+                }
+            });
         },
         render: function(){
             this.$el.html(template_cache('breakdownSummary', {model:this.model}));
