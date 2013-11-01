@@ -204,6 +204,9 @@
                 year = this.endYear;
             }
             var guts = this.where(query);
+            if (guts.length < 1) {
+                return null;
+            }
             var summary = {};
             var self = this;
             var exp = self.getChartTotals('Expenditures', query, year);
