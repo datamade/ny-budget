@@ -327,14 +327,18 @@
             index = this.series.index;
             this.select(selected, false);
 
-            $.each(this.series.chart.series, function(i, serie) {
-              if (serie.index !== index) {
-                $(serie.data).each(function(j, point){
-                  if(x === point.x && point.y != null) {
-                    point.select(selected, true);
-                  }
-                });
-              }
+            $.each($('.budget-chart'), function(i, chart){
+              var sel_points = $(chart).highcharts().getSelectedPoints();
+              $.each(sel_points, function(i, point){
+                  point.select(false);
+              });
+              $.each($(chart).highcharts().series, function(i, serie){
+                  $(serie.data).each(function(j, point){
+                    if(x === point.x && point.y != null) {
+                      point.select(selected, true);
+                    }
+                  });
+              });
             });
             var clickedYear = new Date(x).getFullYear();
             var yearIndex = this.series.processedYData.indexOf(y);
@@ -482,14 +486,18 @@
             index = this.series.index;
             this.select(selected, false);
 
-            $.each(this.series.chart.series, function(i, serie) {
-              if (serie.index !== index) {
-                $(serie.data).each(function(j, point){
-                  if(x === point.x && point.y != null) {
-                    point.select(selected, true);
-                  }
-                });
-              }
+            $.each($('.budget-chart'), function(i, chart){
+              var sel_points = $(chart).highcharts().getSelectedPoints();
+              $.each(sel_points, function(i, point){
+                  point.select(false);
+              });
+              $.each($(chart).highcharts().series, function(i, serie){
+                  $(serie.data).each(function(j, point){
+                    if(x === point.x && point.y != null) {
+                      point.select(selected, true);
+                    }
+                  });
+              });
             });
             var clickedYear = new Date(x).getFullYear();
             var yearIndex = this.series.processedYData.indexOf(y);
