@@ -168,6 +168,7 @@
                     self.reset(json);
                     self.hierarchy = {
                         Fund: {child: 'Department', parent: null},
+                        "Control Officer": {child: 'Department', parent: null},
                         Department: {child: 'Expense Line', parent: 'Fund'},
                         "Expense Line": {child: null, parent: 'Department'}
                     }
@@ -247,7 +248,8 @@
                     .replace("&", "")
                     .replace(")", "")
                     .replace("(", "")
-                    .split(' ').join('-');
+                    .split(' ')
+                    .join('-');
             });
             if (typeof summary['expenditures'] !== 'undefined'){
                 return summary
@@ -263,6 +265,10 @@
         // The bulk of the chart options are defined in the budget_highcharts.js file
         // and attached to the window over there. Dunno if that's the best approach but it works
         chartOpts: window.mainChartOpts,
+
+        events: {
+            'click .breakdown-choice': 'breakIt'
+        },
 
         // Render the view when you initialize it.
         initialize: function(){
@@ -365,6 +371,13 @@
             var clickedYear = new Date(x).getFullYear();
             var yearIndex = this.series.processedYData.indexOf(y);
             collection.updateYear(clickedYear, yearIndex);
+        },
+        breakIt: function(e){
+            e.preventDefault();
+            var view = $(e.currentTarget).data('choice');
+            $('.breadkdown-choice').parent().removeClass('.active');
+            $(e.currentTarget).addClass('active');
+            collection.updateTables(view, 'Macoupin County Budget');
         }
     })
 
