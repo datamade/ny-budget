@@ -24,18 +24,24 @@ def add_attrs(reader, curs):
             row[6] = res[1]
         yield row
 
-if __name__ == '__main__':
+def make_db(fname, tblname):
     conn = sqlite3.connect(':memory:')
-    t = Table.from_csv(open('macoupin-descriptions.csv', 'rb'), name="description")
+    t = Table.from_csv(open(fname, 'rb'), name=tblname)
     sql_table = make_table(t)
     create_st = make_create_table_statement(sql_table)
+    print create_st
     insert = sql_table.insert()
     curs = conn.cursor()
     curs.execute(create_st)
     headers = t.headers()
+    print headers
     rows = [dict(zip(headers, row)) for row in t.to_rows()]
     for row in rows:
         curs.execute(str(insert), row)
+    return curs
+
+if __name__ == '__main__':
+    curs = make_db('macoupin-descriptions.csv', 'description')
     outp = open('macoupin-budget-2014-cleaned.csv', 'wb')
     writer = UnicodeCSVWriter(outp)
     with open('macoupin-budget-2014.csv', 'rb') as f:
