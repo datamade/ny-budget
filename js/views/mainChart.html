@@ -13,10 +13,18 @@
 
     <div id="breakdown-nav">
         <ul>
-            <li class="current">
+            <% if (model.get('view') == 'Fund'){ %>
+                <li class="current">
+            <% } else { %>
+                <li>
+            <% } %>
                 <a class="breakdown-choice" href="javascript://" data-choice="Fund">Where's it going?</a>
             </li>
-            <li>
+            <% if (model.get('view') == 'Control Officer'){ %>
+                <li class="current">
+            <% } else { %>
+                <li>
+            <% } %>
                 <a class="breakdown-choice" href="javascript://" data-choice="Control Officer">Who controls it?</a>
             </li>
         </ul>

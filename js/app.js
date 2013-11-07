@@ -85,6 +85,17 @@
             this.breakdownChartData.setRows(year, yearIndex);
         },
         updateTables: function(view, title, filter){
+            // Various cleanup is needed when running this a second time.
+            if(typeof this.mainChartView !== 'undefined'){
+                this.mainChartView.undelegateEvents();
+            }
+            if($('#breakdown-table-body').html() != ''){
+                $('#breakdown-table-body').empty();
+            }
+            if(typeof this.dataTable !== 'undefined'){
+                this.dataTable.fnClearTable();
+                this.dataTable.fnDestroy();
+            }
             var exp = [];
             var approp = [];
             var self = this;
@@ -113,14 +124,11 @@
                 selectedExp: accounting.formatMoney(selExp),
                 selectedApprop: accounting.formatMoney(selApprop),
                 appropChange: appropChange,
-                expChange: expChange
+                expChange: expChange,
+                view: view
             });
             var bd = []
             var chartGuts = this.pluck(view).getUnique();
-            if(typeof this.dataTable !== 'undefined'){
-                this.dataTable.fnClearTable();
-                this.dataTable.fnDestroy();
-            }
             var all_nums = []
             $.each(chartGuts, function(i, name){
                 if (!incomingFilter){
@@ -318,6 +326,9 @@
             return this;
         },
         updateChart: function(data, year){
+            if (typeof this.highChart !== 'undefined'){
+                delete this.highChart;
+            }
             var exp = jQuery.extend(true, [], data.get('expenditures'));
             var approp = jQuery.extend(true, [], data.get('appropriations'));
             var minValuesArray = $.grep(approp.concat(exp),
@@ -344,7 +355,7 @@
                 name: globalOpts.expendTitle
             }];
             this.chartOpts.yAxis.min = Math.min.apply( Math, minValuesArray )
-            new Highcharts.Chart(this.chartOpts);
+            this.highChart = new Highcharts.Chart(this.chartOpts);
         },
         pointClick: function(e){
             $("#readme").fadeOut("fast");
@@ -375,8 +386,6 @@
         breakIt: function(e){
             e.preventDefault();
             var view = $(e.currentTarget).data('choice');
-            $('.breadkdown-choice').parent().removeClass('.active');
-            $(e.currentTarget).addClass('active');
             collection.updateTables(view, 'Macoupin County Budget');
         }
     })
@@ -420,6 +429,9 @@
         },
         details: function(e){
             e.preventDefault();
+            if (typeof this.detailView !== 'undefined'){
+                this.detailView.undelegateEvents();
+            }
             if (this.detailShowing){
                 this.$el.next().remove();
                 this.$el.find('img').attr('src', 'images/expand.png')
@@ -436,6 +448,7 @@
                 filter[parent_type] = this.model.get('parent');
                 var expenditures = [];
                 var appropriations = [];
+                console.log(filter[parent_type]);
                 $.each(collection.getYearRange(), function(i, year){
                     var exp = collection.getChartTotals('Expenditures', filter, year);
                     expenditures.push(collection.reduceTotals(exp));
@@ -444,9 +457,9 @@
                 });
                 this.model.allExpenditures = expenditures;
                 this.model.allAppropriations = appropriations;
-                var detailView = new app.BreakdownDetail({model:this.model});
-                detailView.render().$el.insertAfter(this.$el);
-                detailView.updateChart();
+                this.detailView = new app.BreakdownDetail({model:this.model});
+                this.detailView.render().$el.insertAfter(this.$el);
+                this.detailView.updateChart();
                 this.detailShowing = true;
                 this.$el.find('img').attr('src', 'images/collapse.png')
             }
@@ -491,6 +504,9 @@
         },
 
         updateChart: function(){
+            if (typeof this.highChart !== 'undefined'){
+                delete this.highChart;
+            }
             var data = this.model;
             var minValuesArray = $.grep(data.allAppropriations.concat(data.allExpenditures),
               function(val) { return val != null; });
@@ -523,7 +539,7 @@
             //   this.chartOpts.series[0].data[selectedYearIndex].select(true,true);
             // if (this.chartOpts.series[1].data[selectedYearIndex].y != null)
             //   this.chartOpts.series[1].data[selectedYearIndex].select(true,true);
-            new Highcharts.Chart(this.chartOpts);
+            this.highChart = new Highcharts.Chart(this.chartOpts);
         },
 
         // Handler for the click events on the points on the chart
