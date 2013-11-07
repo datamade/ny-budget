@@ -96,6 +96,10 @@
                 this.dataTable.fnClearTable();
                 this.dataTable.fnDestroy();
             }
+            // Need to orientate the views to a top level
+            if(typeof this.hierarchy[view] !== 'undefined'){
+                this.topLevelView = view
+            }
             var exp = [];
             var approp = [];
             var self = this;
@@ -175,15 +179,38 @@
                     var json = $.csv.toObjects(data);
                     self.reset(json);
                     self.hierarchy = {
-                        Fund: {child: 'Department', parent: null},
-                        "Control Officer": {child: 'Department', parent: null},
-                        Department: {child: 'Expense Line', parent: 'Fund'},
-                        "Expense Line": {child: null, parent: 'Department'}
+                        Fund: ['Fund', 'Department', 'Expense Line'],
+                        "Control Officer": ['Control Officer', 'Department', 'Expense Line']
                     }
                     if (typeof init === 'undefined'){
+                        self.topLevelView = 'Fund';
                         self.updateTables('Fund', 'Macoupin County budget');
                     } else {
-                        self.updateTables(init['bdView'], init['name'], init['filter']);
+                        self.Funds = self.pluck('Fund').getUnique();
+                        self.controlOfficer = self.pluck('Fund').getUnique();
+                        var fundIndex = self.Funds.indexOf(init[0]);
+                        var officerIndex = self.controlOfficer.indexOf(init[0]);
+                        var view = '';
+                        var name = '';
+                        var filter = {}
+                        if(init.length == 1){
+                            name = init[0]
+                            if(self.Funds.indexOf(name) >= 0){
+                                view = 'Fund';
+                            } else {
+                                view = 'Control Officer';
+                            }
+                            filter[view] = name;
+                        } else if (init.length == 2){
+                            name = init[1];
+                            filter['Department'] = name
+                            if(fundIndex >= 0){
+                                filter['Fund'] = self.Funds[fundIndex];
+                            } else {
+                                filter['Control Officer'] = self.controlOfficer[officerIndex];
+                            }
+                        }
+                        self.updateTables(view, name, filter);
                     }
                 }
             );
@@ -246,9 +273,19 @@
                 summary['appropChange'] = appropChange;
                 summary['rowId'] = item.get(view + ' ID');
                 summary['type'] = view
-                summary['child'] = self.hierarchy[view]['child']
-                if(self.hierarchy[view]['parent']){
-                    summary['parent_type'] = self.hierarchy[view]['parent'];
+                var hierarchy = self.hierarchy[self.topLevelView]
+                var ranking = hierarchy.indexOf(view)
+                if (ranking == 0){
+                    summary['child'] = hierarchy[1];
+                    summary['parent_type'] = null;
+                } else if(ranking == 1){
+                    summary['child'] = hierarchy[2];
+                    summary['parent_type'] = hierarchy[0];
+                } else if(ranking == 2) {
+                    summary['child'] = null;
+                    summary['parent_type'] = hierarchy[1];
+                }
+                if(summary['parent_type']){
                     summary['parent'] = self.mainChartData.get('title')
                 }
                 summary['slug'] = item.get(view)
@@ -448,7 +485,6 @@
                 filter[parent_type] = this.model.get('parent');
                 var expenditures = [];
                 var appropriations = [];
-                console.log(filter[parent_type]);
                 $.each(collection.getYearRange(), function(i, year){
                     var exp = collection.getChartTotals('Expenditures', filter, year);
                     expenditures.push(collection.reduceTotals(exp));
@@ -492,7 +528,9 @@
             filter[this.model.get('type')] = this.model.get('rowName')
             var path = this.model.get('slug');
             if (this.model.get('parent')){
-                var parent_type = collection.hierarchy[this.model.get('type')]['parent']
+                var hierarchy = collection.hierarchy[collection.topLevelView]
+                var type_pos = hierarchy.indexOf(this.model.get('type'))
+                var parent_type = hierarchy[type_pos - 1];
                 filter[parent_type] = this.model.get('parent');
                 path = this.model.get('parent').split(' ').join('-') + '/' + this.model.get('slug')
             }
@@ -583,7 +621,7 @@
 
     app.Router = Backbone.Router.extend({
         routes: {
-            "detail/:fundName(/:deptName)": "detailRoute",
+            "detail/:topName(/:secondName)(/:thirdName)": "detailRoute",
             "": "defaultRoute"
         },
         initialize: function(options){
@@ -593,22 +631,17 @@
             $('#secondary-title').text('Fund');
             this.collection.bootstrap();
         },
-        detailRoute: function(fundName, deptName){
-            var init = {}
-            var fund = fundName.split('-').join(' ');
-            if (!deptName){
-                init['mainView'] = 'Fund';
-                init['bdView'] = 'Department';
-                init['name'] = fund;
-                init['filter'] = {'Fund': fund};
-                $('#secondary-title').text('Department');
-            } else {
-                var dept = deptName.split('-').join(' ');
-                init['mainView'] = 'Department';
-                init['bdView'] = 'Expense Line';
-                init['name'] = dept;
-                init['filter'] = {'Fund': fund, 'Department': dept}
-                $('#secondary-title').text('Expense Line');
+        detailRoute: function(topName, secondName, thirdName){
+            var init = []
+            var top = topName.split('-').join(' ');
+            init.push(top);
+            if(secondName){
+                var second = secondName.split('-').join(' ');
+                init.push(second);
+            }
+            if(thirdName){
+                var third = thirdName.split('-').join(' ');
+                init.push(third)
             }
             this.collection.bootstrap(init);
         }
