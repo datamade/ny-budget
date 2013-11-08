@@ -94,6 +94,7 @@ a:hover { text-decoration: underline; }
 #breakdown-nav a { display: block; padding: 0.4em 1em 0.3em; }
 #breakdown-nav li { float: left; }
 #breakdown-nav li.current { background: #264870; color: #fff; padding: 0.4em 1em 0.3em; }
+#breakdown-nav li.current a {  color: #fff; }
 #breakdown-nav ul { list-style: none; margin: 0; }
 
 #department-search { margin: 50px 0 10px 0; }

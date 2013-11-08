@@ -9,7 +9,7 @@
 
         if ( ! template_cache.tmpl_cache[tmpl_name] ) {
             var tmpl_dir = '/js/views';
-            var tmpl_url = tmpl_dir + '/' + tmpl_name + '.html?2';
+            var tmpl_url = tmpl_dir + '/' + tmpl_name + '.html?3';
 
             var tmpl_string;
             $.ajax({
@@ -129,7 +129,7 @@
                 selectedApprop: accounting.formatMoney(selApprop),
                 appropChange: appropChange,
                 expChange: expChange,
-                view: view
+                view: self.topLevelView
             });
             var bd = []
             var chartGuts = this.pluck(view).getUnique();
@@ -186,31 +186,15 @@
                         self.topLevelView = 'Fund';
                         self.updateTables('Fund', 'Macoupin County budget');
                     } else {
-                        self.Funds = self.pluck('Fund').getUnique();
-                        self.controlOfficer = self.pluck('Fund').getUnique();
-                        var fundIndex = self.Funds.indexOf(init[0]);
-                        var officerIndex = self.controlOfficer.indexOf(init[0]);
-                        var view = '';
-                        var name = '';
+                        var topLevelView = init[0];
+                        var name = init[1];
                         var filter = {}
-                        if(init.length == 1){
-                            name = init[0]
-                            if(self.Funds.indexOf(name) >= 0){
-                                view = 'Fund';
-                            } else {
-                                view = 'Control Officer';
-                            }
-                            filter[view] = name;
-                        } else if (init.length == 2){
-                            name = init[1];
-                            filter['Department'] = name
-                            if(fundIndex >= 0){
-                                filter['Fund'] = self.Funds[fundIndex];
-                            } else {
-                                filter['Control Officer'] = self.controlOfficer[officerIndex];
-                            }
+                        filter[topLevelView] = name;
+                        if(init.length > 2){
+                            name = init[2].split('-').join(' ');
+                            filter['Department'] = name;
                         }
-                        self.updateTables(view, name, filter);
+                        self.updateTables(topLevelView, name, filter);
                     }
                 }
             );
@@ -423,6 +407,7 @@
         breakIt: function(e){
             e.preventDefault();
             var view = $(e.currentTarget).data('choice');
+            app_router.navigate('/');
             collection.updateTables(view, 'Macoupin County Budget');
         }
     })
@@ -525,11 +510,12 @@
 
         breakdownNav: function(e){
             var filter = {}
-            filter[this.model.get('type')] = this.model.get('rowName')
+            var topLevelView = this.model.get('type')
+            filter[topLevelView] = this.model.get('rowName')
             var path = this.model.get('slug');
             if (this.model.get('parent')){
                 var hierarchy = collection.hierarchy[collection.topLevelView]
-                var type_pos = hierarchy.indexOf(this.model.get('type'))
+                var type_pos = hierarchy.indexOf(topLevelView)
                 var parent_type = hierarchy[type_pos - 1];
                 filter[parent_type] = this.model.get('parent');
                 path = this.model.get('parent').split(' ').join('-') + '/' + this.model.get('slug')
@@ -537,7 +523,13 @@
             collection.updateTables(this.model.get('child'), this.model.get('rowName'), filter);
             document.title = document.title + ' | ' + this.model.get('rowName');
             $('#secondary-title').text(this.model.get('child'));
-            app_router.navigate('detail/' + path);
+            var pathStart = null;
+            if(topLevelView == 'Fund'){
+                pathStart = 'fund-detail/';
+            } else {
+                pathStart = 'control-officer-detail/';
+            }
+            app_router.navigate(pathStart + path);
             collection.mainChartView.updateCrumbs();
         },
 
@@ -620,8 +612,13 @@
     }
 
     app.Router = Backbone.Router.extend({
+        // Maybe the thing to do here is to construct a separate route for
+        // the two different top level views. So, fund-detail and control-officer-detail
+        // or something. That would require making sure the correct route is
+        // triggered when links are clicked. Not impossible but probably cleaner
         routes: {
-            "detail/:topName(/:secondName)(/:thirdName)": "detailRoute",
+            "fund-detail/:topName(/:secondName)": "fundDetailRoute",
+            "control-officer-detail/:topName(/:secondName)": "controlDetailRoute",
             "": "defaultRoute"
         },
         initialize: function(options){
@@ -631,17 +628,23 @@
             $('#secondary-title').text('Fund');
             this.collection.bootstrap();
         },
-        detailRoute: function(topName, secondName, thirdName){
-            var init = []
+        fundDetailRoute: function(topName, secondName){
+            var init = ['Fund']
             var top = topName.split('-').join(' ');
             init.push(top);
             if(secondName){
                 var second = secondName.split('-').join(' ');
                 init.push(second);
             }
-            if(thirdName){
-                var third = thirdName.split('-').join(' ');
-                init.push(third)
+            this.collection.bootstrap(init);
+        },
+        controlDetailRoute: function(topName, secondName){
+            var init = ['Control Officer']
+            var top = topName.split('-').join(' ');
+            init.push(top);
+            if(secondName){
+                var second = secondName.split('-').join(' ');
+                init.push(second);
             }
             this.collection.bootstrap(init);
         }
