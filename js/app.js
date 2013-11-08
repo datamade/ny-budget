@@ -257,6 +257,7 @@
                 summary['appropChange'] = appropChange;
                 summary['rowId'] = item.get(view + ' ID');
                 summary['type'] = view
+                summary['link'] = item.get('Link to Website');
                 var hierarchy = self.hierarchy[self.topLevelView]
                 var ranking = hierarchy.indexOf(view)
                 if (ranking == 0){

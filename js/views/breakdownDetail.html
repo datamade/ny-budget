@@ -5,6 +5,9 @@
             <p class='expanded-description'>
                 <%= model.get('description') %>
             </p>
+            <% if (model.get('link')){ %>
+            <p><a href="<%= model.get('link') %>" target="_blank">Read more</a></p>
+            <%}%>
             <ul class='stats'>
                 <li>
                   <% if (model.get('child')){ %>
