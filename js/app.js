@@ -84,7 +84,7 @@
             this.mainChartData.setYear(year, yearIndex);
             this.breakdownChartData.setRows(year, yearIndex);
         },
-        updateTables: function(view, title, filter){
+        updateTables: function(view, title, filter, year){
             // Various cleanup is needed when running this a second time.
             if(typeof this.mainChartView !== 'undefined'){
                 this.mainChartView.undelegateEvents();
@@ -99,6 +99,9 @@
             // Need to orientate the views to a top level
             if(typeof this.hierarchy[view] !== 'undefined'){
                 this.topLevelView = view
+            }
+            if (typeof year === 'undefined'){
+                year = this.endYear;
             }
             var exp = [];
             var approp = [];
@@ -123,8 +126,8 @@
                 expenditures: exp,
                 appropriations: approp,
                 title: title,
-                viewYear: self.endYear,
-                prevYear: self.endYear - 1,
+                viewYear: year,
+                prevYear: year - 1,
                 selectedExp: accounting.formatMoney(selExp),
                 selectedApprop: accounting.formatMoney(selApprop),
                 appropChange: appropChange,
@@ -139,7 +142,7 @@
                     filter = {}
                 }
                 filter[view] = name;
-                var summary = self.getSummary(view, filter);
+                var summary = self.getSummary(view, filter, year);
                 if (summary){
                     var row = new app.BreakdownRow(summary);
                     bd.push(row);
@@ -171,7 +174,7 @@
                 "bAutoWidth": false
             });
         },
-        bootstrap: function(init){
+        bootstrap: function(init, year){
             var self = this;
             this.spin('#main-chart', 'large');
             $.when($.get('/data/macoupin-budget-2014-cleaned.csv')).then(
@@ -184,7 +187,10 @@
                     }
                     if (typeof init === 'undefined'){
                         self.topLevelView = 'Fund';
-                        self.updateTables('Fund', 'Macoupin County budget');
+                        if (!year){
+                            year = 2012;
+                        }
+                        self.updateTables('Fund', 'Macoupin County budget', undefined, year);
                     } else {
                         var topLevelView = init[0];
                         var name = init[1];
@@ -194,7 +200,7 @@
                             name = init[2].split('-').join(' ');
                             filter['Department'] = name;
                         }
-                        self.updateTables(topLevelView, name, filter);
+                        self.updateTables(topLevelView, name, filter, year);
                     }
                     self.searchView = new app.SearchView();
                 }
@@ -251,6 +257,7 @@
             guts.forEach(function(item){
                 summary['rowName'] = item.get(view);
                 summary['prevYear'] = year - 1;
+                summary['year'] = year;
                 summary['description'] = item.get(view + ' Description');
                 summary['expenditures'] = self.reduceTotals(exp);
                 summary['appropriations'] = self.reduceTotals(approp);
@@ -279,6 +286,7 @@
                     .replace("&", "")
                     .replace(")", "")
                     .replace("(", "")
+                    .replace("/", "")
                     .split(' ')
                     .join('-');
             });
@@ -322,7 +330,13 @@
         updateCrumbs: function(){
             var links = ['<a href="/">Macoupin County</a>'];
             if(Backbone.history.fragment){
-                var parts = Backbone.history.fragment.split('/');
+                var parts = Backbone.history.fragment;
+                if (parts.indexOf('?') >= 0){
+                    var idx = parts.indexOf('?');
+                    parts = parts.slice(0,idx).split('/')
+                } else {
+                    parts = parts.split('/');
+                }
                 var crumbs = parts.slice(1, parts.length);
                 $.each(crumbs, function(i, crumb){
                     var link = '<a href="#' + parts.slice(0,i+2).join('/') + '">';
@@ -345,7 +359,7 @@
                 expChange: '.expChange',
                 appropChange: '.appropChange'
             });
-            this.updateChart(this.model, this.model.viewYear);
+            this.updateChart(this.model, this.model.get('viewYear'));
             return this;
         },
         updateChart: function(data, year){
@@ -379,6 +393,9 @@
             }];
             this.chartOpts.yAxis.min = Math.min.apply( Math, minValuesArray )
             this.highChart = new Highcharts.Chart(this.chartOpts);
+            var selectedYearIndex = year - collection.startYear;
+            this.highChart.series[0].data[selectedYearIndex].select(true, true);
+            this.highChart.series[1].data[selectedYearIndex].select(true, true);
         },
         pointClick: function(e){
             $("#readme").fadeOut("fast");
@@ -404,6 +421,11 @@
             });
             var clickedYear = new Date(x).getFullYear();
             var yearIndex = this.series.processedYData.indexOf(y);
+            var hash = window.location.hash;
+            if(hash.indexOf('?') >= 0){
+                hash = hash.slice(0, hash.indexOf('?'));
+            }
+            app_router.navigate(hash + '?year=' + clickedYear);
             collection.updateYear(clickedYear, yearIndex);
         },
         breakIt: function(e){
@@ -522,7 +544,7 @@
                 filter[parent_type] = this.model.get('parent');
                 path = this.model.get('parent').split(' ').join('-') + '/' + this.model.get('slug')
             }
-            collection.updateTables(this.model.get('child'), this.model.get('rowName'), filter);
+            collection.updateTables(this.model.get('child'), this.model.get('rowName'), filter, this.model.get('year'));
             document.title = document.title + ' | ' + this.model.get('rowName');
             $('#secondary-title').text(this.model.get('child'));
             var pathStart = null;
@@ -533,8 +555,8 @@
             }
             $('html, body').animate({
                 scrollTop: $('#breadcrumbs').offset().top
-            })
-            app_router.navigate(pathStart + path);
+            });
+            app_router.navigate(pathStart + path + '?year=' + this.model.get('year'));
             collection.mainChartView.updateCrumbs();
         },
 
@@ -569,12 +591,10 @@
                 name: globalOpts.expendTitle
               }]
             // select current year
-            // var selectedYearIndex = 2012 - collection.startYear;
-            // if (this.chartOpts.series[0].data[selectedYearIndex].y != null)
-            //   this.chartOpts.series[0].data[selectedYearIndex].select(true,true);
-            // if (this.chartOpts.series[1].data[selectedYearIndex].y != null)
-            //   this.chartOpts.series[1].data[selectedYearIndex].select(true,true);
+            var selectedYearIndex = this.model.get('year') - collection.startYear;
             this.highChart = new Highcharts.Chart(this.chartOpts);
+            this.highChart.series[0].data[selectedYearIndex].select(true, true);
+            this.highChart.series[1].data[selectedYearIndex].select(true, true);
         },
 
         // Handler for the click events on the points on the chart
@@ -602,6 +622,11 @@
             });
             var clickedYear = new Date(x).getFullYear();
             var yearIndex = this.series.processedYData.indexOf(y);
+            var hash = window.location.hash;
+            if(hash.indexOf('?') >= 0){
+                hash = hash.slice(0, hash.indexOf('?'));
+            }
+            app_router.navigate(hash + '?year=' + clickedYear);
             collection.updateYear(clickedYear, yearIndex);
         }
     });
@@ -647,21 +672,25 @@
         // or something. That would require making sure the correct route is
         // triggered when links are clicked. Not impossible but probably cleaner
         routes: {
-            "fund-detail/:topName(/:secondName)": "fundDetailRoute",
-            "control-officer-detail/:topName(/:secondName)": "controlDetailRoute",
-            "": "defaultRoute"
+            "fund-detail/:topName(/:secondName)(?year=:year)": "fundDetailRoute",
+            "control-officer-detail/:topName(/:secondName)(?year=:year)": "controlDetailRoute",
+            "(?year=:year)": "defaultRoute"
         },
         initialize: function(options){
             this.collection = options.collection;
         },
-        defaultRoute: function(actions){
+        defaultRoute: function(year){
             $('#secondary-title').text('Fund');
-            this.collection.bootstrap();
+            var init = undefined;
+            this.collection.bootstrap(init, year);
         },
         fundDetailRoute: function(topName, secondName){
             var init = ['Fund']
             var top = topName.split('-').join(' ');
             init.push(top);
+            if (typeof year === 'undefined'){
+                year = 2012
+            }
             if(secondName){
                 var second = secondName.split('-').join(' ');
                 init.push(second);
@@ -675,6 +704,9 @@
             if(secondName){
                 var second = secondName.split('-').join(' ');
                 init.push(second);
+            }
+            if (typeof year === 'undefined'){
+                year = 2012
             }
             this.collection.bootstrap(init);
         }
