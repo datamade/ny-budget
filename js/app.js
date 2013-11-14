@@ -531,6 +531,9 @@
             } else {
                 pathStart = 'control-officer-detail/';
             }
+            $('html, body').animate({
+                scrollTop: $('#breadcrumbs').offset().top
+            })
             app_router.navigate(pathStart + path);
             collection.mainChartView.updateCrumbs();
         },
