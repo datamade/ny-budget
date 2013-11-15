@@ -1,3 +1,5 @@
+<% var exp = accounting.unformat(model.get('expenditures')) %>
+<% var app = accounting.unformat(model.get('appropriations')) %>
 <td>
     <a href="javascript://" class="details">
         <img class='budget-expand-img' src='images/expand.png' />
@@ -10,8 +12,6 @@
 <td>
     <div class="bars">
         <% var max = model.get('maxNum') %>
-        <% var exp = accounting.unformat(model.get('expenditures')) %>
-        <% var app = accounting.unformat(model.get('appropriations')) %>
         <span class="budgeted outer" style="width: <%= parseFloat((app / max) * 100) %>%;"></span>
         <span class="spent inner" style="width: <%= parseFloat((exp / max) * 100) %>%;"></span>
     </div>

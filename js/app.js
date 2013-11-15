@@ -99,6 +99,8 @@
             // Need to orientate the views to a top level
             if(typeof this.hierarchy[view] !== 'undefined'){
                 this.topLevelView = view
+            } else {
+                this.bdView = view;
             }
             if (typeof year === 'undefined'){
                 year = this.endYear;
@@ -112,15 +114,17 @@
                 values = _.where(this.toJSON(), filter);
                 incomingFilter = true;
             }
-            $.each(this.getYearRange(), function(i, year){
+            var yearRange = this.getYearRange()
+            $.each(yearRange, function(i, year){
                 exp.push(self.getTotals(values, 'Expenditures', year));
                 approp.push(self.getTotals(values, 'Appropriations', year));
             });
-            var selExp = exp[exp.length - 1];
-            var prevExp = exp[exp.length - 2];
+            var yearIndex = yearRange.indexOf(parseInt(year))
+            var selExp = exp[yearIndex];
+            var prevExp = exp[yearIndex - 1];
             var expChange = calc_change(selExp, prevExp);
-            var selApprop = approp[approp.length - 1];
-            var prevApprop = approp[approp.length - 2];
+            var selApprop = approp[yearIndex];
+            var prevApprop = approp[yearIndex - 1];
             var appropChange = calc_change(selApprop, prevApprop);
             this.mainChartData = new app.MainChartModel({
                 expenditures: exp,
@@ -192,15 +196,20 @@
                         }
                         self.updateTables('Fund', 'Macoupin County budget', undefined, year);
                     } else {
-                        var topLevelView = init[0];
+                        self.topLevelView = init[0];
+                        var typeView = init[0];
                         var name = init[1];
                         var filter = {}
-                        filter[topLevelView] = name;
+                        filter[init[0]] = name;
+                        if (init.length == 2){
+                            typeView = 'Department';
+                        }
                         if(init.length > 2){
                             name = init[2].split('-').join(' ');
+                            typeView = 'Expense Line';
                             filter['Department'] = name;
                         }
-                        self.updateTables(topLevelView, name, filter, year);
+                        self.updateTables(typeView, name, filter, year);
                     }
                     self.searchView = new app.SearchView();
                 }
@@ -287,6 +296,7 @@
                     .replace(")", "")
                     .replace("(", "")
                     .replace("/", "")
+                    .replace(" - ", "-")
                     .split(' ')
                     .join('-');
             });
@@ -449,6 +459,16 @@
             var self = this;
             this.model.on('change', function(model){
                 var sel = '#' + model.get('slug') + '-selected-chart';
+                var exp = accounting.unformat(model.get('expenditures'));
+                var app = accounting.unformat(model.get('appropriations'));
+                if((exp + app) == 0){
+                    $(self.el).hide();
+                    if($(self.el).next().is(':visible')){
+                        $(self.el).next().hide();
+                    }
+                } else {
+                    $(self.el).show();
+                }
                 if(!model.get('appropChange')){
                     $(sel).parent().find('.sparkline-budgeted').hide();
                 } else {
@@ -534,12 +554,12 @@
 
         breakdownNav: function(e){
             var filter = {}
-            var topLevelView = this.model.get('type')
-            filter[topLevelView] = this.model.get('rowName')
+            var typeView = this.model.get('type');
+            filter[typeView] = this.model.get('rowName')
             var path = this.model.get('slug');
             if (this.model.get('parent')){
                 var hierarchy = collection.hierarchy[collection.topLevelView]
-                var type_pos = hierarchy.indexOf(topLevelView)
+                var type_pos = hierarchy.indexOf(typeView)
                 var parent_type = hierarchy[type_pos - 1];
                 filter[parent_type] = this.model.get('parent');
                 path = this.model.get('parent').split(' ').join('-') + '/' + this.model.get('slug')
@@ -548,7 +568,7 @@
             document.title = document.title + ' | ' + this.model.get('rowName');
             $('#secondary-title').text(this.model.get('child'));
             var pathStart = null;
-            if(topLevelView == 'Fund'){
+            if(collection.topLevelView == 'Fund'){
                 pathStart = 'fund-detail/';
             } else {
                 pathStart = 'control-officer-detail/';
@@ -672,8 +692,8 @@
         // or something. That would require making sure the correct route is
         // triggered when links are clicked. Not impossible but probably cleaner
         routes: {
-            "fund-detail/:topName(/:secondName)(?year=:year)": "fundDetailRoute",
-            "control-officer-detail/:topName(/:secondName)(?year=:year)": "controlDetailRoute",
+            "fund-detail/:topName(/:secondName)": "fundDetailRoute",
+            "control-officer-detail/:topName(/:secondName)": "controlDetailRoute",
             "(?year=:year)": "defaultRoute"
         },
         initialize: function(options){
@@ -685,30 +705,37 @@
             this.collection.bootstrap(init, year);
         },
         fundDetailRoute: function(topName, secondName){
-            var init = ['Fund']
-            var top = topName.split('-').join(' ');
-            init.push(top);
-            if (typeof year === 'undefined'){
-                year = 2012
-            }
-            if(secondName){
-                var second = secondName.split('-').join(' ');
-                init.push(second);
-            }
-            this.collection.bootstrap(init);
+            var initYear = this.getInitYear('Fund', topName, secondName);
+            var init = initYear[0];
+            var year = initYear[1];
+            this.collection.bootstrap(init, year);
         },
         controlDetailRoute: function(topName, secondName){
-            var init = ['Control Officer']
+            var initYear = this.getInitYear('Control Officer', topName, secondName);
+            var init = initYear[0];
+            var year = initYear[1];
+            this.collection.bootstrap(init, year);
+        },
+        getInitYear: function(view, topName, secondName){
+            var init = [view];
             var top = topName.split('-').join(' ');
+            var idx = topName.indexOf('?');
+            var year = undefined;
+            if (idx >= 0){
+                top = topName.slice(0, idx).split('-').join(' ');
+                year = topName.slice(idx+1, topName.length).replace('year=', '');
+            }
             init.push(top);
             if(secondName){
                 var second = secondName.split('-').join(' ');
+                var idx = secondName.indexOf('?');
+                if (idx >= 0){
+                    second = secondName.slice(0, idx).split('-').join(' ');
+                    year = secondName.slice(idx+1, secondName.length).replace('year=', '');
+                }
                 init.push(second);
             }
-            if (typeof year === 'undefined'){
-                year = 2012
-            }
-            this.collection.bootstrap(init);
+            return [init, year]
         }
     });
     var collection = new app.BudgetColl();
