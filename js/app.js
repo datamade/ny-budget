@@ -43,6 +43,13 @@
         return change
     }
 
+    function slugify(text){
+        return text
+            .toLowerCase()
+            .replace(/[^\w ]+/g,'')
+            .replace(/ +/g, '-');
+    }
+
     app.MainChartModel = Backbone.Model.extend({
         setYear: function(year, index){
             var exp = this.get('expenditures');
@@ -184,7 +191,14 @@
             $.when($.get('/data/macoupin-budget-2014-cleaned.csv')).then(
                 function(data){
                     var json = $.csv.toObjects(data);
-                    self.reset(json);
+                    var loadit = []
+                    $.each(json, function(i, j){
+                        j['Fund Slug'] = slugify(j['Fund']);
+                        j['Department Slug'] = slugify(j['Department']);
+                        j['Expense Line Slug'] = slugify(j['Expense Line']);
+                        loadit.push(j)
+                    });
+                    self.reset(loadit);
                     self.hierarchy = {
                         Fund: ['Fund', 'Department', 'Expense Line'],
                         "Control Officer": ['Control Officer', 'Department', 'Expense Line']
@@ -194,22 +208,25 @@
                         if (!year){
                             year = 2012;
                         }
-                        self.updateTables('Fund', 'Macoupin County budget', undefined, year);
+                        self.updateTables('Fund', 'Macoupin County Budget', undefined, year);
                     } else {
                         self.topLevelView = init[0];
-                        var typeView = init[0];
+                        var lowerView = init[0];
                         var name = init[1];
                         var filter = {}
-                        filter[init[0]] = name;
+                        var key = init[0] + ' Slug'
+                        filter[key] = name;
+                        var title = self.findWhere(filter).get(init[0])
                         if (init.length == 2){
-                            typeView = 'Department';
+                            lowerView = 'Department';
                         }
                         if(init.length > 2){
-                            name = init[2].split('-').join(' ');
-                            typeView = 'Expense Line';
-                            filter['Department'] = name;
+                            name = init[2];
+                            lowerView = 'Expense Line';
+                            filter['Department Slug'] = name;
+                            title = self.findWhere(filter).get('Department');
                         }
-                        self.updateTables(typeView, name, filter, year);
+                        self.updateTables(lowerView, title, filter, year);
                     }
                     self.searchView = new app.SearchView();
                 }
@@ -290,15 +307,7 @@
                 if(summary['parent_type']){
                     summary['parent'] = self.mainChartData.get('title')
                 }
-                summary['slug'] = item.get(view)
-                    .replace("'", "")
-                    .replace("&", "")
-                    .replace(")", "")
-                    .replace("(", "")
-                    .replace("/", "")
-                    .replace(" - ", "-")
-                    .split(' ')
-                    .join('-');
+                summary['slug'] = item.get(view + ' Slug');
             });
             if (typeof summary['expenditures'] !== 'undefined'){
                 return summary
@@ -348,9 +357,23 @@
                     parts = parts.split('/');
                 }
                 var crumbs = parts.slice(1, parts.length);
+                var topView = collection.topLevelView;
+                var query = {}
                 $.each(crumbs, function(i, crumb){
                     var link = '<a href="#' + parts.slice(0,i+2).join('/') + '">';
-                    link += crumb.split('-').join(' ');
+                    if(i==0){
+                        var key = topView + ' Slug';
+                        query[key] = crumb;
+                        link += collection.findWhere(query).get(topView);
+                    }
+                    if(i==1){
+                        query['Department Slug'] = crumb;
+                        link += collection.findWhere(query).get('Department');
+                    }
+                    if(i==2){
+                        query['Expense Line Slug'] = crumb;
+                        link += collection.findWhere(query).get('Expense Line');
+                    }
                     link += '</a>';
                     links.push(link);
                 });
@@ -514,6 +537,7 @@
                 filter[parent_type] = this.model.get('parent');
                 var expenditures = [];
                 var appropriations = [];
+                console.log(filter);
                 $.each(collection.getYearRange(), function(i, year){
                     var exp = collection.getChartTotals('Expenditures', filter, year);
                     expenditures.push(collection.reduceTotals(exp));
@@ -562,7 +586,7 @@
                 var type_pos = hierarchy.indexOf(typeView)
                 var parent_type = hierarchy[type_pos - 1];
                 filter[parent_type] = this.model.get('parent');
-                path = this.model.get('parent').split(' ').join('-') + '/' + this.model.get('slug')
+                path = slugify(this.model.get('parent')) + '/' + this.model.get('slug')
             }
             collection.updateTables(this.model.get('child'), this.model.get('rowName'), filter, this.model.get('year'));
             document.title = document.title + ' | ' + this.model.get('rowName');
@@ -718,19 +742,19 @@
         },
         getInitYear: function(view, topName, secondName){
             var init = [view];
-            var top = topName.split('-').join(' ');
+            var top = topName;
             var idx = topName.indexOf('?');
             var year = undefined;
             if (idx >= 0){
-                top = topName.slice(0, idx).split('-').join(' ');
+                top = topName.slice(0, idx);
                 year = topName.slice(idx+1, topName.length).replace('year=', '');
             }
             init.push(top);
             if(secondName){
-                var second = secondName.split('-').join(' ');
+                var second = secondName;
                 var idx = secondName.indexOf('?');
                 if (idx >= 0){
-                    second = secondName.slice(0, idx).split('-').join(' ');
+                    second = secondName.slice(0, idx);
                     year = secondName.slice(idx+1, secondName.length).replace('year=', '');
                 }
                 init.push(second);
