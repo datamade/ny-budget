@@ -208,7 +208,7 @@
                     if (typeof init === 'undefined'){
                         self.topLevelView = 'Fund';
                         if (!year){
-                            year = 2014;
+                            year = 2013;
                         }
                         self.updateTables('Fund', 'Macoupin County Budget', undefined, year);
                     } else {
