@@ -41,10 +41,10 @@ def make_db(fname, tblname):
     return curs
 
 if __name__ == '__main__':
-    curs = make_db('macoupin-descriptions.csv', 'description')
-    outp = open('macoupin-budget-2014-cleaned.csv', 'wb')
+    curs = make_db('macoupin-budget-update/moucoupin-budget-department-desc.csv', 'description')
+    outp = open('macoupin-budget-update/macoupin-budget-2014-update.csv', 'wb')
     writer = UnicodeCSVWriter(outp)
-    with open('macoupin-budget-2014.csv', 'rb') as f:
+    with open('macoupin-budget-update/macoupin-budget.csv', 'rb') as f:
         reader = UnicodeCSVReader(f)
         headers = reader.next()
         headers.insert(1, 'Fund ID')

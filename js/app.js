@@ -86,7 +86,8 @@
 
     app.BudgetColl = Backbone.Collection.extend({
         startYear: 1995,
-        endYear: 2012,
+        endYear: 2014,
+        activeYear: 2013,
         updateYear: function(year, yearIndex){
             this.mainChartData.setYear(year, yearIndex);
             this.breakdownChartData.setRows(year, yearIndex);
@@ -110,7 +111,7 @@
                 this.bdView = view;
             }
             if (typeof year === 'undefined'){
-                year = this.endYear;
+                year = this.activeYear;
             }
             var exp = [];
             var approp = [];
@@ -188,7 +189,7 @@
         bootstrap: function(init, year){
             var self = this;
             this.spin('#main-chart', 'large');
-            $.when($.get('/data/macoupin-budget-2014-cleaned.csv')).then(
+            $.when($.get('/data/macoupin-budget_1997-2014.csv')).then(
                 function(data){
                     var json = $.csv.toObjects(data);
                     var loadit = []
@@ -196,6 +197,7 @@
                         j['Fund Slug'] = slugify(j['Fund']);
                         j['Department Slug'] = slugify(j['Department']);
                         j['Expense Line Slug'] = slugify(j['Expense Line']);
+                        j['Control Officer Slug'] = slugify(j['Control Officer']);
                         loadit.push(j)
                     });
                     self.reset(loadit);
@@ -206,7 +208,7 @@
                     if (typeof init === 'undefined'){
                         self.topLevelView = 'Fund';
                         if (!year){
-                            year = 2012;
+                            year = 2014;
                         }
                         self.updateTables('Fund', 'Macoupin County Budget', undefined, year);
                     } else {
@@ -265,7 +267,7 @@
         },
         getSummary: function(view, query, year){
             if (typeof year === 'undefined'){
-                year = this.endYear;
+                year = this.activeYear;
             }
             var guts = this.where(query);
             if (guts.length < 1) {
@@ -534,10 +536,11 @@
                 var type = this.model.get('type');
                 filter[type] = this.model.get('rowName');
                 var parent_type = this.model.get('parent_type');
-                filter[parent_type] = this.model.get('parent');
+                if(parent_type){
+                    filter[parent_type] = this.model.get('parent');
+                }
                 var expenditures = [];
                 var appropriations = [];
-                console.log(filter);
                 $.each(collection.getYearRange(), function(i, year){
                     var exp = collection.getChartTotals('Expenditures', filter, year);
                     expenditures.push(collection.reduceTotals(exp));
