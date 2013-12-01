@@ -74,7 +74,7 @@
     app.BreakdownColl = Backbone.Collection.extend({
         setRows: function(year, index){
             var self = this;
-            this.models.forEach(function(row){
+            $.each(this.models, function(i, row){
                 var query = {}
                 query[row.get('type')] = row.get('rowName')
                 var summ = collection.getSummary(row.get('type'), query, year)
@@ -244,7 +244,7 @@
         },
         reduceTotals: function(totals){
             var total = [];
-            totals.forEach(function(item){
+            $.each(totals, function(i, item){
                 total.push(accounting.unformat(item));
             });
             return total.reduce(function(a,b){return a + b});
@@ -260,7 +260,7 @@
             var totals = [];
             var rows = this.where(query);
             var self = this;
-            rows.forEach(function(row){
+            $.each(rows, function(i, row){
                 totals.push(accounting.unformat(row.get(category + ' ' + year)));
             });
             return totals;
@@ -282,7 +282,7 @@
             var expChange = calc_change(self.reduceTotals(exp), self.reduceTotals(prevExp));
             var appropChange = calc_change(self.reduceTotals(approp), self.reduceTotals(prevApprop));
             var self = this;
-            guts.forEach(function(item){
+            $.each(guts, function(i, item){
                 summary['rowName'] = item.get(view);
                 summary['prevYear'] = year - 1;
                 summary['year'] = year;
