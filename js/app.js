@@ -710,7 +710,7 @@
         apropTitle:   'Appropriations',
         expendColor:  '#405c7d',
         expendSybmol: 'square',
-        expendTitle:  'Expenditures',
+        expendTitle:  'Expenditures'
     }
 
     app.Router = Backbone.Router.extend({
