@@ -70,7 +70,7 @@ window.sparkLineOpts =  {
         chart: {
           defaultSeriesType: "area",
           marginBottom: 15,
-          marginRight: 0,
+          marginRight: 0
         },
         legend: { enabled: false },
         credits: { enabled: false },

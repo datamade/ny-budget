@@ -555,7 +555,7 @@
                 this.detailShowing = true;
                 this.$el.find('img').attr('src', 'images/collapse.png')
             }
-        },
+        }
     })
 
     app.BreakdownDetail = Backbone.View.extend({
