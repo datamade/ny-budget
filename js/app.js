@@ -9,7 +9,7 @@
 
         if ( ! template_cache.tmpl_cache[tmpl_name] ) {
             var tmpl_dir = '/js/views';
-            var tmpl_url = tmpl_dir + '/' + tmpl_name + '.html?3';
+            var tmpl_url = tmpl_dir + '/' + tmpl_name + '.html?4';
 
             var tmpl_string;
             $.ajax({
@@ -80,6 +80,17 @@
                 var summ = collection.getSummary(row.get('type'), query, year)
                 row.set(summ);
                 row.yearIndex = index;
+            });
+            var max_app = _.max(this.models, function(obj){return obj.get('appropriations')});
+            var max_exp = _.max(this.models, function(obj){return obj.get('expenditures')});
+            var maxes = [max_app.get('appropriations'), max_exp.get('expenditures')];
+            this.maxNum = maxes.sort(function(a,b){return b-a})[0];
+            $.each(this.models, function(i, row){
+                var exps = accounting.unformat(row.get('expenditures'));
+                var apps = accounting.unformat(row.get('appropriations'));
+                var exp_perc = parseFloat((exps/self.maxNum) * 100) + '%';
+                var app_perc = parseFloat((apps/self.maxNum) * 100) + '%';
+                row.set({app_perc:app_perc, exp_perc:exp_perc});
             });
         }
     });
@@ -164,8 +175,14 @@
             });
             var maxNum = all_nums.sort(function(a,b){return b-a})[0];
             this.breakdownChartData = new app.BreakdownColl(bd);
+            this.breakdownChartData.maxNum = maxNum;
             this.breakdownChartData.forEach(function(row){
-                var rowView = new app.BreakdownSummary({model:row, attributes: {maxNum: maxNum}});
+                var exps = accounting.unformat(row.get('expenditures'));
+                var apps = accounting.unformat(row.get('appropriations'));
+                var exp_perc = parseFloat((exps/maxNum) * 100) + '%';
+                var app_perc = parseFloat((apps/maxNum) * 100) + '%';
+                row.set({app_perc:app_perc, exp_perc:exp_perc});
+                var rowView = new app.BreakdownSummary({model:row});
                 $('#breakdown-table-body').append(rowView.render().el);
             });
             this.mainChartView = new app.MainChartView({
@@ -462,6 +479,10 @@
             }
             app_router.navigate(hash + '?year=' + clickedYear);
             collection.updateYear(clickedYear, yearIndex);
+            $.each($('.bars').children(), function(i, bar){
+                var width = $(bar).text();
+                $(bar).css('width', width);
+            });
         },
         breakIt: function(e){
             e.preventDefault();
@@ -485,8 +506,8 @@
             this.model.on('change', function(model){
                 var sel = '#' + model.get('slug') + '-selected-chart';
                 var exp = accounting.unformat(model.get('expenditures'));
-                var app = accounting.unformat(model.get('appropriations'));
-                if((exp + app) == 0){
+                var approp = accounting.unformat(model.get('appropriations'));
+                if((exp + approp) == 0){
                     $(self.el).hide();
                     if($(self.el).next().is(':visible')){
                         $(self.el).next().hide();
@@ -507,11 +528,12 @@
             });
         },
         render: function(){
-            this.model.set({maxNum: this.attributes.maxNum})
             this.$el.html(template_cache('breakdownSummary', {model:this.model}));
             this._modelBinder.bind(this.model, this.el, {
                 expenditures: {selector: '[name="expenditures"]', converter: this.moneyChanger},
-                appropriations: {selector: '[name="appropriations"]', converter: this.moneyChanger}
+                appropriations: {selector: '[name="appropriations"]', converter: this.moneyChanger},
+                app_perc: {selector: '[name=app_perc]'},
+                exp_perc: {selector: '[name=exp_perc]'}
             });
             return this;
         },
@@ -675,6 +697,10 @@
             }
             app_router.navigate(hash + '?year=' + clickedYear);
             collection.updateYear(clickedYear, yearIndex);
+            $.each($('.bars').children(), function(i, bar){
+                var width = $(bar).text();
+                $(bar).css('width', width);
+            });
         }
     });
 
