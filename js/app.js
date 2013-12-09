@@ -247,7 +247,7 @@
                         }
                         self.updateTables(lowerView, title, filter, year);
                     }
-                    self.searchView = new app.SearchView();
+                    // self.searchView = new app.SearchView();
                 }
             );
         },
