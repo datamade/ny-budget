@@ -86,8 +86,8 @@
             var maxes = [max_app.get('appropriations'), max_exp.get('expenditures')];
             this.maxNum = maxes.sort(function(a,b){return b-a})[0];
             $.each(this.models, function(i, row){
-                var exps = accounting.unformat(row.get('expenditures'));
-                var apps = accounting.unformat(row.get('appropriations'));
+                var exps = row.get('expenditures');
+                var apps = row.get('appropriations');
                 var exp_perc = parseFloat((exps/self.maxNum) * 100) + '%';
                 var app_perc = parseFloat((apps/self.maxNum) * 100) + '%';
                 row.set({app_perc:app_perc, exp_perc:exp_perc});
@@ -102,6 +102,8 @@
         updateYear: function(year, yearIndex){
             this.mainChartData.setYear(year, yearIndex);
             this.breakdownChartData.setRows(year, yearIndex);
+            this.dataTable.fnDestroy();
+            this.initDataTable();
         },
         updateTables: function(view, title, filter, year){
             // Various cleanup is needed when running this a second time.
@@ -188,6 +190,9 @@
             this.mainChartView = new app.MainChartView({
                 model: self.mainChartData
             });
+            this.initDataTable();
+        },
+        initDataTable: function(){
             this.dataTable = $("#breakdown").dataTable({
                 "aaSorting": [[1, "desc"]],
                 "aoColumns": [
