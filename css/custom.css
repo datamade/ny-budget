@@ -7,7 +7,7 @@ h1, h2, h3, h4, h5, h6 { color: #0b3059; }
 a { color: #92021a; text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-#logo { padding: 10px 0 10px 0; }
+#logo, #credit { padding: 10px 0 10px 0; }
 #header, #footer { color: #b1c6df; }
 #header a, #footer a { color: #c8ced5; }
 #header h1 a, #footer h1 a { color: #fff; }
