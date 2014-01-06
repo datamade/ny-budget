@@ -206,7 +206,7 @@
         bootstrap: function(init, year){
             var self = this;
             this.spin('#main-chart', 'large');
-            $.when($.get('/data/macoupin-budget_1997-2014-cleaned.csv')).then(
+            $.when($.get('/data/macoupin-budget_1997-2014.csv')).then(
                 function(data){
                     var json = $.csv.toObjects(data);
                     var loadit = []
