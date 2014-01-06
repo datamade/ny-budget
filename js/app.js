@@ -206,7 +206,7 @@
         bootstrap: function(init, year){
             var self = this;
             this.spin('#main-chart', 'large');
-            $.when($.get('/data/macoupin-budget_1997-2014.csv')).then(
+            $.when($.get('/data/macoupin-budget_1997-2014-cleaned.csv')).then(
                 function(data){
                     var json = $.csv.toObjects(data);
                     var loadit = []
@@ -260,11 +260,15 @@
             return Number.range(this.startYear, this.endYear + 1);
         },
         reduceTotals: function(totals){
-            var total = [];
-            $.each(totals, function(i, item){
-                total.push(accounting.unformat(item));
+          //var total = [];
+          //$.each(totals, function(i, item){
+          //    total.push(accounting.unformat(item));
+          //});
+            return totals.reduce(function(a,b){
+              var int_a = parseFloat(a);
+              var int_b = parseFloat(b);
+              return int_a + int_b;
             });
-            return total.reduce(function(a,b){return a + b});
         },
 
         // Returns a total for a given category and year
@@ -273,12 +277,12 @@
             var all = _.pluck(values, category + ' ' + year);
             return this.reduceTotals(all);
         },
-        getChartTotals: function(category, query, year){
+        getChartTotals: function(category, rows, year){
             var totals = [];
-            var rows = this.where(query);
-            var self = this;
             $.each(rows, function(i, row){
-                totals.push(accounting.unformat(row.get(category + ' ' + year)));
+                var attr = category + ' ' + year
+                var val = row.get(attr);
+                totals.push(val);
             });
             return totals;
         },
@@ -292,10 +296,10 @@
             }
             var summary = {};
             var self = this;
-            var exp = self.getChartTotals('Expenditures', query, year);
-            var approp = self.getChartTotals('Appropriations', query, year);
-            var prevExp = self.getChartTotals('Expenditures', query, year - 1);
-            var prevApprop = self.getChartTotals('Appropriations', query, year - 1);
+            var exp = self.getChartTotals('Expenditures', guts, year);
+            var approp = self.getChartTotals('Appropriations', guts, year);
+            var prevExp = self.getChartTotals('Expenditures', guts, year - 1);
+            var prevApprop = self.getChartTotals('Appropriations', guts, year - 1);
             var expChange = calc_change(self.reduceTotals(exp), self.reduceTotals(prevExp));
             var appropChange = calc_change(self.reduceTotals(approp), self.reduceTotals(prevApprop));
             var self = this;
@@ -418,8 +422,22 @@
             if (typeof this.highChart !== 'undefined'){
                 delete this.highChart;
             }
-            var exp = jQuery.extend(true, [], data.get('expenditures'));
-            var approp = jQuery.extend(true, [], data.get('appropriations'));
+            var exps = jQuery.extend(true, [], data.get('expenditures'));
+            var approps = jQuery.extend(true, [], data.get('appropriations'));
+            var exp = [];
+            var approp = [];
+            $.each(exps, function(i, e){
+                if (e === 0 || isNaN(e)){
+                    e = null;
+                }
+                exp.push(e);
+            })
+            $.each(approps, function(i, e){
+                if (e === 0 || isNaN(e)){
+                    e = null;
+                }
+                approp.push(e);
+            });
             var minValuesArray = $.grep(approp.concat(exp),
               function(val) { return val != null; });
             var globalOpts = app.GlobalChartOpts;
@@ -444,10 +462,11 @@
                 name: globalOpts.expendTitle
             }];
             this.chartOpts.yAxis.min = Math.min.apply( Math, minValuesArray )
-            this.highChart = new Highcharts.Chart(this.chartOpts);
             var selectedYearIndex = year - collection.startYear;
-            this.highChart.series[0].data[selectedYearIndex].select(true, true);
-            this.highChart.series[1].data[selectedYearIndex].select(true, true);
+            this.highChart = new Highcharts.Chart(this.chartOpts, function(){
+                this.series[0].data[selectedYearIndex].select(true, true);
+                this.series[1].data[selectedYearIndex].select(true, true);
+            });
         },
         pointClick: function(e){
             $("#readme").fadeOut("fast");
@@ -553,8 +572,8 @@
                 var row = $(e.currentTarget).parent().parent();
                 $.each(row.parent().find('img'), function(i,img){
                     $(img).attr('src', 'images/expand.png');
-                })
-                var filter = {}
+                });
+                var filter = {};
                 var type = this.model.get('type');
                 filter[type] = this.model.get('rowName');
                 var parent_type = this.model.get('parent_type');
@@ -564,9 +583,11 @@
                 var expenditures = [];
                 var appropriations = [];
                 $.each(collection.getYearRange(), function(i, year){
-                    var exp = collection.getChartTotals('Expenditures', filter, year);
+                    var exps = collection.where(filter)
+                    var exp = collection.getChartTotals('Expenditures', exps, year);
                     expenditures.push(collection.reduceTotals(exp));
-                    var approp = collection.getChartTotals('Appropriations', filter, year);
+                    var apps = collection.where(filter);
+                    var approp = collection.getChartTotals('Appropriations', apps, year);
                     appropriations.push(collection.reduceTotals(approp));
                 });
                 this.model.allExpenditures = expenditures;
@@ -634,7 +655,21 @@
                 delete this.highChart;
             }
             var data = this.model;
-            var minValuesArray = $.grep(data.allAppropriations.concat(data.allExpenditures),
+            var exp = [];
+            var approp = [];
+            $.each(data.allExpenditures, function(i, e){
+                if (e === 0 || isNaN(e)){
+                    e = null;
+                }
+                exp.push(e);
+            })
+            $.each(data.allAppropriations, function(i, e){
+                if (e === 0 || isNaN(e)){
+                    e = null;
+                }
+                approp.push(e);
+            });
+            var minValuesArray = $.grep(approp.concat(exp),
               function(val) { return val != null; });
             var globalOpts = app.GlobalChartOpts;
             this.chartOpts.chart.renderTo = data.get('slug') + "-selected-chart";
@@ -644,7 +679,7 @@
             this.chartOpts.plotOptions.series.point.events.click = this.pointClick;
             this.chartOpts.series = [{
                 color: globalOpts.apropColor,
-                data: data.allAppropriations,
+                data: approp,
                 marker: {
                   radius: 4,
                   symbol: globalOpts.apropSymbol
@@ -652,7 +687,7 @@
                 name: globalOpts.apropTitle
               }, {
                 color: globalOpts.expendColor,
-                data: data.allExpenditures,
+                data: exp,
                 marker: {
                   radius: 5,
                   symbol: globalOpts.expendSybmol
@@ -661,9 +696,10 @@
               }]
             // select current year
             var selectedYearIndex = this.model.get('year') - collection.startYear;
-            this.highChart = new Highcharts.Chart(this.chartOpts);
-            this.highChart.series[0].data[selectedYearIndex].select(true, true);
-            this.highChart.series[1].data[selectedYearIndex].select(true, true);
+            this.highChart = new Highcharts.Chart(this.chartOpts, function(){
+                this.series[0].data[selectedYearIndex].select(true, true);
+                this.series[1].data[selectedYearIndex].select(true, true);
+            });
         },
 
         // Handler for the click events on the points on the chart
