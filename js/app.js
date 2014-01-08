@@ -521,8 +521,9 @@
         breakIt: function(e){
             e.preventDefault();
             var view = $(e.currentTarget).data('choice');
-            app_router.navigate('/');
-            collection.updateTables(view, 'Macoupin County Budget');
+            var year = window.location.hash.split('=')[1];
+            app_router.navigate('?year=' + year);
+            collection.updateTables(view, 'Macoupin County Budget', undefined, year);
         }
     })
 
