@@ -100,10 +100,20 @@
         endYear: 2014,
         activeYear: 2013,
         updateYear: function(year, yearIndex){
+            var expanded = [];
+            $.each($('tr.expanded-content'), function(i, row){
+                var name = $(row).prev().find('a.rowName').text();
+                expanded.push(name);
+                $(row).remove();
+            })
             this.mainChartData.setYear(year, yearIndex);
             this.breakdownChartData.setRows(year, yearIndex);
             this.dataTable.fnDestroy();
             this.initDataTable();
+            $.each(expanded, function(i, name){
+                var sel = 'a.details:contains("' + name + '")';
+                $(sel).first().trigger('click');
+            })
         },
         updateTables: function(view, title, filter, year){
             // Various cleanup is needed when running this a second time.
@@ -569,15 +579,10 @@
             if (typeof this.detailView !== 'undefined'){
                 this.detailView.undelegateEvents();
             }
-            if (this.detailShowing){
+            if (this.$el.next().hasClass('expanded-content')){
                 this.$el.next().remove();
                 this.$el.find('img').attr('src', 'images/expand.png')
-                this.detailShowing = false;
             } else {
-                var row = $(e.currentTarget).parent().parent();
-                $.each(row.parent().find('img'), function(i,img){
-                    $(img).attr('src', 'images/expand.png');
-                });
                 var filter = {};
                 var type = this.model.get('type');
                 filter[type] = this.model.get('rowName');
@@ -600,7 +605,6 @@
                 this.detailView = new app.BreakdownDetail({model:this.model});
                 this.detailView.render().$el.insertAfter(this.$el);
                 this.detailView.updateChart();
-                this.detailShowing = true;
                 this.$el.find('img').attr('src', 'images/collapse.png')
             }
         }
@@ -716,7 +720,7 @@
             selected = !this.selected,
             index = this.series.index;
             this.select(selected, false);
-
+            var active_chart;
             $.each($('.budget-chart'), function(i, chart){
               var sel_points = $(chart).highcharts().getSelectedPoints();
               $.each(sel_points, function(i, point){
@@ -725,6 +729,7 @@
               $.each($(chart).highcharts().series, function(i, serie){
                   $(serie.data).each(function(j, point){
                     if(x === point.x && point.y != null) {
+                      active_chart = chart;
                       point.select(selected, true);
                     }
                   });
