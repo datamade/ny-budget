@@ -275,10 +275,6 @@
             return Number.range(this.startYear, this.endYear + 1);
         },
         reduceTotals: function(totals){
-          //var total = [];
-          //$.each(totals, function(i, item){
-          //    total.push(accounting.unformat(item));
-          //});
             return totals.reduce(function(a,b){
               var int_a = parseFloat(a);
               var int_b = parseFloat(b);
@@ -442,13 +438,13 @@
             var exp = [];
             var approp = [];
             $.each(exps, function(i, e){
-                if (e === 0 || isNaN(e)){
+                if (isNaN(e)){
                     e = null;
                 }
                 exp.push(e);
             })
             $.each(approps, function(i, e){
-                if (e === 0 || isNaN(e)){
+                if (isNaN(e)){
                     e = null;
                 }
                 approp.push(e);
@@ -596,7 +592,11 @@
                 $.each(collection.getYearRange(), function(i, year){
                     var exps = collection.where(filter)
                     var exp = collection.getChartTotals('Expenditures', exps, year);
-                    expenditures.push(collection.reduceTotals(exp));
+                    if (exp.length > 1){
+                        expenditures.push(collection.reduceTotals(exp));
+                    } else {
+                        expenditures.push(parseFloat(exp[0]));
+                    }
                     var apps = collection.where(filter);
                     var approp = collection.getChartTotals('Appropriations', apps, year);
                     appropriations.push(collection.reduceTotals(approp));
@@ -668,13 +668,13 @@
             var exp = [];
             var approp = [];
             $.each(data.allExpenditures, function(i, e){
-                if (e === 0 || isNaN(e)){
+                if (isNaN(e)){
                     e = null;
                 }
                 exp.push(e);
             })
             $.each(data.allAppropriations, function(i, e){
-                if (e === 0 || isNaN(e)){
+                if (isNaN(e)){
                     e = null;
                 }
                 approp.push(e);
