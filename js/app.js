@@ -599,7 +599,11 @@
                     }
                     var apps = collection.where(filter);
                     var approp = collection.getChartTotals('Appropriations', apps, year);
-                    appropriations.push(collection.reduceTotals(approp));
+                    if (approp.length > 1){
+                        appropriations.push(collection.reduceTotals(approp));
+                    } else {
+                        appropriations.push(parseFloat(approp[0]));
+                    }
                 });
                 this.model.allExpenditures = expenditures;
                 this.model.allAppropriations = appropriations;
@@ -681,6 +685,7 @@
             });
             var minValuesArray = $.grep(approp.concat(exp),
               function(val) { return val != null; });
+            console.log(minValuesArray);
             var globalOpts = app.GlobalChartOpts;
             this.chartOpts.chart.renderTo = data.get('slug') + "-selected-chart";
             this.chartOpts.plotOptions.area.pointInterval = globalOpts.pointInterval
