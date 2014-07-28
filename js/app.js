@@ -96,7 +96,7 @@
     });
 
     app.BudgetColl = Backbone.Collection.extend({
-        startYear: 1995,
+        startYear: 2004,
         endYear: 2014,
         activeYear: 2013,
         updateYear: function(year, yearIndex){
@@ -140,6 +140,7 @@
             var approp = [];
             var self = this;
             var values = this.toJSON();
+            console.log(this);
             var incomingFilter = false;
             if (typeof filter !== 'undefined'){
                 values = _.where(this.toJSON(), filter);
@@ -221,21 +222,23 @@
         bootstrap: function(init, year){
             var self = this;
             this.spin('#main-chart', 'large');
-            $.when($.get('/data/macoupin-budget_1997-2014.csv')).then(
+            $.when($.get('https://docs.google.com/spreadsheet/pub?key=0AtbqcVh3dkAqdFk0cWxLeDZtTkpjQVItUkp6NTNyR3c&output=csv')).then(
                 function(data){
                     var json = $.csv.toObjects(data);
+                    console.log(data)
                     var loadit = []
                     $.each(json, function(i, j){
+                        console.log("hi")
+                        console.log(j)
                         j['Fund Slug'] = slugify(j['Fund']);
                         j['Department Slug'] = slugify(j['Department']);
-                        j['Expense Line Slug'] = slugify(j['Expense Line']);
-                        j['Control Officer Slug'] = slugify(j['Control Officer']);
                         loadit.push(j)
                     });
                     self.reset(loadit);
+                    console.log(loadit)
                     self.hierarchy = {
-                        Fund: ['Fund', 'Department', 'Expense Line'],
-                        "Control Officer": ['Control Officer', 'Department', 'Expense Line']
+                        Fund: ['Fund', 'Department'],
+                        "Control Officer": ['Control Officer', 'Department']
                     }
                     if (typeof init === 'undefined'){
                         self.topLevelView = 'Fund';
