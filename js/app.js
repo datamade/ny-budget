@@ -245,7 +245,7 @@
                         if (!year){
                             year = 2013;
                         }
-                        self.updateTables('Fund', 'Macoupin County Budget', undefined, year);
+                        self.updateTables('Fund', 'New Orleans Budget', undefined, year);
                     } else {
                         self.topLevelView = init[0];
                         var lowerView = init[0];
@@ -384,7 +384,7 @@
             });
         },
         updateCrumbs: function(){
-            var links = ['<a href="/">Macoupin County</a>'];
+            var links = ['<a href="/">New Orleans</a>'];
             if(Backbone.history.fragment){
                 var parts = Backbone.history.fragment;
                 if (parts.indexOf('?') >= 0){
@@ -522,7 +522,7 @@
             var view = $(e.currentTarget).data('choice');
             var year = window.location.hash.split('=')[1];
             app_router.navigate('?year=' + year);
-            collection.updateTables(view, 'Macoupin County Budget', undefined, year);
+            collection.updateTables(view, 'New Orleans Budget', undefined, year);
         }
     })
 
