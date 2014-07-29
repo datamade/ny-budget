@@ -1,6 +1,13 @@
 (function(){
     var app = {}
 
+    // Variables to set
+    startYear = 2004;
+    endYear = 2014;
+    activeYear = 2012;
+    debugMode = false;
+    dataSource = 'https://docs.google.com/spreadsheet/pub?key=0AtbqcVh3dkAqdFk0cWxLeDZtTkpjQVItUkp6NTNyR3c&output=csv'
+
     // Builds a cache of templates that get fetched and rendered by views
     function template_cache(tmpl_name, tmpl_data){
         if ( !template_cache.tmpl_cache ) {
@@ -96,9 +103,9 @@
     });
 
     app.BudgetColl = Backbone.Collection.extend({
-        startYear: 2004,
-        endYear: 2014,
-        activeYear: 2013,
+        startYear: startYear,
+        endYear: endYear,
+        activeYear: activeYear,
         updateYear: function(year, yearIndex){
             var expanded = [];
             $.each($('tr.expanded-content'), function(i, row){
@@ -222,7 +229,7 @@
         bootstrap: function(init, year){
             var self = this;
             this.spin('#main-chart', 'large');
-            $.when($.get('https://docs.google.com/spreadsheet/pub?key=0AtbqcVh3dkAqdFk0cWxLeDZtTkpjQVItUkp6NTNyR3c&output=csv')).then(
+            $.when($.get(dataSource)).then(
                 function(data){
                     var json = $.csv.toObjects(data);
                     console.log(data)
@@ -232,6 +239,7 @@
                         console.log(j)
                         j['Fund Slug'] = slugify(j['Fund']);
                         j['Department Slug'] = slugify(j['Department']);
+                        j['Control Officer Slug'] = slugify(j['Control Officer']);
                         loadit.push(j)
                     });
                     self.reset(loadit);
@@ -243,7 +251,7 @@
                     if (typeof init === 'undefined'){
                         self.topLevelView = 'Fund';
                         if (!year){
-                            year = 2013;
+                            year = activeYear;
                         }
                         self.updateTables('Fund', 'New Orleans Budget', undefined, year);
                     } else {
