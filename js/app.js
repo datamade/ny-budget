@@ -545,8 +545,6 @@
                 year = activeYear;
             }
             app_router.navigate('?year=' + year);
-            console.log("hi")
-            console.log(year)
             collection.updateTables(view, budgetName, undefined, year);
         }
     })
