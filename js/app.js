@@ -147,7 +147,10 @@
             var approp = [];
             var self = this;
             var values = this.toJSON();
-            console.log(this);
+            if (debugMode == true){
+                console.log("Update Tables");
+                console.log(this);
+            }
             var incomingFilter = false;
             if (typeof filter !== 'undefined'){
                 values = _.where(this.toJSON(), filter);
@@ -232,18 +235,26 @@
             $.when($.get(dataSource)).then(
                 function(data){
                     var json = $.csv.toObjects(data);
-                    console.log(data)
+                    if (debugMode == true){
+                        console.log("Data source to object");
+                        console.log(data);
+                    }
                     var loadit = []
                     $.each(json, function(i, j){
-                        console.log("hi")
-                        console.log(j)
+                        if (debugMode == true){
+                            console.log("Process row");
+                            console.log(j);
+                        }
                         j['Fund Slug'] = slugify(j['Fund']);
                         j['Department Slug'] = slugify(j['Department']);
                         j['Control Officer Slug'] = slugify(j['Control Officer']);
                         loadit.push(j)
                     });
                     self.reset(loadit);
-                    console.log(loadit)
+                    if (debugMode == true){
+                        console.log("Reset loadit");
+                        console.log(loadit);
+                    }
                     self.hierarchy = {
                         Fund: ['Fund', 'Department'],
                         "Control Officer": ['Control Officer', 'Department']
@@ -696,7 +707,10 @@
             });
             var minValuesArray = $.grep(approp.concat(exp),
               function(val) { return val != null; });
-            console.log(minValuesArray);
+            if (debugMode == true){
+                console.log("minValuesArray");
+                console.log(minValuesArray);
+            }
             var globalOpts = app.GlobalChartOpts;
             this.chartOpts.chart.renderTo = data.get('slug') + "-selected-chart";
             this.chartOpts.plotOptions.area.pointInterval = globalOpts.pointInterval
@@ -788,7 +802,10 @@
             var input = $(e.currentTarget).parent().prev();
             var term = $(input).val();
             var results = this.Search.search(term);
-            console.log(results);
+            if (debugMode == true){
+                console.log("results");
+                console.log(results);
+            }
         }
     });
 
