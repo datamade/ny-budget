@@ -6,7 +6,8 @@
     endYear = 2014;
     activeYear = 2012;
     debugMode = false;
-    dataSource = 'https://docs.google.com/spreadsheet/pub?key=0AtbqcVh3dkAqdFk0cWxLeDZtTkpjQVItUkp6NTNyR3c&output=csv'
+    dataSource = 'https://docs.google.com/spreadsheet/pub?key=0AtbqcVh3dkAqdFk0cWxLeDZtTkpjQVItUkp6NTNyR3c&output=csv';
+    budgetName = 'New Orleans';
 
     // Builds a cache of templates that get fetched and rendered by views
     function template_cache(tmpl_name, tmpl_data){
@@ -264,7 +265,7 @@
                         if (!year){
                             year = activeYear;
                         }
-                        self.updateTables('Fund', 'New Orleans Budget', undefined, year);
+                        self.updateTables('Fund', budgetName, undefined, year);
                     } else {
                         self.topLevelView = init[0];
                         var lowerView = init[0];
@@ -403,7 +404,7 @@
             });
         },
         updateCrumbs: function(){
-            var links = ['<a href="/">New Orleans</a>'];
+            var links = ['<a href="/">'+budgetName+'</a>'];
             if(Backbone.history.fragment){
                 var parts = Backbone.history.fragment;
                 if (parts.indexOf('?') >= 0){
@@ -541,7 +542,7 @@
             var view = $(e.currentTarget).data('choice');
             var year = window.location.hash.split('=')[1];
             app_router.navigate('?year=' + year);
-            collection.updateTables(view, 'New Orleans Budget', undefined, year);
+            collection.updateTables(view, budgetName, undefined, year);
         }
     })
 
