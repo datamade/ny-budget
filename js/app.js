@@ -541,7 +541,12 @@
             e.preventDefault();
             var view = $(e.currentTarget).data('choice');
             var year = window.location.hash.split('=')[1];
+            if (year==undefined){
+                year = activeYear;
+            }
             app_router.navigate('?year=' + year);
+            console.log("hi")
+            console.log(year)
             collection.updateTables(view, budgetName, undefined, year);
         }
     })
@@ -812,10 +817,10 @@
 
     app.GlobalChartOpts = {
         pointInterval: 365 * 24 * 3600 * 1000, //one year in ms
-        apropColor:   '#13345a',
+        apropColor:   '#AB861C',
         apropSymbol:  'circle',
         apropTitle:   'Appropriations',
-        expendColor:  '#405c7d',
+        expendColor:  '#1b3364',
         expendSybmol: 'square',
         expendTitle:  'Expenditures'
     }
