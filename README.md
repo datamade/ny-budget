@@ -2,6 +2,8 @@
 
 A budget transparency visualization for New Orleans, displaying appropriations & spending broken down by funds/departments from 2004 to 2014.
 
+![alt-tag](https://cloud.githubusercontent.com/assets/1406537/3756294/d90203ce-182c-11e4-8832-918dbbcafb94.png)
+
 This is based on [Look at Cook](http://lookatcook.com) by Derek Eder and Nick Rougeux at [Open City](http://opencityapps.org), and can be easily re-deployed to visualize other budgets.
 
 #### Dependencies
