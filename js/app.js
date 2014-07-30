@@ -1,69 +1,34 @@
 (function(){
     var app = {}
 
-    // Variables to set
-    startYear = 2004;
-    endYear = 2014;
-    activeYear = 2012;
-    debugMode = false;
-    dataSource = 'https://docs.google.com/spreadsheet/pub?key=0AtbqcVh3dkAqdFk0cWxLeDZtTkpjQVItUkp6NTNyR3c&output=csv';
-    budgetName = 'New Orleans';
+    // Configuration variables to set
+    startYear   = 2004;  // first year of budget data
+    endYear     = 2014;  // last year of budget data
+    activeYear  = 2012;  // default year to select
+    debugMode   = false; // change to true for debugging message in the javascript console
+    municipalityName = 'City of New Orleans'; // name of budget municipality 
 
-    // Builds a cache of templates that get fetched and rendered by views
-    function template_cache(tmpl_name, tmpl_data){
-        if ( !template_cache.tmpl_cache ) {
-            template_cache.tmpl_cache = {};
-        }
+    // CSV data source for budget data
+    dataSource  = 'https://docs.google.com/spreadsheet/pub?key=0AtbqcVh3dkAqdFk0cWxLeDZtTkpjQVItUkp6NTNyR3c&output=csv';
+    
+    app.GlobalChartOpts = {
+        apropColor:   '#AB861C',
+        apropSymbol:  'circle',
+        apropTitle:   'Appropriations', // label for first chart line
+        
+        expendColor:  '#1b3364',
+        expendSybmol: 'square',
+        expendTitle:  'Expenditures', // label for second chart line
 
-        if ( ! template_cache.tmpl_cache[tmpl_name] ) {
-            var tmpl_dir = '/js/views';
-            var tmpl_url = tmpl_dir + '/' + tmpl_name + '.html?4';
-
-            var tmpl_string;
-            $.ajax({
-                url: tmpl_url,
-                method: 'GET',
-                async: false,
-                success: function(data) {
-                    tmpl_string = data;
-                }
-            });
-
-            template_cache.tmpl_cache[tmpl_name] = _.template(tmpl_string);
-        }
-
-        return template_cache.tmpl_cache[tmpl_name](tmpl_data);
-    }
-
-    function calc_change(cur, prev){
-        if (prev == 0){
-            return null
-        }
-        if (cur == 0 && prev == 0){
-            return null
-        }
-        var change = parseFloat(((cur - prev) / prev) * 100);
-        if (change < 0){
-            change = change.toFixed(1) + '%';
-        } else {
-            change = '+' + change.toFixed(1) + '%';
-        }
-        return change
-    }
-
-    function slugify(text){
-        return text
-            .toLowerCase()
-            .replace(/[^\w ]+/g,'')
-            .replace(/ +/g, '-');
+        pointInterval: 365 * 24 * 3600 * 1000 // chart interval set to one year (in ms)
     }
 
     app.MainChartModel = Backbone.Model.extend({
         setYear: function(year, index){
             var exp = this.get('expenditures');
             var approp = this.get('appropriations');
-            var expChange = calc_change(exp[index], exp[index -1]);
-            var appropChange = calc_change(approp[index], approp[index - 1]);
+            var expChange = BudgetHelpers.calc_change(exp[index], exp[index -1]);
+            var appropChange = BudgetHelpers.calc_change(approp[index], approp[index - 1]);
             this.set({
                 'selectedExp': accounting.formatMoney(exp[index]),
                 'selectedApprop': accounting.formatMoney(approp[index]),
@@ -165,10 +130,10 @@
             var yearIndex = yearRange.indexOf(parseInt(year))
             var selExp = exp[yearIndex];
             var prevExp = exp[yearIndex - 1];
-            var expChange = calc_change(selExp, prevExp);
+            var expChange = BudgetHelpers.calc_change(selExp, prevExp);
             var selApprop = approp[yearIndex];
             var prevApprop = approp[yearIndex - 1];
-            var appropChange = calc_change(selApprop, prevApprop);
+            var appropChange = BudgetHelpers.calc_change(selApprop, prevApprop);
             this.mainChartData = new app.MainChartModel({
                 expenditures: exp,
                 appropriations: approp,
@@ -233,6 +198,8 @@
         bootstrap: function(init, year){
             var self = this;
             this.spin('#main-chart', 'large');
+
+            $('#download-button').attr('href', dataSource);
             $.when($.get(dataSource)).then(
                 function(data){
                     var json = $.csv.toObjects(data);
@@ -246,9 +213,9 @@
                             console.log("Process row");
                             console.log(j);
                         }
-                        j['Fund Slug'] = slugify(j['Fund']);
-                        j['Department Slug'] = slugify(j['Department']);
-                        j['Control Officer Slug'] = slugify(j['Control Officer']);
+                        j['Fund Slug'] = BudgetHelpers.convertToSlug(j['Fund']);
+                        j['Department Slug'] = BudgetHelpers.convertToSlug(j['Department']);
+                        j['Control Officer Slug'] = BudgetHelpers.convertToSlug(j['Control Officer']);
                         loadit.push(j)
                     });
                     self.reset(loadit);
@@ -265,7 +232,7 @@
                         if (!year){
                             year = activeYear;
                         }
-                        self.updateTables('Fund', budgetName, undefined, year);
+                        self.updateTables('Fund', municipalityName, undefined, year);
                     } else {
                         self.topLevelView = init[0];
                         var lowerView = init[0];
@@ -334,8 +301,8 @@
             var approp = self.getChartTotals('Appropriations', guts, year);
             var prevExp = self.getChartTotals('Expenditures', guts, year - 1);
             var prevApprop = self.getChartTotals('Appropriations', guts, year - 1);
-            var expChange = calc_change(self.reduceTotals(exp), self.reduceTotals(prevExp));
-            var appropChange = calc_change(self.reduceTotals(approp), self.reduceTotals(prevApprop));
+            var expChange = BudgetHelpers.calc_change(self.reduceTotals(exp), self.reduceTotals(prevExp));
+            var appropChange = BudgetHelpers.calc_change(self.reduceTotals(approp), self.reduceTotals(prevApprop));
             var self = this;
             $.each(guts, function(i, item){
                 summary['rowName'] = item.get(view);
@@ -404,7 +371,7 @@
             });
         },
         updateCrumbs: function(){
-            var links = ['<a href="/">'+budgetName+'</a>'];
+            var links = ['<a href="/">'+municipalityName+'</a>'];
             if(Backbone.history.fragment){
                 var parts = Backbone.history.fragment;
                 if (parts.indexOf('?') >= 0){
@@ -440,7 +407,7 @@
         // This is where the magic happens. Grab the template from the template_cache function
         // at the top of this file and then update the chart with what's passed in as the model.
         render: function(){
-            this.$el.html(template_cache('mainChart', {model: this.model}));
+            this.$el.html(BudgetHelpers.template_cache('mainChart', {model: this.model}));
             this._modelBinder.bind(this.model, this.el, {
                 viewYear: '.viewYear',
                 prevYear: '.prevYear',
@@ -545,7 +512,7 @@
                 year = activeYear;
             }
             app_router.navigate('?year=' + year);
-            collection.updateTables(view, budgetName, undefined, year);
+            collection.updateTables(view, municipalityName, undefined, year);
         }
     })
 
@@ -585,7 +552,7 @@
             });
         },
         render: function(){
-            this.$el.html(template_cache('breakdownSummary', {model:this.model}));
+            this.$el.html(BudgetHelpers.template_cache('breakdownSummary', {model:this.model}));
             this._modelBinder.bind(this.model, this.el, {
                 expenditures: {selector: '[name="expenditures"]', converter: this.moneyChanger},
                 appropriations: {selector: '[name="appropriations"]', converter: this.moneyChanger},
@@ -653,7 +620,7 @@
             this._modelBinder = new Backbone.ModelBinder();
         },
         render: function(){
-            this.$el.html(template_cache('breakdownDetail', {model: this.model}));
+            this.$el.html(BudgetHelpers.template_cache('breakdownDetail', {model: this.model}));
             this._modelBinder.bind(this.model, this.el, {
                 prevYear: '.prevYear',
                 expChange: '.expChange',
@@ -672,7 +639,7 @@
                 var type_pos = hierarchy.indexOf(typeView)
                 var parent_type = hierarchy[type_pos - 1];
                 filter[parent_type] = this.model.get('parent');
-                path = slugify(this.model.get('parent')) + '/' + this.model.get('slug')
+                path = BudgetHelpers.convertToSlug(this.model.get('parent')) + '/' + this.model.get('slug')
             }
             collection.updateTables(this.model.get('child'), this.model.get('rowName'), filter, this.model.get('year'));
             document.title = document.title + ' | ' + this.model.get('rowName');
@@ -799,7 +766,7 @@
             'click #search': 'engage'
         },
         render: function(){
-            this.$el.html(template_cache('search'));
+            this.$el.html(BudgetHelpers.template_cache('search'));
         },
         engage: function(e){
             e.preventDefault();
@@ -812,16 +779,6 @@
             }
         }
     });
-
-    app.GlobalChartOpts = {
-        pointInterval: 365 * 24 * 3600 * 1000, //one year in ms
-        apropColor:   '#AB861C',
-        apropSymbol:  'circle',
-        apropTitle:   'Appropriations',
-        expendColor:  '#1b3364',
-        expendSybmol: 'square',
-        expendTitle:  'Expenditures'
-    }
 
     app.Router = Backbone.Router.extend({
         // Maybe the thing to do here is to construct a separate route for
