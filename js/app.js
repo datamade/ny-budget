@@ -7,6 +7,8 @@
     activeYear  = 2012;  // default year to select
     debugMode   = false; // change to true for debugging message in the javascript console
     municipalityName = 'City of New Orleans'; // name of budget municipality 
+    apropTitle  = 'Appropriations'; // label for first chart line
+    expendTitle = 'Expenditures';   // label for second chart line
 
     // CSV data source for budget data
     dataSource  = 'https://docs.google.com/spreadsheet/pub?key=0AtbqcVh3dkAqdFk0cWxLeDZtTkpjQVItUkp6NTNyR3c&output=csv';
@@ -14,12 +16,12 @@
     app.GlobalChartOpts = {
         apropColor:   '#AB861C',
         apropSymbol:  'circle',
-        apropTitle:   'Appropriations', // label for first chart line
         
         expendColor:  '#1b3364',
         expendSybmol: 'square',
-        expendTitle:  'Expenditures', // label for second chart line
 
+        apropTitle:   apropTitle, 
+        expendTitle:  expendTitle, 
         pointInterval: 365 * 24 * 3600 * 1000 // chart interval set to one year (in ms)
     }
 
@@ -124,8 +126,8 @@
             }
             var yearRange = this.getYearRange()
             $.each(yearRange, function(i, year){
-                exp.push(self.getTotals(values, 'Expenditures', year));
-                approp.push(self.getTotals(values, 'Appropriations', year));
+                exp.push(self.getTotals(values, expendTitle, year));
+                approp.push(self.getTotals(values, apropTitle, year));
             });
             var yearIndex = yearRange.indexOf(parseInt(year))
             var selExp = exp[yearIndex];
@@ -297,10 +299,10 @@
             }
             var summary = {};
             var self = this;
-            var exp = self.getChartTotals('Expenditures', guts, year);
-            var approp = self.getChartTotals('Appropriations', guts, year);
-            var prevExp = self.getChartTotals('Expenditures', guts, year - 1);
-            var prevApprop = self.getChartTotals('Appropriations', guts, year - 1);
+            var exp = self.getChartTotals(expendTitle, guts, year);
+            var approp = self.getChartTotals(apropTitle, guts, year);
+            var prevExp = self.getChartTotals(expendTitle, guts, year - 1);
+            var prevApprop = self.getChartTotals(apropTitle, guts, year - 1);
             var expChange = BudgetHelpers.calc_change(self.reduceTotals(exp), self.reduceTotals(prevExp));
             var appropChange = BudgetHelpers.calc_change(self.reduceTotals(approp), self.reduceTotals(prevApprop));
             var self = this;
@@ -584,14 +586,14 @@
                 var appropriations = [];
                 $.each(collection.getYearRange(), function(i, year){
                     var exps = collection.where(filter)
-                    var exp = collection.getChartTotals('Expenditures', exps, year);
+                    var exp = collection.getChartTotals(expendTitle, exps, year);
                     if (exp.length > 1){
                         expenditures.push(collection.reduceTotals(exp));
                     } else {
                         expenditures.push(parseFloat(exp[0]));
                     }
                     var apps = collection.where(filter);
-                    var approp = collection.getChartTotals('Appropriations', apps, year);
+                    var approp = collection.getChartTotals(apropTitle, apps, year);
                     if (approp.length > 1){
                         appropriations.push(collection.reduceTotals(approp));
                     } else {
