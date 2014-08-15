@@ -2,7 +2,7 @@
     var app = {}
 
     // Configuration variables to set
-    startYear   = 2004;  // first year of budget data
+    startYear   = 2007;  // first year of budget data
     endYear     = 2014;  // last year of budget data
     activeYear  = 2012;  // default year to select
     debugMode   = false; // change to true for debugging message in the javascript console
