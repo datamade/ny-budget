@@ -11,26 +11,6 @@
       <div id="readme"><img class='visible-lg' alt="Click points to see annual budgets below" src="images/readme.png" /></div>
     </div>
 
-    <div id="breakdown-nav">
-        <ul>
-            <% if (model.get('view') == 'Fund'){ %>
-                <li class="current">
-            <% } else { %>
-                <li>
-            <% } %>
-                <a class="breakdown-choice" href="javascript://" data-choice="Fund">Where's it going?</a>
-            </li>
-            <% if (model.get('view') == 'Control Officer'){ %>
-                <li class="current">
-            <% } else { %>
-                <li>
-            <% } %>
-                <a class="breakdown-choice" href="javascript://" data-choice="Control Officer">Who controls it?</a>
-            </li>
-        </ul>
-        <div class="clear"></div>
-    </div>
-
     <table id="scorecard" class='table'>
       <tbody>
         <tr>

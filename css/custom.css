@@ -8,6 +8,7 @@ a { color: #1b3364; text-decoration: none; font-weight: bold;}
 a:hover { text-decoration: underline; }
 
 #logo, #credit { padding: 10px 0 10px 0; max-height: 120px;}
+#logo { padding-bottom: 0;}
 #logo img {
   max-height: 80px;
   display: inline;
@@ -16,6 +17,8 @@ a:hover { text-decoration: underline; }
   display: inline;
   font-size: 3em;
   vertical-align: bottom;
+  font-family: Georgia, serif;
+  color: #AB861C;
 }
 #header, #footer { color: #1b3364; }
 #header a, #footer a { color: #1b3364; }

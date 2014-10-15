@@ -11,7 +11,7 @@
     expendTitle = 'Expenditures';   // label for second chart line
 
     // CSV data source for budget data
-    dataSource  = 'https://docs.google.com/spreadsheet/pub?key=0AtbqcVh3dkAqdFk0cWxLeDZtTkpjQVItUkp6NTNyR3c&output=csv';
+    dataSource  = 'https://docs.google.com/spreadsheet/pub?key=0AswuyKhD7LxVdGlERGdEckpaRDc4Q1RCN0tjZ2tMMGc&output=csv';
     
     app.GlobalChartOpts = {
         apropColor:   '#AB861C',

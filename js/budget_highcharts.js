@@ -50,10 +50,13 @@ window.mainChartOpts = {
         shared: true
       },
       xAxis: {
-        dateTimeLabelFormats: { year: "%Y" },
         gridLineColor: "#ddd",
         gridLineWidth: 1,
-        type: "datetime"
+        type: "datetime",
+        tickInterval: 365 * 24 * 36e5, // one week
+        labels: {
+          format: '{value:%Y}'
+        }
       },
       yAxis: {
         gridLineColor: "#ddd",
