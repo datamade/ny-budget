@@ -56,15 +56,18 @@
                 row.set(summ);
                 row.yearIndex = index;
             });
+            
             var max_app = _.max(this.models, function(obj){return obj.get('appropriations')});
             var max_exp = _.max(this.models, function(obj){return obj.get('expenditures')});
             var maxes = [max_app.get('appropriations'), max_exp.get('expenditures')];
             this.maxNum = maxes.sort(function(a,b){return b-a})[0];
             $.each(this.models, function(i, row){
-                var exps = row.get('expenditures');
+
                 var apps = row.get('appropriations');
-                var exp_perc = parseFloat((exps/self.maxNum) * 100) + '%';
+                var exps = row.get('expenditures');
+
                 var app_perc = parseFloat((apps/self.maxNum) * 100) + '%';
+                var exp_perc = parseFloat((exps/self.maxNum) * 100) + '%';
                 row.set({app_perc:app_perc, exp_perc:exp_perc});
             });
         }
@@ -164,9 +167,12 @@
                     all_nums.push(summary['appropriations']);
                 }
             });
+
+            if (debugMode == true) console.log("all breakdown numbers: " + all_nums);
             var maxNum = all_nums.sort(function(a,b){return b-a})[0];
             this.breakdownChartData = new app.BreakdownColl(bd);
             this.breakdownChartData.maxNum = maxNum;
+            if (debugMode == true) console.log("max bar chart num: " + maxNum);
             this.breakdownChartData.forEach(function(row){
                 var exps = accounting.unformat(row.get('expenditures'));
                 var apps = accounting.unformat(row.get('appropriations'));
@@ -285,7 +291,7 @@
             $.each(rows, function(i, row){
                 var attr = category + ' ' + year
                 var val = row.get(attr);
-                totals.push(val);
+                totals.push(parseInt(val));
             });
             return totals;
         },
@@ -427,6 +433,7 @@
             }
             var exps = jQuery.extend(true, [], data.get('expenditures'));
             var approps = jQuery.extend(true, [], data.get('appropriations'));
+
             var exp = [];
             var approp = [];
             $.each(exps, function(i, e){
@@ -600,6 +607,7 @@
                         appropriations.push(parseFloat(approp[0]));
                     }
                 });
+
                 this.model.allExpenditures = expenditures;
                 this.model.allAppropriations = appropriations;
                 this.detailView = new app.BreakdownDetail({model:this.model});
