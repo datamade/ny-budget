@@ -5,7 +5,7 @@
     startYear   = 2007;  // first year of budget data
     endYear     = 2014;  // last year of budget data
     activeYear  = 2012;  // default year to select
-    debugMode   = false; // change to true for debugging message in the javascript console
+    debugMode   = true; // change to true for debugging message in the javascript console
     municipalityName = 'City of New Orleans'; // name of budget municipality 
     apropTitle  = 'Appropriations'; // label for first chart line
     expendTitle = 'Expenditures';   // label for second chart line
@@ -434,18 +434,26 @@
             var exps = jQuery.extend(true, [], data.get('expenditures'));
             var approps = jQuery.extend(true, [], data.get('appropriations'));
 
+            if (debugMode == true) {
+                console.log('main chart data:')
+                console.log(exps);
+                console.log(approps);
+            }
+
             var exp = [];
             var approp = [];
             $.each(exps, function(i, e){
-                if (isNaN(e)){
+                if (isNaN(e))
                     e = null;
-                }
+                else
+                    e = parseInt(e);
                 exp.push(e);
             })
             $.each(approps, function(i, e){
-                if (isNaN(e)){
+                if (isNaN(e))
                     e = null;
-                }
+                else
+                    e = parseInt(e);
                 approp.push(e);
             });
             var minValuesArray = $.grep(approp.concat(exp),
@@ -663,6 +671,13 @@
             $('html, body').animate({
                 scrollTop: $('#breadcrumbs').offset().top
             });
+            if (debugMode == true) {
+                console.log('navigating ...')
+                console.log(pathStart);
+                console.log(path);
+                console.log(this.model.get('year'));
+
+            }
             app_router.navigate(pathStart + path + '?year=' + this.model.get('year'));
             collection.mainChartView.updateCrumbs();
         },
