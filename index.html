@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Customize meta description -->
+    <meta name="description" content="">
+    <!-- Customize meta author -->
+    <meta name="author" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- Customize page title -->
+    <title>Big Easy Budget Breakdown</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="shortcut icon" href="/favicon.png">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/custom.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="/lib/html5shiv.js"></script>
+      <script src="/lib/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <a href="#content" class="sr-only">Skip to content</a>
+    <div id="readme" style="display: none;"><img src="" alt="Click points to see annual budgets below"></div>
+    <div class="container">
+      <div id='header'>
+        <div class='row'>
+          <div class='col-md-8'>
+            <div id='logo'>
+              <!-- Customize logo -->
+              <span>Big Easy Budget Breakdown</span>
+            </div>
+            <!-- Customize page text below logo -->
+            <p>Explore the <strong>City of New Orleans</strong> budget from 2007 to 2014 and learn how the money is being spent.</p>
+          </div>
+          <div class='col-md-4'>
+            <!-- Customize credit -->
+            <a href='http://www.cbno.org/'>
+              <img id='credit' class='img-responsive pull-right' src='images/logo.png'/>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class='well'>
+        <div id='main-chart'></div>
+        <table id="breakdown" class='table table-condensed table-bordered'>
+            <thead>
+              <tr>
+                <th id='breakdown-item-title'><span id="secondary-title">Fund</span></th>
+                <th class="num"><span>Budgeted</span></th>
+                <th class="num"><span>Spent</span></th>
+                <th class="charts sorting_disabled"><span>Budgeted vs. Spent</span></th>
+              </tr>
+            </thead>
+            <tbody id="breakdown-table-body"></tbody>
+        </table>
+
+        <div id="footnotes">
+          <!-- <ul>
+            <li id="f-officers">* These budgets are controlled by the officers and offices listed even though not all expenses are incurred by the respective control officer.</li>
+          </ul> -->
+        </div>
+      </div>
+
+      <div class='well about'>
+        <h2>About</h2>
+        <div class='row'>
+          <div class='col-md-12'>
+            <!-- Customize about -->
+            <p>[info here]</p>
+          </div>
+        </div>
+      </div>
+
+      <div id='footer'>
+        <p class='pull-left'>
+          <!-- Customize download link -->
+          <a id="download-button" class="btn btn-primary" href="">View &amp; download data</a>
+          All the data for this project is freely available to download or explore.
+          <br />
+          <br />
+          Built by <a href="http://datamade.us">DataMade</a>
+        </p>
+        <p class='pull-right'>
+          <strong>Share:</strong>
+          <!-- Customize facebook share -->
+          <a href="http://www.facebook.com/share.php?u=http%3a%2f%2fwww..com"><img alt="Facebook" src="images/facebook-lg.png" /></a>
+          <!-- Customize twitter share -->
+          <a href="http://twitter.com/share?text=Where's%20the%20money%20going%3F%20Explore%20New%20Orleans'%20budget&amp;url=http%3a%2f%2fwww..com"><img alt="Twitter" src="images/twitter-lg.png" /></a>
+        </p>
+      </div>
+    </div>
+    <!-- loading javascript at the bottom of the page for performance -->
+    <!-- HTML templates for Backbone views -->
+    <!-- javascript libraries -->
+    <script src="lib/jquery.min.js" type="text/javascript"></script>
+    <script src="lib/spin.min.js" type="text/javascript"></script>
+    <script src="lib/jquery.spin.js" type="text/javascript"></script>
+    <script src="lib/accounting.min.js" type="text/javascript"></script>
+    <script src="lib/fuse.min.js" type="text/javascript"></script>
+    <script src="lib/reduce.js" type="text/javascript"></script>
+    <script src="lib/range.js" type="text/javascript"></script>
+    <script src="lib/array_indexof.js" type="text/javascript"></script>
+    <script src="lib/array_getunique.js" type="text/javascript"></script>
+    <script src="lib/jquery.csv.min.js" type="text/javascript"></script>
+    <script src="lib/bootstrap.min.js" type="text/javascript"></script>
+    <script src="lib/highcharts.js" type="text/javascript"></script>
+    <script src="lib/jquery.dataTables.js" type="text/javascript"></script>
+    <script src="lib/jquery.cookie.js" type="text/javascript"></script>
+    <script src="lib/underscore.min.js" type="text/javascript"></script>
+    <script src="lib/backbone.min.js" type="text/javascript"></script>
+    <script src="lib/Backbone.ModelBinder.min.js" type="text/javascript"></script>
+
+    <!-- custom javascript -->
+    <script src="js/dataTables.sorting.js" type="text/javascript"></script>
+    <script src="js/budget_helpers.js" type="text/javascript"></script>
+    <script src="js/budget_highcharts.js" type="text/javascript"></script>
+    <script src="js/analytics_lib.js" type="text/javascript"></script>
+
+    <script src="js/app.js" type="text/javascript"></script>
+  </body>
+</html>
