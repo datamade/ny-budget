@@ -1,7 +1,9 @@
 import csv
+import xlrd
 
 def cleanup():
-    f = open('big_easy_budget_breakdown.csv', 'rb')
+    csv_from_excel('SpendingData.xlsx', 'SpendingData.csv')
+    f = open('SpendingData.csv', 'rb')
     reader = csv.DictReader(f)
     all_rows = []
     for row in reader:
@@ -20,6 +22,18 @@ def cleanup():
     writer.writerows(all_rows)
     f.close()
     outp.close()
+
+def csv_from_excel(infile_excel, outfile_csv):
+
+    wb = xlrd.open_workbook(infile_excel)
+    sh = wb.sheet_by_name('Sheet1')
+    csv_file = open(outfile_csv, 'wb')
+    wr = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
+
+    for rownum in xrange(sh.nrows):
+        wr.writerow(sh.row_values(rownum))
+
+    csv_file.close()
 
 if __name__ == "__main__":
     cleanup()
