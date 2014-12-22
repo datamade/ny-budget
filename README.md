@@ -46,7 +46,7 @@ See examples of prepped data:
 
 ## Errors / bugs
 
-If something is not behaving intuitively, it is a bug, and should be [reported as an issue](https://github.com/datamade/bigeasy-budget/issues)
+If something is not behaving intuitively, it is a bug, and should be [reported as an issue](https://github.com/datamade/ny-budget/issues)
 
 You can also email info@datamade.us or tweet @DataMadeCo.
 

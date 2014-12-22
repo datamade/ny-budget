@@ -2,16 +2,16 @@
     var app = {}
 
     // Configuration variables to set
-    startYear   = 2007;  // first year of budget data
+    startYear   = 1994;  // first year of budget data
     endYear     = 2014;  // last year of budget data
-    activeYear  = 2012;  // default year to select
+    activeYear  = 2014;  // default year to select
     debugMode   = false; // change to true for debugging message in the javascript console
-    municipalityName = 'City of New Orleans'; // name of budget municipality 
-    apropTitle  = 'Appropriations'; // label for first chart line
-    expendTitle = 'Expenditures';   // label for second chart line
+    municipalityName = 'State of New York'; // name of budget municipality 
+    apropTitle  = 'Estimated'; // label for first chart line
+    expendTitle = 'Actual';   // label for second chart line
 
     // CSV data source for budget data
-    dataSource  = 'https://docs.google.com/spreadsheet/pub?key=0AswuyKhD7LxVdGlERGdEckpaRDc4Q1RCN0tjZ2tMMGc&output=csv';
+    dataSource  = 'http://openbudget.ny.gov/openbudgetdata/SpendingData.xlsx';
     
     app.GlobalChartOpts = {
         apropColor:   '#AB861C',
