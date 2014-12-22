@@ -3,15 +3,15 @@
 
     // Configuration variables to set
     startYear   = 1994;  // first year of budget data
-    endYear     = 2014;  // last year of budget data
-    activeYear  = 2014;  // default year to select
+    endYear     = 2013;  // last year of budget data
+    activeYear  = 2013;  // default year to select
     debugMode   = false; // change to true for debugging message in the javascript console
     municipalityName = 'State of New York'; // name of budget municipality 
     apropTitle  = 'Estimated'; // label for first chart line
     expendTitle = 'Actual';   // label for second chart line
 
     // CSV data source for budget data
-    dataSource  = 'http://openbudget.ny.gov/openbudgetdata/SpendingData.xlsx';
+    dataSource  = '../data/SpendingData.csv';
     
     app.GlobalChartOpts = {
         apropColor:   '#AB861C',
@@ -221,9 +221,15 @@
                             console.log("Process row");
                             console.log(j);
                         }
+                        j['Function Slug'] = BudgetHelpers.convertToSlug(j['Function']);
+                        j['Agency Slug'] = BudgetHelpers.convertToSlug(j['Agency']);
+                        j['Fund Type Slug'] = BudgetHelpers.convertToSlug(j['Fund Type']);
+                        j['FP Category Slug'] = BudgetHelpers.convertToSlug(j['FP Category']);
                         j['Fund Slug'] = BudgetHelpers.convertToSlug(j['Fund']);
-                        j['Department Slug'] = BudgetHelpers.convertToSlug(j['Department']);
-                        j['Control Officer Slug'] = BudgetHelpers.convertToSlug(j['Control Officer']);
+                        j['Subfund Slug'] = BudgetHelpers.convertToSlug(j['Subfund Name']);
+
+                        j['Department Slug'] = BudgetHelpers.convertToSlug('old dept slug');
+                        j['Control Officer Slug'] = BudgetHelpers.convertToSlug('old ctrl off');
                         loadit.push(j)
                     });
                     self.reset(loadit);
@@ -232,15 +238,15 @@
                         console.log(loadit);
                     }
                     self.hierarchy = {
-                        Fund: ['Fund', 'Department'],
-                        "Control Officer": ['Control Officer', 'Department']
+                        "Function": ['Function', 'Agency'],
+                        "Fund Type": ['Fund Type', 'Fund']
                     }
                     if (typeof init === 'undefined'){
-                        self.topLevelView = 'Fund';
+                        self.topLevelView = 'Function';
                         if (!year){
                             year = activeYear;
                         }
-                        self.updateTables('Fund', municipalityName, undefined, year);
+                        self.updateTables('Function', municipalityName, undefined, year);
                     } else {
                         self.topLevelView = init[0];
                         var lowerView = init[0];

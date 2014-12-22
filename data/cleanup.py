@@ -16,7 +16,7 @@ def cleanup():
                     v = 0
             row[k] = v
         all_rows.append(row)
-    outp = open('big_easy_budget_cleaned.csv', 'wb')
+    outp = open('budget_cleaned.csv', 'wb')
     writer = csv.DictWriter(outp, row.keys())
     writer.writeheader()
     writer.writerows(all_rows)
