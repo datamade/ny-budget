@@ -483,6 +483,21 @@
             this.chartOpts.plotOptions.area.pointInterval = globalOpts.pointInterval;
             this.chartOpts.plotOptions.area.pointStart = Date.UTC(collection.startYear, 1, 1);
             this.chartOpts.plotOptions.series.point.events.click = this.pointClick;
+            var extra_point = {
+                    y: 0,
+                    marker: {
+                        enabled: false
+                    },
+                    enableMouseTracking: false
+                }
+            // copy over the last actual value as first estimated value, to fill gap in line
+            for (var i = 1; i < approp.length; i++) {
+                console.log(i)
+                if (approp[i]!==null && exp[i-1]!==null){
+                    extra_point['y']= exp[i-1]
+                    approp[i-1] = extra_point
+                }
+            }
             this.chartOpts.series = [{
                 color: globalOpts.apropColor,
                 data: approp,
