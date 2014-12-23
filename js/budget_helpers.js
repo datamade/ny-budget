@@ -50,5 +50,17 @@ var BudgetHelpers = {
           change = '+' + change.toFixed(1) + '%';
       }
       return change
-  }
+  },
+  tryParse: function(str){
+      var retValue = 0;
+      if(str !== null && str !== undefined) {
+          if(str.length > 0) {
+              str = str.replace('$', '')
+              if (!isNaN(str)) {
+                  retValue = parseFloat(str);
+              }
+          }
+      }
+      return retValue;
+  },
 }

@@ -3,15 +3,15 @@
 
     // Configuration variables to set
     startYear   = 1994;  // first year of budget data
-    endYear     = 1996;  // last year of budget data
-    activeYear  = 1996;  // default year to select
+    endYear     = 2015;  // last year of budget data
+    activeYear  = 2014;  // default year to select
     debugMode   = false; // change to true for debugging message in the javascript console
     municipalityName = 'State of New York'; // name of budget municipality 
     apropTitle  = 'Estimates'; // label for first chart line
     expendTitle = 'Actuals';   // label for second chart line
 
     // CSV data source for budget data
-    dataSource  = '../data/dev.csv';
+    dataSource  = '../data/SpendingData.csv';
     
     app.GlobalChartOpts = {
         apropColor:   '#AB861C',
@@ -131,6 +131,7 @@
             $.each(yearRange, function(i, year){
                 exp_col_name = self.getColumnName(year, expendTitle);
                 approp_col_name = self.getColumnName(year, apropTitle);
+
                 exp.push(self.getTotals(values, exp_col_name));
                 approp.push(self.getTotals(values, approp_col_name));
             });
@@ -223,15 +224,19 @@
                             console.log("Process row");
                             console.log(j);
                         }
+        
                         j['Function Slug'] = BudgetHelpers.convertToSlug(j['Function']);
                         j['Agency Slug'] = BudgetHelpers.convertToSlug(j['Agency']);
                         j['Fund Type Slug'] = BudgetHelpers.convertToSlug(j['Fund Type']);
                         j['FP Category Slug'] = BudgetHelpers.convertToSlug(j['FP Category']);
                         j['Fund Slug'] = BudgetHelpers.convertToSlug(j['Fund']);
                         j['Subfund Slug'] = BudgetHelpers.convertToSlug(j['Subfund Name']);
+                        for (var key in j) {
+                            if (key.match("Estimates$") || key.match("Actuals$")){
+                                j[key] = BudgetHelpers.tryParse(j[key])
+                            }
+                        }
 
-                        j['Department Slug'] = BudgetHelpers.convertToSlug('old dept slug');
-                        j['Control Officer Slug'] = BudgetHelpers.convertToSlug('old ctrl off');
                         loadit.push(j)
                     });
                     self.reset(loadit);
@@ -282,24 +287,23 @@
         },
         reduceTotals: function(totals){
             return totals.reduce(function(a,b){
-              var int_a = parseFloat(a);
-              var int_b = parseFloat(b);
-              return int_a + int_b;
+              return a + b;
             });
         },
+
 
         // Returns a total for a given category and year
         // Example: "Expenditures 1995"
         getTotals: function(values, col_name){
-            console.log(col_name)//#################
             var all = _.pluck(values, col_name);
-            console.log(all)
-            console.log(this.reduceTotals(all))//############
-            return this.reduceTotals(all);
+            sum = this.reduceTotals(all)
+            return sum;
         },
         // Given a year and category, returns the column name to search for
         getColumnName: function(year, category){
             var next_year = (year+1)%100;
+            if (next_year === 0){next_year = '00'}
+            else if (next_year < 10){next_year = '0'+next_year}
             var col_name = year + '-' + next_year + '  ' + category;
             return col_name
         },
