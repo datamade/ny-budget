@@ -41,7 +41,12 @@ window.mainChartOpts = {
       tooltip: {
         borderColor: "#000",
         formatter: function() {
-          var s = "<strong>" + Highcharts.dateFormat("%Y", this.x) + "</strong>";
+          year = parseInt(Highcharts.dateFormat("%Y", this.x))
+          var next_year = (year+1)%100;
+          if (next_year === 0){next_year = '00'}
+          else if (next_year < 10){next_year = '0'+next_year}
+          var year_range = year + '-' + next_year
+          var s = "<strong>" + year_range + "</strong>";
           $.each(this.points, function(i, point) {
             s += "<br /><span style=\"color: " + point.series.color + "\">" + point.series.name + ":</span> $" + Highcharts.numberFormat(point.y, 0);
           });
