@@ -3,15 +3,15 @@
 
     // Configuration variables to set
     startYear   = 1994;  // first year of budget data
-    endYear     = 2013;  // last year of budget data
-    activeYear  = 2013;  // default year to select
+    endYear     = 1996;  // last year of budget data
+    activeYear  = 1996;  // default year to select
     debugMode   = false; // change to true for debugging message in the javascript console
     municipalityName = 'State of New York'; // name of budget municipality 
-    apropTitle  = 'Estimated'; // label for first chart line
-    expendTitle = 'Actual';   // label for second chart line
+    apropTitle  = 'Estimates'; // label for first chart line
+    expendTitle = 'Actuals';   // label for second chart line
 
     // CSV data source for budget data
-    dataSource  = '../data/SpendingData.csv';
+    dataSource  = '../data/dev.csv';
     
     app.GlobalChartOpts = {
         apropColor:   '#AB861C',
@@ -129,8 +129,10 @@
             }
             var yearRange = this.getYearRange()
             $.each(yearRange, function(i, year){
-                exp.push(self.getTotals(values, expendTitle, year));
-                approp.push(self.getTotals(values, apropTitle, year));
+                exp_col_name = self.getColumnName(year, expendTitle);
+                approp_col_name = self.getColumnName(year, apropTitle);
+                exp.push(self.getTotals(values, exp_col_name));
+                approp.push(self.getTotals(values, approp_col_name));
             });
             var yearIndex = yearRange.indexOf(parseInt(year))
             var selExp = exp[yearIndex];
@@ -288,9 +290,18 @@
 
         // Returns a total for a given category and year
         // Example: "Expenditures 1995"
-        getTotals: function(values, category, year){
-            var all = _.pluck(values, category + ' ' + year);
+        getTotals: function(values, col_name){
+            console.log(col_name)//#################
+            var all = _.pluck(values, col_name);
+            console.log(all)
+            console.log(this.reduceTotals(all))//############
             return this.reduceTotals(all);
+        },
+        // Given a year and category, returns the column name to search for
+        getColumnName: function(year, category){
+            var next_year = (year+1)%100;
+            var col_name = year + '-' + next_year + '  ' + category;
+            return col_name
         },
         getChartTotals: function(category, rows, year){
             var totals = [];

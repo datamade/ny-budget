@@ -37,3 +37,4 @@ def csv_from_excel(infile_excel, outfile_csv):
 
 if __name__ == "__main__":
     cleanup()
+    csv_from_excel("dev.xlsx", "dev.csv")
