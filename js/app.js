@@ -4,7 +4,7 @@
     // Configuration variables to set
     startYear   = 1994;  // first year of budget data
     endYear     = 2015;  // last year of budget data
-    activeYear  = 2014;  // default year to select
+    activeYear  = 2015;  // default year to select
     debugMode   = false; // change to true for debugging message in the javascript console
     municipalityName = 'State of New York'; // name of budget municipality 
     apropTitle  = 'Estimates'; // label for first chart line
@@ -129,8 +129,8 @@
             }
             var yearRange = this.getYearRange()
             $.each(yearRange, function(i, year){
-                exp_col_name = self.getColumnName(year, expendTitle);
-                approp_col_name = self.getColumnName(year, apropTitle);
+                exp_col_name = BudgetHelpers.getColumnName(year, expendTitle);
+                approp_col_name = BudgetHelpers.getColumnName(year, apropTitle);
 
                 exp.push(self.getTotals(values, exp_col_name));
                 approp.push(self.getTotals(values, approp_col_name));
@@ -155,6 +155,7 @@
                 view: self.topLevelView
             });
             var bd = []
+            // chartGuts holds the values of the view (e.g. fund)
             var chartGuts = this.pluck(view).getUnique();
             var all_nums = []
             $.each(chartGuts, function(i, name){
@@ -299,19 +300,11 @@
             sum = this.reduceTotals(all)
             return sum;
         },
-        // Given a year and category, returns the column name to search for
-        getColumnName: function(year, category){
-            var next_year = (year+1)%100;
-            if (next_year === 0){next_year = '00'}
-            else if (next_year < 10){next_year = '0'+next_year}
-            var col_name = year + '-' + next_year + '  ' + category;
-            return col_name
-        },
         getChartTotals: function(category, rows, year){
             var totals = [];
             $.each(rows, function(i, row){
-                var attr = category + ' ' + year
-                var val = row.get(attr);
+                var col_name = BudgetHelpers.getColumnName(year, category);
+                var val = row.get(col_name);
                 totals.push(parseInt(val));
             });
             return totals;
@@ -492,7 +485,6 @@
                 }
             // copy over the last actual value as first estimated value, to fill gap in line
             for (var i = 1; i < approp.length; i++) {
-                console.log(i)
                 if (approp[i]!==null && exp[i-1]!==null){
                     extra_point['y']= exp[i-1]
                     approp[i-1] = extra_point

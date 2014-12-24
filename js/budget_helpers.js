@@ -9,6 +9,14 @@ var BudgetHelpers = {
         .replace(/[^\w ]+/g,'')
         .replace(/ +/g, '-');
   },
+  // Given a year and category, returns the column name to search for
+  getColumnName: function(year, category){
+      var next_year = (year+1)%100;
+      if (next_year === 0){next_year = '00'}
+      else if (next_year < 10){next_year = '0'+next_year}
+      var col_name = year + '-' + next_year + '  ' + category;
+      return col_name
+  },
 
   // Builds a cache of templates that get fetched and rendered by views
   template_cache: function(tmpl_name, tmpl_data){
