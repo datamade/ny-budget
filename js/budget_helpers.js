@@ -52,6 +52,9 @@ var BudgetHelpers = {
           return null
       }
       var change = parseFloat(((cur - prev) / prev) * 100);
+      if (isNaN(change)){
+        return null
+      }
       if (change < 0){
           change = change.toFixed(1) + '%';
       } else {
