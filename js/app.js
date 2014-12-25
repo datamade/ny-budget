@@ -27,6 +27,7 @@
 
     app.MainChartModel = Backbone.Model.extend({
         setYear: function(year, index){
+            console.log("*** in MainChartModel setYear")
             var exp = this.get('expenditures');
             var approp = this.get('appropriations');
             var expChange = BudgetHelpers.calc_change(exp[index], exp[index -1]);
@@ -48,10 +49,12 @@
 
     app.BreakdownColl = Backbone.Collection.extend({
         setRows: function(year, index){
+            console.log("*** in BreakdownColl setRows")
             var self = this;
             $.each(this.models, function(i, row){
                 var query = {}
                 query[row.get('type')] = row.get('rowName')
+                console.log("  *** call getSummary in .each this.models")
                 var summ = collection.getSummary(row.get('type'), query, year)
                 row.set(summ);
                 row.yearIndex = index;
@@ -78,6 +81,7 @@
         endYear: endYear,
         activeYear: activeYear,
         updateYear: function(year, yearIndex){
+            console.log("*** in BudgetColl updateYear")
             var expanded = [];
             $.each($('tr.expanded-content'), function(i, row){
                 var name = $(row).prev().find('a.rowName').text();
@@ -94,6 +98,7 @@
             })
         },
         updateTables: function(view, title, filter, year){
+            console.log("*** in BudgetColl updateTables")
             // Various cleanup is needed when running this a second time.
             if(typeof this.mainChartView !== 'undefined'){
                 this.mainChartView.undelegateEvents();
@@ -128,7 +133,10 @@
                 incomingFilter = true;
             }
             var yearRange = this.getYearRange()
+            //loop through years in range & get estimated & actual values for line chart
+            console.log("*** in BudgetColl updateTables    loop through each year & getTotals for exp/app")
             $.each(yearRange, function(i, year){
+                console.log("*** loop calls getTotals")
                 exp_col_name = BudgetHelpers.getColumnName(year, expendTitle);
                 approp_col_name = BudgetHelpers.getColumnName(year, apropTitle);
 
@@ -150,6 +158,7 @@
                 prevYear: year - 1,
                 selectedExp: accounting.formatMoney(selExp),
                 selectedApprop: accounting.formatMoney(selApprop),
+                // this is the +/- percentage summary below main line chart
                 appropChange: appropChange,
                 expChange: expChange,
                 view: self.topLevelView
@@ -158,7 +167,9 @@
             // chartGuts holds the values of the view (e.g. fund)
             var chartGuts = this.pluck(view).getUnique();
             var all_nums = []
+            console.log("   *** loop through chartGuts(x13)")
             $.each(chartGuts, function(i, name){
+                console.log("   *** inside loop, calls getSummary")
                 if (!incomingFilter){
                     filter = {}
                 }
@@ -171,12 +182,15 @@
                     all_nums.push(summary['appropriations']);
                 }
             });
+            console.log("   *** loop through chartGuts finish")
 
             if (debugMode == true) console.log("all breakdown numbers: " + all_nums);
+            all_nums = all_nums.filter(Boolean);
             var maxNum = all_nums.sort(function(a,b){return b-a})[0];
             this.breakdownChartData = new app.BreakdownColl(bd);
             this.breakdownChartData.maxNum = maxNum;
             if (debugMode == true) console.log("max bar chart num: " + maxNum);
+            console.log("   *** loop through breakdownChartData.forEach (x13)")
             this.breakdownChartData.forEach(function(row){
                 var exps = accounting.unformat(row.get('expenditures'));
                 var apps = accounting.unformat(row.get('appropriations'));
@@ -184,14 +198,18 @@
                 var app_perc = parseFloat((apps/maxNum) * 100) + '%';
                 row.set({app_perc:app_perc, exp_perc:exp_perc});
                 var rowView = new app.BreakdownSummary({model:row});
+                // add all content to the sortable table html
                 $('#breakdown-table-body').append(rowView.render().el);
+                console.log("   *** in loop, initialize & render BreakdownSummary")
             });
+            console.log("   *** loop through breakdownChartData.forEach finish")
             this.mainChartView = new app.MainChartView({
                 model: self.mainChartData
             });
             this.initDataTable();
         },
         initDataTable: function(){
+            console.log("*** in BudgetColl initDataTable")
             this.dataTable = $("#breakdown").dataTable({
                 "aaSorting": [[1, "desc"]],
                 "aoColumns": [
@@ -208,6 +226,7 @@
             });
         },
         bootstrap: function(init, year){
+            console.log("*** in BudgetColl bootstrap")
             var self = this;
             this.spin('#main-chart', 'large');
 
@@ -220,6 +239,7 @@
                         console.log(data);
                     }
                     var loadit = []
+                    console.log("*** in BudgetColl bootstrap - start loop through rows")
                     $.each(json, function(i, j){
                         if (debugMode == true){
                             console.log("Process row");
@@ -240,6 +260,7 @@
 
                         loadit.push(j)
                     });
+                    console.log("*** in BudgetColl bootstrap - finish loop through rows")
                     self.reset(loadit);
                     if (debugMode == true){
                         console.log("Reset loadit");
@@ -279,11 +300,13 @@
             );
         },
         spin: function(element, option){
+            console.log("*** in BudgetColl spin")
             // option is either size of spinner or false to cancel it
             $(element).spin(option);
         },
         // Returns an array of valid years.
         getYearRange: function(){
+            console.log("*** in BudgetColl getYearRange")
             return Number.range(this.startYear, this.endYear + 1);
         },
         reduceTotals: function(totals){
@@ -293,8 +316,7 @@
         },
 
 
-        // Returns a total for a given category and year
-        // Example: "Expenditures 1995"
+        // Returns a total for a given column name
         getTotals: function(values, col_name){
             var all = _.pluck(values, col_name);
             sum = this.reduceTotals(all)
@@ -309,6 +331,7 @@
             });
             return totals;
         },
+        // getSummary is called for each row in chart
         getSummary: function(view, query, year){
             if (typeof year === 'undefined'){
                 year = this.activeYear;
@@ -323,9 +346,13 @@
             var approp = self.getChartTotals(apropTitle, guts, year);
             var prevExp = self.getChartTotals(expendTitle, guts, year - 1);
             var prevApprop = self.getChartTotals(apropTitle, guts, year - 1);
+            //console.log("*** in BudgetColl getSummary - var expChange = BudgetHelpers.calc_change(self.reduceTotals(exp), self.reduceTotals(prevExp));")
             var expChange = BudgetHelpers.calc_change(self.reduceTotals(exp), self.reduceTotals(prevExp));
+            //console.log("*** in BudgetColl getSummary - var appropChange = BudgetHelpers.calc_change(self.reduceTotals(approp), self.reduceTotals(prevApprop));")
             var appropChange = BudgetHelpers.calc_change(self.reduceTotals(approp), self.reduceTotals(prevApprop));
             var self = this;
+            // get info for each row of the sortable chart
+            //console.log("*** in BudgetColl getSummary - START LOOP")
             $.each(guts, function(i, item){
                 summary['rowName'] = item.get(view);
                 summary['prevYear'] = year - 1;
@@ -355,6 +382,7 @@
                 }
                 summary['slug'] = item.get(view + ' Slug');
             });
+            //console.log("*** in BudgetColl getSummary - END LOOP")
             if (typeof summary['expenditures'] !== 'undefined'){
                 return summary
             } else {
@@ -393,6 +421,7 @@
             });
         },
         updateCrumbs: function(){
+            console.log("*** in MainChartView pdateCrumbs")
             var links = ['<a href="/">'+municipalityName+'</a>'];
             if(Backbone.history.fragment){
                 var parts = Backbone.history.fragment;
@@ -429,6 +458,7 @@
         // This is where the magic happens. Grab the template from the template_cache function
         // at the top of this file and then update the chart with what's passed in as the model.
         render: function(){
+            console.log("*** in MainChartView render")
             this.$el.html(BudgetHelpers.template_cache('mainChart', {model: this.model}));
             this._modelBinder.bind(this.model, this.el, {
                 viewYear: '.viewYear',
@@ -442,6 +472,7 @@
             return this;
         },
         updateChart: function(data, year){
+            console.log("*** in MainChartView updateChart")
             if (typeof this.highChart !== 'undefined'){
                 delete this.highChart;
             }
@@ -515,6 +546,7 @@
             });
         },
         pointClick: function(e){
+            console.log("*** in MainChartView pointClick")
             $("#readme").fadeOut("fast");
             $.cookie("budgetbreakdownreadme", "read", { expires: 7 });
             var x = this.x,
@@ -550,6 +582,7 @@
             });
         },
         breakIt: function(e){
+            console.log("*** in MainChartView breakIt")
             e.preventDefault();
             var view = $(e.currentTarget).data('choice');
             var year = window.location.hash.split('=')[1];
@@ -607,9 +640,11 @@
             return this;
         },
         moneyChanger: function(direction, value){
+            //console.log("*** in BreakdownSummary moneyChanger")
             return accounting.formatMoney(value);
         },
         details: function(e){
+            console.log("*** in BreakdownSummary details")
             e.preventDefault();
             if (typeof this.detailView !== 'undefined'){
                 this.detailView.undelegateEvents();
@@ -629,6 +664,7 @@
                 var appropriations = [];
                 $.each(collection.getYearRange(), function(i, year){
                     var exps = collection.where(filter)
+                    console.log("*** in BreakdownSummary details     calls getChartTotals twice")
                     var exp = collection.getChartTotals(expendTitle, exps, year);
                     if (exp.length > 1){
                         expenditures.push(collection.reduceTotals(exp));
@@ -663,9 +699,11 @@
             'click .breakdown': 'breakdownNav'
         },
         initialize: function(){
+            console.log("*** in BreakdownDetail initialize")
             this._modelBinder = new Backbone.ModelBinder();
         },
         render: function(){
+            console.log("*** in BreakdownDetail render")
             this.$el.html(BudgetHelpers.template_cache('breakdownDetail', {model: this.model}));
             this._modelBinder.bind(this.model, this.el, {
                 prevYear: '.prevYear',
@@ -676,6 +714,7 @@
         },
 
         breakdownNav: function(e){
+            console.log("*** in BreakdownDetail breakdownNav")
             var filter = {}
             var typeView = this.model.get('type');
             filter[typeView] = this.model.get('rowName')
@@ -711,6 +750,7 @@
         },
 
         updateChart: function(){
+            console.log("*** in BreakdownDetail updateChart")
             if (typeof this.highChart !== 'undefined'){
                 delete this.highChart;
             }
@@ -768,6 +808,7 @@
 
         // Handler for the click events on the points on the chart
         pointClick: function(e){
+            console.log("*** in BreakdownDetail pointClick")
             $("#readme").fadeOut("fast");
             $.cookie("budgetbreakdownreadme", "read", { expires: 7 });
             var x = this.x,
@@ -808,6 +849,7 @@
     app.SearchView = Backbone.View.extend({
         el: $('#search-form'),
         initialize: function(){
+            console.log("*** in SearchView initialize")
             var search_options = {
                 keys: ['Expense Line'],
                 threshold: 0.4
@@ -819,9 +861,11 @@
             'click #search': 'engage'
         },
         render: function(){
+            console.log("*** in SearchView render")
             this.$el.html(BudgetHelpers.template_cache('search'));
         },
         engage: function(e){
+            console.log("*** in SearchView engage")
             e.preventDefault();
             var input = $(e.currentTarget).parent().prev();
             var term = $(input).val();
@@ -844,26 +888,31 @@
             "(?year=:year)": "defaultRoute"
         },
         initialize: function(options){
+            console.log("*** in Router initialize")
             this.collection = options.collection;
         },
         defaultRoute: function(year){
+            console.log("*** in Router defaultRoute")
             $('#secondary-title').text('Fund');
             var init = undefined;
             this.collection.bootstrap(init, year);
         },
         fundDetailRoute: function(topName, secondName){
+            console.log("*** in Router fundDetailRoute")
             var initYear = this.getInitYear('Fund', topName, secondName);
             var init = initYear[0];
             var year = initYear[1];
             this.collection.bootstrap(init, year);
         },
         controlDetailRoute: function(topName, secondName){
+            console.log("*** in Router controlDetailRoute")
             var initYear = this.getInitYear('Control Officer', topName, secondName);
             var init = initYear[0];
             var year = initYear[1];
             this.collection.bootstrap(init, year);
         },
         getInitYear: function(view, topName, secondName){
+            console.log("*** in Router getInitYear")
             var init = [view];
             var top = topName;
             var idx = topName.indexOf('?');
