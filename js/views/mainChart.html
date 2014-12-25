@@ -13,19 +13,19 @@
 
     <div id="breakdown-nav">
         <ul>
-            <% if (model.get('view') == 'Fund'){ %>
+            <% if (model.get('view') == 'Function'){ %>
                 <li class="current">
             <% } else { %>
                 <li>
             <% } %>
-                <a class="breakdown-choice" href="javascript://" data-choice="Fund">Where's it going?</a>
+                <a class="breakdown-choice" href="javascript://" data-choice="Function">Budget Breakdown by Function</a>
             </li>
-            <% if (model.get('view') == 'Control Officer'){ %>
+            <% if (model.get('view') == 'Fund Type'){ %>
                 <li class="current">
             <% } else { %>
                 <li>
             <% } %>
-                <a class="breakdown-choice" href="javascript://" data-choice="Control Officer">Who controls it?</a>
+                <a class="breakdown-choice" href="javascript://" data-choice="Fund Type">Budget Breakdown by Fund Type</a>
             </li>
         </ul>
         <div class="clear"></div>

@@ -883,8 +883,8 @@
         // or something. That would require making sure the correct route is
         // triggered when links are clicked. Not impossible but probably cleaner
         routes: {
-            "fund-detail/:topName(/:secondName)": "fundDetailRoute",
-            "control-officer-detail/:topName(/:secondName)": "controlDetailRoute",
+            "function-detail/:topName(/:secondName)": "functionDetailRoute",
+            "fund-type-detail/:topName(/:secondName)": "fundTypeDetailRoute",
             "(?year=:year)": "defaultRoute"
         },
         initialize: function(options){
@@ -893,20 +893,21 @@
         },
         defaultRoute: function(year){
             console.log("*** in Router defaultRoute")
-            $('#secondary-title').text('Fund');
+            $('#secondary-title').text('Function');
             var init = undefined;
             this.collection.bootstrap(init, year);
         },
-        fundDetailRoute: function(topName, secondName){
-            console.log("*** in Router fundDetailRoute")
-            var initYear = this.getInitYear('Fund', topName, secondName);
+        functionDetailRoute: function(topName, secondName){
+            console.log("*** in Router functionDetailRoute")
+            var initYear = this.getInitYear('Function', topName, secondName);
             var init = initYear[0];
             var year = initYear[1];
             this.collection.bootstrap(init, year);
         },
-        controlDetailRoute: function(topName, secondName){
-            console.log("*** in Router controlDetailRoute")
-            var initYear = this.getInitYear('Control Officer', topName, secondName);
+        fundTypeDetailRoute: function(topName, secondName){
+            console.log("*** in Router fundTypeDetailRoute")
+            $('#secondary-title').text('Fund Type');
+            var initYear = this.getInitYear('Fund Type', topName, secondName);
             var init = initYear[0];
             var year = initYear[1];
             this.collection.bootstrap(init, year);
