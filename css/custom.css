@@ -136,7 +136,7 @@ a:hover { text-decoration: underline; }
 .stats strong { font-size: 25px; }
 
 /* Sparklines */
-.sparkline { height: 120px; margin-bottom: 15px; }
+.sparkline { height: 120px; margin-bottom: 10px; }
 
 .well {
   background-color: #fff;

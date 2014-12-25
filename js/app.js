@@ -517,6 +517,7 @@
             var minValuesArray = $.grep(approp.concat(exp),
               function(val) { return val != null; });
             var globalOpts = app.GlobalChartOpts;
+            // chart options for main chart
             this.chartOpts.plotOptions.area.pointInterval = globalOpts.pointInterval;
             this.chartOpts.plotOptions.area.pointStart = Date.UTC(collection.startYear, 1, 1);
             this.chartOpts.plotOptions.series.point.events.click = this.pointClick;
@@ -788,7 +789,9 @@
                 console.log(minValuesArray);
             }
             var globalOpts = app.GlobalChartOpts;
+            // chart options for detail charts
             this.chartOpts.chart.renderTo = data.get('slug') + "-selected-chart";
+            this.chartOpts.chart.marginBottom = 20;
             this.chartOpts.plotOptions.area.pointInterval = globalOpts.pointInterval
             this.chartOpts.plotOptions.area.pointStart = Date.UTC(collection.startYear, 1, 1)
             this.chartOpts.yAxis.min = Math.min.apply( Math, minValuesArray )
