@@ -51,6 +51,7 @@
         setRows: function(year, index){
             console.log("*** in BreakdownColl setRows")
             var self = this;
+            var all_nums = []
             $.each(this.models, function(i, row){
                 var query = {}
                 query[row.get('type')] = row.get('rowName')
@@ -58,16 +59,17 @@
                 var summ = collection.getSummary(row.get('type'), query, year)
                 row.set(summ);
                 row.yearIndex = index;
+                all_nums.push(row.get('appropriations'));
+                all_nums.push(row.get('expenditures'));
             });
-            
-            var max_app = _.max(this.models, function(obj){return obj.get('appropriations')});
-            var max_exp = _.max(this.models, function(obj){return obj.get('expenditures')});
-            var maxes = [max_app.get('appropriations'), max_exp.get('expenditures')];
-            this.maxNum = maxes.sort(function(a,b){return b-a})[0];
+            all_nums = all_nums.filter(Boolean);
+            this.maxNum = all_nums.sort(function(a,b){return b-a})[0];
             $.each(this.models, function(i, row){
 
                 var apps = row.get('appropriations');
                 var exps = row.get('expenditures');
+                if (isNaN(apps)){apps = 0};
+                if (isNaN(exps)){apps = 0};
 
                 var app_perc = parseFloat((apps/self.maxNum) * 100) + '%';
                 var exp_perc = parseFloat((exps/self.maxNum) * 100) + '%';
