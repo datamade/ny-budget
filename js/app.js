@@ -33,8 +33,8 @@
             var expChange = BudgetHelpers.calc_change(exp[index], exp[index -1]);
             var appropChange = BudgetHelpers.calc_change(approp[index], approp[index - 1]);
             this.set({
-                'selectedExp': accounting.formatMoney(exp[index]),
-                'selectedApprop': accounting.formatMoney(approp[index]),
+                'selectedExp': BudgetHelpers.convertToMoney(exp[index]),
+                'selectedApprop': BudgetHelpers.convertToMoney(approp[index]),
                 'expChange': expChange,
                 'appropChange': appropChange,
                 'viewYear': year,
@@ -158,8 +158,8 @@
                 title: title,
                 viewYear: year,
                 prevYear: year - 1,
-                selectedExp: accounting.formatMoney(selExp),
-                selectedApprop: accounting.formatMoney(selApprop),
+                selectedExp: BudgetHelpers.convertToMoney(selExp),
+                selectedApprop: BudgetHelpers.convertToMoney(selApprop),
                 // this is the +/- percentage summary below main line chart
                 appropChange: appropChange,
                 expChange: expChange,
@@ -409,6 +409,17 @@
             this._modelBinder = new Backbone.ModelBinder();
             this.render();
             this.updateCrumbs();
+            if(!this.model.get('appropChange')){
+                $('.main-approp').hide();
+            } else {
+                $('.main-approp').show();
+            }
+            if(!this.model.get('expChange')){
+                $('.main-exp').hide();
+            } else {
+                $('.main-exp').show();
+            }
+            console.log(this.model)
             this.model.on('change', function(model){
                 if(!model.get('appropChange')){
                     $('.main-approp').hide();
@@ -642,8 +653,7 @@
             return this;
         },
         moneyChanger: function(direction, value){
-            //console.log("*** in BreakdownSummary moneyChanger")
-            return accounting.formatMoney(value);
+            return BudgetHelpers.convertToMoney(value);
         },
         details: function(e){
             console.log("*** in BreakdownSummary details")

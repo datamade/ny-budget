@@ -17,6 +17,14 @@ var BudgetHelpers = {
       var col_name = year + '-' + next_year + '  ' + category;
       return col_name
   },
+  convertToMoney: function(input) {
+    if (isNaN(input)){
+      return null
+    }
+    else {
+      return accounting.formatMoney(input)
+    }
+  },
 
   // Builds a cache of templates that get fetched and rendered by views
   template_cache: function(tmpl_name, tmpl_data){
