@@ -69,7 +69,7 @@
                 var apps = row.get('appropriations');
                 var exps = row.get('expenditures');
                 if (isNaN(apps)){apps = 0};
-                if (isNaN(exps)){apps = 0};
+                if (isNaN(exps)){exps = 0};
 
                 var app_perc = parseFloat((apps/self.maxNum) * 100) + '%';
                 var exp_perc = parseFloat((exps/self.maxNum) * 100) + '%';
