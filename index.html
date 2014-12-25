@@ -10,7 +10,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <!-- Customize page title -->
-    <title>New York Budget Breakdown</title>
+    <title>New York Budget</title>
 
     <!-- Bootstrap core CSS -->
     <link rel="shortcut icon" href="/favicon.png">
@@ -25,28 +25,33 @@
   </head>
 
   <body>
-    <a href="#content" class="sr-only">Skip to content</a>
-    <div id="readme" style="display: none;"><img src="" alt="Click points to see annual budgets below"></div>
-    <div class="container">
-      <div id='header'>
+    <div class="container-fluid" id='header'>
+      <div class="container">
+
         <div class='row'>
-          <div class='col-md-8'>
+          <div class='col-md-9'>
             <div id='logo'>
               <!-- Customize logo -->
               <span>New York Budget Breakdown</span>
             </div>
             <!-- Customize page text below logo -->
-            <p>Explore the <strong>State of New York</strong> budget from 1994 to 2014 and learn how the money is being spent.</p>
+            <p>Explore the <strong>State of New York</strong> budget from 1994 to 2015 and learn how the money is being spent.</p>
           </div>
-          <div class='col-md-4'>
+          <div class='col-md-3'>
             <!-- Customize credit -->
             <a href='http://www.openbudget.ny.gov/'>
               <img id='credit' class='img-responsive pull-right' src='images/logo.png'/>
             </a>
           </div>
         </div>
+
       </div>
-      <div class='well'>
+    </div>
+
+    <a href="#content" class="sr-only">Skip to content</a>
+    <div id="readme" style="display: none;"><img src="" alt="Click points to see annual budgets below"></div>
+    <div class="container">
+
         <div id='main-chart'></div>
         <table id="breakdown" class='table table-condensed table-bordered'>
             <thead>
@@ -65,34 +70,41 @@
             <li id="f-officers">* These budgets are controlled by the officers and offices listed even though not all expenses are incurred by the respective control officer.</li>
           </ul> -->
         </div>
-      </div>
 
-      <div class='well about'>
-        <h2>About</h2>
-        <div class='row'>
-          <div class='col-md-12'>
-            <!-- Customize about -->
-            <p>[info here]</p>
+    </div>
+
+
+    <div class="container-fluid" id='footer'>
+      <div class="container">
+        <div class='about'>
+          <h2>About</h2>
+          <div class='row'>
+            <div class='col-md-12'>
+              <!-- Customize about -->
+              <p>[info here]</p>
+            </div>
           </div>
-        </div>
-      </div>
 
-      <div id='footer'>
-        <p class='pull-left'>
-          <!-- Customize download link -->
-          <a id="download-button" class="btn btn-primary" href="">View &amp; download data</a>
-          All the data for this project is freely available to download or explore.
-          <br />
-          <br />
-          Built by <a href="http://datamade.us">DataMade</a>
-        </p>
-        <p class='pull-right'>
-          <strong>Share:</strong>
-          <!-- Customize facebook share POPULATE THIS ******* -->
-          <a href=""><img alt="Facebook" src="images/facebook-lg.png" /></a>
-          <!-- Customize twitter share POPULATE THIS ******* -->
-          <a href=""><img alt="Twitter" src="images/twitter-lg.png" /></a>
-        </p>
+        </div>
+
+        <div>
+          <p class='pull-left'>
+            <!-- Customize download link -->
+            <a id="download-button" class="btn btn-primary" href="">View &amp; download data</a>
+            All the data for this project is freely available to download or explore.
+            <br />
+            <br />
+            Built by <a href="http://datamade.us">DataMade</a>
+          </p>
+          <p class='pull-right'>
+            <strong>Share:</strong>
+            <!-- Customize facebook share POPULATE THIS ******* -->
+            <a href=""><img alt="Facebook" src="images/facebook-lg.png" /></a>
+            <!-- Customize twitter share POPULATE THIS ******* -->
+            <a href=""><img alt="Twitter" src="images/twitter-lg.png" /></a>
+          </p>
+        </div>
+
       </div>
     </div>
     <!-- loading javascript at the bottom of the page for performance -->

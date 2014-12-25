@@ -14,10 +14,10 @@
     dataSource  = '../data/SpendingData.csv';
     
     app.GlobalChartOpts = {
-        apropColor:   '#AB861C',
+        apropColor:   '#989898',
         apropSymbol:  'circle',
         
-        expendColor:  '#1b3364',
+        expendColor:  '#468AC4',
         expendSybmol: 'square',
 
         apropTitle:   apropTitle, 
@@ -518,6 +518,7 @@
               function(val) { return val != null; });
             var globalOpts = app.GlobalChartOpts;
             // chart options for main chart
+            this.chartOpts.chart.borderWidth = 0;
             this.chartOpts.plotOptions.area.pointInterval = globalOpts.pointInterval;
             this.chartOpts.plotOptions.area.pointStart = Date.UTC(collection.startYear, 1, 1);
             this.chartOpts.plotOptions.series.point.events.click = this.pointClick;

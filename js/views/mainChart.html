@@ -11,26 +11,6 @@
       <div id="readme"><img class='visible-lg' alt="Click points to see annual budgets below" src="images/readme.png" /></div>
     </div>
 
-    <div id="breakdown-nav">
-        <ul>
-            <% if (model.get('view') == 'Function'){ %>
-                <li class="current">
-            <% } else { %>
-                <li>
-            <% } %>
-                <a class="breakdown-choice" href="javascript://" data-choice="Function">Budget Breakdown by Function</a>
-            </li>
-            <% if (model.get('view') == 'Fund Type'){ %>
-                <li class="current">
-            <% } else { %>
-                <li>
-            <% } %>
-                <a class="breakdown-choice" href="javascript://" data-choice="Fund Type">Budget Breakdown by Fund Type</a>
-            </li>
-        </ul>
-        <div class="clear"></div>
-    </div>
-
     <table id="scorecard" class='table'>
       <tbody>
         <tr>
@@ -39,6 +19,30 @@
                 <span class="viewYear"><%= model.get('viewYear') %></span>
                 <span class="title"><%= model.get('title') %></span>
             </h2>
+
+
+            <div id="breakdown-nav">
+                <ul>
+                  <li><p>Budget Breakdown By:</p></li>
+                    <% if (model.get('view') == 'Function'){ %>
+                        <li class="current">
+                    <% } else { %>
+                        <li>
+                    <% } %>
+                        <a class="breakdown-choice btn btn-success" href="javascript://" data-choice="Function">Function</a>
+                    </li>
+                    <% if (model.get('view') == 'Fund Type'){ %>
+                        <li class="current">
+                    <% } else { %>
+                        <li>
+                    <% } %>
+                        <a class="breakdown-choice btn btn-success" href="javascript://" data-choice="Fund Type">Fund Type</a>
+                    </li>
+                </ul>
+                <div class="clear"></div>
+            </div>
+
+
             <p id='actual-change-percent'></p>
           </td>
           <td>

@@ -1,11 +1,13 @@
 body {
   background: #ffffff;
+  font-family: "Helvetica", "Arial", sans-serif;
 }
 
-h1, h2, h3, h4, h5, h6 { color: #0b3059; }
+h1, h2, h3, h4, h5, h6 { color: #004B75; }
 
-a { color: #1b3364; text-decoration: none; font-weight: bold;}
-a:hover { text-decoration: underline; }
+a { color: #2BABE2; text-decoration: none; font-weight: bold;}
+a:hover { color: #23387E; text-decoration: underline; }
+a.details:hover, a.details:active { text-decoration: none;}
 
 #logo, #credit { padding: 10px 0 10px 0; max-height: 120px;}
 #logo { padding-bottom: 0;}
@@ -17,17 +19,23 @@ a:hover { text-decoration: underline; }
   display: inline;
   font-size: 3em;
   vertical-align: bottom;
-  font-family: Georgia, serif;
-  color: #AB861C;
+  font-family: "Helvetica", "Arial", serif;
+  color: #004B75;
 }
-#header, #footer { color: #1b3364; }
-#header a, #footer a { color: #1b3364; }
-#header h1 a, #footer h1 a { color: #fff; }
+#header{ 
+  color: #333333;
+  background-color: #E8EDEE;
+   }
+#footer{
+  color: #E8EDEE;
+  background-color: #333333;
+}
+
 #footer .btn { color: #fff; }
 
 .btn-primary {
-  background-color: #1b3364;
-  border-color: #1b3364;
+  background-color: #004B75;
+  border-color: #004B75;
 }
 
 .btn-primary:hover {
@@ -36,13 +44,15 @@ a:hover { text-decoration: underline; }
 }
 
 .btn-info {
-  background-color: #AB861C;
-  border-color: #AB861C;
+  background-color: #fff;
+  color: #2BABE2;
+  border: 2px solid #2BABE2;
 }
 
 .btn-info:hover {
-  background-color: #8e6f17;
-  border-color: #8e6f17;
+  background-color: #def2fb;
+  color: #2BABE2;
+  border: 2px solid #2BABE2;
 }
 
 #readme {
@@ -63,7 +73,7 @@ a:hover { text-decoration: underline; }
 /* Breakdown table */
 #breakdown a { cursor: pointer; }
 #breakdown .num { text-align: right; }
-#breakdown td, #breakdown th { border: 1px solid #ddd; font-size: 14px; padding: 0.3em 10px; }
+#breakdown td, #breakdown th { border: 0px; border-bottom: 1px solid #ddd; font-size: 14px; padding: 0.3em 10px; }
 #breakdown th { background: #dddddd; font-size: 12px; font-weight: bold; text-align: left; }
 #breakdown th.charts { width: 50%; }
 #breakdown th.controls { width: 20px; }
@@ -112,12 +122,25 @@ a:hover { text-decoration: underline; }
 .expanded-secondary { float: left; width: 48%; }
 
 /* Nav */
+a.breakdown-choice{
+  border: 2px solid #F6A704;
+  color: #F6A704;
+  background-color: #fff;
+}
+a.breakdown-choice:hover{
+  color: #F6A704;
+  background-color: #feecc8;
+  border: 2px solid #F6A704;
+}
 #breakdown-nav { margin-top: -1px;}
+#breakdown-nav li {display: inline-block;}
 #breakdown-nav a { display: block; padding: 0.4em 1em 0.3em; }
-#breakdown-nav li { float: left; padding: 0.4em 1em 0.3em; }
-#breakdown-nav li.current { background: #dddddd; color: #fff; }
-#breakdown-nav li.current a {  color: #1b3364; }
-#breakdown-nav ul { list-style: none; margin: 0; }
+#breakdown-nav li.current a { 
+  color: #fff;
+  background-color: #F6A704;
+  border: 2px solid #F6A704;
+}
+#breakdown-nav ul { list-style: none; margin: 0; padding: 0; }
 
 #department-search { margin: 50px 0 10px 0; }
 #department-search a { color: #fff; }
@@ -126,7 +149,7 @@ a:hover { text-decoration: underline; }
 #scorecard { border-top: 3px solid #dddddd; margin: 0; }
 #scorecard h2 { font-size: 20px; }
 #scorecard h2, #scorecard p { margin: 0; }
-#scorecard td { border: 1px solid #ddd; border-bottom: 0; padding: 0.8em 10px; width: 25%; }
+#scorecard td { border-bottom: 0; padding: 0.8em 10px; width: 25%; }
 #scorecard td#scorecard-desc { width: 50%; }
 
 /* Stats */
