@@ -147,7 +147,7 @@ a.breakdown-choice:hover{
   background-color: #F6A704;
   border: 2px solid #F6A704;
 }
-#breakdown-nav ul { list-style: none; margin: 0; padding: 0; }
+#breakdown-nav ul { list-style: none; margin: 10px 0px 0px 0px; padding: 0; }
 
 #department-search { margin: 50px 0 10px 0; }
 #department-search a { color: #fff; }
