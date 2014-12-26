@@ -25,6 +25,8 @@ a.details:hover, a.details:active { text-decoration: none;}
 #header{ 
   color: #333333;
   background-color: #E8EDEE;
+  padding-bottom: 10px;
+  margin-bottom: 30px;
    }
 #footer{
   color: #E8EDEE;
