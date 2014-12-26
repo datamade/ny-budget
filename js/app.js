@@ -52,6 +52,8 @@
             console.log("*** in BreakdownColl setRows")
             var self = this;
             var all_nums = []
+            var total_app = 0
+            var total_exp = 0
             $.each(this.models, function(i, row){
                 var query = {}
                 query[row.get('type')] = row.get('rowName')
@@ -70,11 +72,23 @@
                 var exps = row.get('expenditures');
                 if (isNaN(apps)){apps = 0};
                 if (isNaN(exps)){exps = 0};
+                total_app = total_app + apps
+                total_exp = total_exp + exps
 
                 var app_perc = parseFloat((apps/self.maxNum) * 100) + '%';
                 var exp_perc = parseFloat((exps/self.maxNum) * 100) + '%';
                 row.set({app_perc:app_perc, exp_perc:exp_perc});
             });
+
+            // hide column in table if all zeros
+            if(total_exp == 0){
+                $('.appropriations.num').show();
+                $('.expenditures.num').hide();
+            };
+            if(total_app == 0){
+                $('.expenditures.num').show();
+                $('.appropriations.num').hide();
+            };
         }
     });
 
@@ -193,9 +207,13 @@
             this.breakdownChartData.maxNum = maxNum;
             if (debugMode == true) console.log("max bar chart num: " + maxNum);
             console.log("   *** loop through breakdownChartData.forEach (x13)")
+            var total_exp = 0
+            var total_app = 0
             this.breakdownChartData.forEach(function(row){
                 var exps = accounting.unformat(row.get('expenditures'));
                 var apps = accounting.unformat(row.get('appropriations'));
+                total_exp = total_exp + exps
+                total_app = total_app + apps
                 var exp_perc = parseFloat((exps/maxNum) * 100) + '%';
                 var app_perc = parseFloat((apps/maxNum) * 100) + '%';
                 row.set({app_perc:app_perc, exp_perc:exp_perc});
@@ -205,6 +223,17 @@
                 console.log("   *** in loop, initialize & render BreakdownSummary")
             });
             console.log("   *** loop through breakdownChartData.forEach finish")
+
+            // hide column in table if all zeros
+            if(total_exp == 0){
+                $('.appropriations.num').show();
+                $('.expenditures.num').hide();
+            };
+            if(total_app == 0){
+                $('.expenditures.num').show();
+                $('.appropriations.num').hide();
+            };
+
             this.mainChartView = new app.MainChartView({
                 model: self.mainChartData
             });
