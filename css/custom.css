@@ -29,8 +29,13 @@ a.details:hover, a.details:active { text-decoration: none;}
   margin-bottom: 30px;
    }
 #footer{
+  margin-top: 30px;
   color: #E8EDEE;
   background-color: #333333;
+}
+
+#footer h2{
+  color: #F6A704;
 }
 
 #footer .btn { color: #fff; }
