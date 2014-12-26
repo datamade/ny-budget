@@ -14,10 +14,10 @@
     dataSource  = '../data/SpendingData.csv';
     
     app.GlobalChartOpts = {
-        apropColor:   '#989898',
+        apropColor:   '#6e6e6e',
         apropSymbol:  'circle',
         
-        expendColor:  '#468AC4',
+        expendColor:  '#23387E',
         expendSybmol: 'square',
 
         apropTitle:   apropTitle, 
