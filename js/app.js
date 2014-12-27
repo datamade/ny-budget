@@ -570,23 +570,24 @@
                 }
             }
             this.chartOpts.series = [{
-                color: globalOpts.expendColor,
-                data: exp,
-                marker: {
-                    radius: 6,
-                    symbol: globalOpts.expendSybmol
-                },
-                name: globalOpts.expendTitle
-                },
-                {
                 color: globalOpts.apropColor,
                 data: approp,
+                legendIndex: 2,
                 marker: {
                     radius: 6,
                     symbol: globalOpts.apropSymbol
                 },
                 name: globalOpts.apropTitle
-              }];
+              }, {
+                color: globalOpts.expendColor,
+                data: exp,
+                legendIndex: 1,
+                marker: {
+                    radius: 6,
+                    symbol: globalOpts.expendSybmol
+                },
+                name: globalOpts.expendTitle
+            }];
             this.chartOpts.yAxis.min = 0
             var selectedYearIndex = year - collection.startYear;
             this.highChart = new Highcharts.Chart(this.chartOpts, function(){
