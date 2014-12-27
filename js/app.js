@@ -570,14 +570,6 @@
                 }
             }
             this.chartOpts.series = [{
-                color: globalOpts.apropColor,
-                data: approp,
-                marker: {
-                    radius: 6,
-                    symbol: globalOpts.apropSymbol
-                },
-                name: globalOpts.apropTitle
-              }, {
                 color: globalOpts.expendColor,
                 data: exp,
                 marker: {
@@ -585,7 +577,16 @@
                     symbol: globalOpts.expendSybmol
                 },
                 name: globalOpts.expendTitle
-            }];
+                },
+                {
+                color: globalOpts.apropColor,
+                data: approp,
+                marker: {
+                    radius: 6,
+                    symbol: globalOpts.apropSymbol
+                },
+                name: globalOpts.apropTitle
+              }];
             this.chartOpts.yAxis.min = Math.min.apply( Math, minValuesArray )
             var selectedYearIndex = year - collection.startYear;
             this.highChart = new Highcharts.Chart(this.chartOpts, function(){
