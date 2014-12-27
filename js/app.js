@@ -587,7 +587,7 @@
                 },
                 name: globalOpts.apropTitle
               }];
-            this.chartOpts.yAxis.min = Math.min.apply( Math, minValuesArray )
+            this.chartOpts.yAxis.min = 0
             var selectedYearIndex = year - collection.startYear;
             this.highChart = new Highcharts.Chart(this.chartOpts, function(){
                 this.series[0].data[selectedYearIndex].select(true, true);
