@@ -232,10 +232,14 @@
             if(total_exp == 0){
                 $('.appropriations.num').show();
                 $('.expenditures.num').hide();
+                $('#scorecard-app').show();
+                $('#scorecard-exp').hide();
             };
             if(total_app == 0){
                 $('.expenditures.num').show();
                 $('.appropriations.num').hide();
+                $('#scorecard-exp').show();
+                $('#scorecard-app').hide();
             };
 
             this.mainChartView = new app.MainChartView({
