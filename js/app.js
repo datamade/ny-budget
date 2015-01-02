@@ -452,7 +452,6 @@
             } else {
                 $('.main-exp').show();
             }
-            console.log(this.model)
             this.model.on('change', function(model){
                 if(!model.get('appropChange')){
                     $('.main-approp').hide();
@@ -667,16 +666,6 @@
                 } else {
                     $(self.el).show();
                 }
-                if(!model.get('appropChange')){
-                    $(sel).parent().find('.sparkline-budgeted').hide();
-                } else {
-                    $(sel).parent().find('.sparkline-budgeted').show();
-                }
-                if(!model.get('expChange')){
-                    $(sel).parent().find('.sparkline-spent').hide();
-                } else {
-                    $(sel).parent().find('.sparkline-spent').show();
-                }
             });
         },
         render: function(){
@@ -735,6 +724,17 @@
                 this.detailView.render().$el.insertAfter(this.$el);
                 this.detailView.updateChart();
                 this.$el.find('img').attr('src', 'images/collapse.png')
+
+                sel_chart_slug = "#"+this.model.get('slug') + "-selected-chart"
+                console.log(this.model)
+                if(this.model.get('appropChange') == null){
+                    $(sel_chart_slug).parent().find('.sparkline-spent').show()
+                    $(sel_chart_slug).parent().find('.sparkline-budgeted').hide()
+                }
+                if(this.model.get('expChange') == null){
+                    $(sel_chart_slug).parent().find(".sparkline-budgeted").show()
+                    $(sel_chart_slug).parent().find(".sparkline-spent").hide()
+                }
             }
         }
     })
