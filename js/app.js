@@ -11,7 +11,7 @@
     expendTitle = 'Actuals';   // label for second chart line
 
     // CSV data source for budget data
-    dataSource  = '../data/SpendingData.csv';
+    dataSource  = window.location.origin + '/data/SpendingData.csv';
     
     app.GlobalChartOpts = {
         apropColor:   '#6e6e6e',

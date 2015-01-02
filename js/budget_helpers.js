@@ -81,7 +81,6 @@ var BudgetHelpers = {
     } else{
         var change = parseFloat(((cur_app - prev_app) / prev_app) * 100);
     }
-    console.log(change)
     if (isNaN(change)){
         return null
     }
