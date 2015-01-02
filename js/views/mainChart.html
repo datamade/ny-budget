@@ -37,6 +37,13 @@
                     <% } %>
                         <a class="breakdown-choice btn btn-success btn-xs" href="javascript://" data-choice="Fund Type">View By Fund Type</a>
                     </li>
+                    <% if (model.get('view') == 'FP Category'){ %>
+                        <li class="current">
+                    <% } else { %>
+                        <li>
+                    <% } %>
+                        <a class="breakdown-choice btn btn-success btn-xs" href="javascript://" data-choice="FP Category">View By Financial Planning Category</a>
+                    </li>
                 </ul>
                 <div class="clear"></div>
             </div>

@@ -303,7 +303,8 @@
                     }
                     self.hierarchy = {
                         "Function": ['Function', 'Agency'],
-                        "Fund Type": ['Fund Type', 'Fund']
+                        "Fund Type": ['Fund Type', 'Fund', 'Subfund Name'],
+                        "FP Category": ['FP Category']
                     }
                     if (typeof init === 'undefined'){
                         self.topLevelView = 'Function';
@@ -487,12 +488,14 @@
                         link += collection.findWhere(query).get(topView);
                     }
                     if(i==1){
-                        query['Department Slug'] = crumb;
-                        link += collection.findWhere(query).get('Department');
+                        var level1 = collection.hierarchy[topView][1]
+                        query[level1 + ' Slug'] = crumb;
+                        link += collection.findWhere(query).get(level1);
                     }
                     if(i==2){
-                        query['Expense Line Slug'] = crumb;
-                        link += collection.findWhere(query).get('Expense Line');
+                        var level2 = collection.hierarchy[topView][2]
+                        query[level2 + ' Slug'] = crumb;
+                        link += collection.findWhere(query).get(level2);
                     }
                     link += '</a>';
                     links.push(link);
@@ -726,7 +729,6 @@
                 this.$el.find('img').attr('src', 'images/collapse.png')
 
                 sel_chart_slug = "#"+this.model.get('slug') + "-selected-chart"
-                console.log(this.model)
                 if(this.model.get('appropChange') == null){
                     $(sel_chart_slug).parent().find('.sparkline-spent').show()
                     $(sel_chart_slug).parent().find('.sparkline-budgeted').hide()
