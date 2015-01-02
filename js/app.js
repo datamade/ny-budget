@@ -30,8 +30,8 @@
             console.log("*** in MainChartModel setYear")
             var exp = this.get('expenditures');
             var approp = this.get('appropriations');
-            var expChange = BudgetHelpers.calc_change(exp[index], exp[index -1]);
-            var appropChange = BudgetHelpers.calc_change(approp[index], approp[index - 1]);
+            var expChange = BudgetHelpers.calc_change(exp[index], exp[index - 1]);
+            var appropChange = BudgetHelpers.calc_approp_change(approp[index], approp[index - 1], exp[index - 1]);
             this.set({
                 'selectedExp': BudgetHelpers.convertToMoney(exp[index]),
                 'selectedApprop': BudgetHelpers.convertToMoney(approp[index]),
@@ -169,7 +169,7 @@
             var expChange = BudgetHelpers.calc_change(selExp, prevExp);
             var selApprop = approp[yearIndex];
             var prevApprop = approp[yearIndex - 1];
-            var appropChange = BudgetHelpers.calc_change(selApprop, prevApprop);
+            var appropChange = BudgetHelpers.calc_approp_change(selApprop, prevApprop, prevExp);
             this.mainChartData = new app.MainChartModel({
                 expenditures: exp,
                 appropriations: approp,
