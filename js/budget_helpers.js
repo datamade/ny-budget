@@ -70,6 +70,28 @@ var BudgetHelpers = {
       }
       return change
   },
+  // if year is first in approp series, will grab the previous years exp
+  calc_approp_change: function(cur_app, prev_app, prev_exp){
+    if (isNaN(cur_app)){
+        return null
+    }
+    if (isNaN(prev_app)){
+        var change = parseFloat(((cur_app - prev_exp) / prev_exp) * 100);
+        console.log(change)
+    } else{
+        var change = parseFloat(((cur_app - prev_app) / prev_app) * 100);
+    }
+    console.log(change)
+    if (isNaN(change)){
+        return null
+    }
+    if (change < 0){
+        change = change.toFixed(1) + '%';
+    } else {
+        change = '+' + change.toFixed(1) + '%';
+    }
+    return change
+  },
   tryParse: function(str){
       var retValue = 0;
       if(str !== null && str !== undefined) {

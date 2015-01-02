@@ -382,13 +382,10 @@
             var approp = self.getChartTotals(apropTitle, guts, year);
             var prevExp = self.getChartTotals(expendTitle, guts, year - 1);
             var prevApprop = self.getChartTotals(apropTitle, guts, year - 1);
-            //console.log("*** in BudgetColl getSummary - var expChange = BudgetHelpers.calc_change(self.reduceTotals(exp), self.reduceTotals(prevExp));")
             var expChange = BudgetHelpers.calc_change(self.reduceTotals(exp), self.reduceTotals(prevExp));
-            //console.log("*** in BudgetColl getSummary - var appropChange = BudgetHelpers.calc_change(self.reduceTotals(approp), self.reduceTotals(prevApprop));")
-            var appropChange = BudgetHelpers.calc_change(self.reduceTotals(approp), self.reduceTotals(prevApprop));
+            var appropChange = BudgetHelpers.calc_approp_change(self.reduceTotals(approp), self.reduceTotals(prevApprop), self.reduceTotals(prevExp));
             var self = this;
             // get info for each row of the sortable chart
-            //console.log("*** in BudgetColl getSummary - START LOOP")
             $.each(guts, function(i, item){
                 summary['rowName'] = item.get(view);
                 summary['prevYear'] = year - 1;
