@@ -26,7 +26,7 @@ var BudgetHelpers = {
     }
   },
   convertYearToRange: function(year){
-    var next_year = (year+1)%100;
+    var next_year = (parseInt(year)+1)%100;
     if (next_year === 0){next_year = '00'}
     else if (next_year < 10){next_year = '0'+next_year}
     var year_range = year + '-' + next_year
@@ -84,7 +84,6 @@ var BudgetHelpers = {
     }
     if (isNaN(prev_app)){
         var change = parseFloat(((cur_app - prev_exp) / prev_exp) * 100);
-        console.log(change)
     } else{
         var change = parseFloat(((cur_app - prev_app) / prev_app) * 100);
     }
