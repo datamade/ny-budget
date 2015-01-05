@@ -37,8 +37,8 @@
                 'selectedApprop': BudgetHelpers.convertToMoney(approp[index]),
                 'expChange': expChange,
                 'appropChange': appropChange,
-                'viewYear': year,
-                'prevYear': year - 1
+                'viewYear': BudgetHelpers.convertYearToRange(year),
+                'prevYear': BudgetHelpers.convertYearToRange(year-1)
             });
         }
     });
@@ -174,8 +174,8 @@
                 expenditures: exp,
                 appropriations: approp,
                 title: title,
-                viewYear: year,
-                prevYear: year - 1,
+                viewYear: BudgetHelpers.convertYearToRange(year),
+                prevYear: BudgetHelpers.convertYearToRange(year-1),
                 selectedExp: BudgetHelpers.convertToMoney(selExp),
                 selectedApprop: BudgetHelpers.convertToMoney(selApprop),
                 // this is the +/- percentage summary below main line chart

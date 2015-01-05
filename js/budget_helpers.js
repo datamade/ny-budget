@@ -25,6 +25,13 @@ var BudgetHelpers = {
       return accounting.formatMoney(input)
     }
   },
+  convertYearToRange: function(year){
+    var next_year = (year+1)%100;
+    if (next_year === 0){next_year = '00'}
+    else if (next_year < 10){next_year = '0'+next_year}
+    var year_range = year + '-' + next_year
+    return year_range
+  },
 
   // Builds a cache of templates that get fetched and rendered by views
   template_cache: function(tmpl_name, tmpl_data){
