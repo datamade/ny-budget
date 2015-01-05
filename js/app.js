@@ -786,10 +786,10 @@
             document.title = document.title + ' | ' + this.model.get('rowName');
             $('#secondary-title').text(this.model.get('child'));
             var pathStart = null;
-            if(collection.topLevelView == 'Fund'){
-                pathStart = 'fund-detail/';
-            } else {
-                pathStart = 'control-officer-detail/';
+            if(collection.topLevelView == 'Function'){
+                pathStart = 'function-detail/';
+            } else if(collection.topLevelView == 'Fund Type') {
+                pathStart = 'fund-type-detail/';
             }
             $('html, body').animate({
                 scrollTop: $('#breadcrumbs').offset().top
