@@ -37,8 +37,10 @@
                 'selectedApprop': BudgetHelpers.convertToMoney(approp[index]),
                 'expChange': expChange,
                 'appropChange': appropChange,
-                'viewYear': BudgetHelpers.convertYearToRange(year),
-                'prevYear': BudgetHelpers.convertYearToRange(year-1)
+                'viewYear': year,
+                'prevYear': year - 1,
+                'yearRange': BudgetHelpers.convertYearToRange(year),
+                'prevYearRange': BudgetHelpers.convertYearToRange(year-1)
             });
         }
     });
@@ -174,8 +176,10 @@
                 expenditures: exp,
                 appropriations: approp,
                 title: title,
-                viewYear: BudgetHelpers.convertYearToRange(year),
-                prevYear: BudgetHelpers.convertYearToRange(year-1),
+                viewYear: year,
+                prevYear: year-1,
+                viewYearRange: BudgetHelpers.convertYearToRange(year),
+                prevYearRange: BudgetHelpers.convertYearToRange(year-1),
                 selectedExp: BudgetHelpers.convertToMoney(selExp),
                 selectedApprop: BudgetHelpers.convertToMoney(selApprop),
                 // this is the +/- percentage summary below main line chart
@@ -510,8 +514,8 @@
             console.log("*** in MainChartView render")
             this.$el.html(BudgetHelpers.template_cache('mainChart', {model: this.model}));
             this._modelBinder.bind(this.model, this.el, {
-                viewYear: '.viewYear',
-                prevYear: '.prevYear',
+                viewYearRange: '.viewYear',
+                prevYearRange: '.prevYear',
                 selectedExp: '.expenditures',
                 selectedApprop: '.appropriations',
                 expChange: '.expChange',
@@ -758,7 +762,7 @@
             console.log("*** in BreakdownDetail render")
             this.$el.html(BudgetHelpers.template_cache('breakdownDetail', {model: this.model}));
             this._modelBinder.bind(this.model, this.el, {
-                prevYear: '.prevYear',
+                prevYearRange: '.prevYear',
                 expChange: '.expChange',
                 appropChange: '.appropChange'
             });
