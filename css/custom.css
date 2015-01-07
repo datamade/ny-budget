@@ -7,7 +7,7 @@ h1, h2, h3, h4, h5, h6 { color: #004B75; }
 
 a { color: #2BABE2; text-decoration: none; font-weight: bold;}
 a:hover { color: #23387E; text-decoration: underline; }
-a.details:hover, a.details:active { text-decoration: none;}
+a.details:hover, a.details:active, a.details:visited, a.details:link { text-decoration: none;}
 
 #logo, #credit { padding: 10px 0 10px 0; max-height: 120px;}
 #logo { padding-bottom: 0;}
@@ -69,10 +69,10 @@ a.details:hover, a.details:active { text-decoration: none;}
   top: 320px;
 }
 
-#timeline-chart { height: 300px; }
+#timeline-chart { height: 180px; }
 
 #main-chart {
-    min-height: 300px;
+    min-height: 200px;
 }
 
 #breadcrumbs { font-weight: bold; font-size: 20px; }

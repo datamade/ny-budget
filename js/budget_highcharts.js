@@ -24,6 +24,11 @@ window.mainChartOpts = {
       },
       credits: { enabled: false },
       legend: {
+        align: "right",
+        verticalAlign: "top",
+        x: -20,
+        y: 10,
+        floating: true,
         backgroundColor: "#ffffff",
         borderColor: "#cccccc"
       },
