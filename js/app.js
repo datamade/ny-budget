@@ -328,14 +328,19 @@
                         var key = init[0] + ' Slug'
                         filter[key] = name;
                         var title = self.findWhere(filter).get(init[0])
+
                         if (init.length == 2){
-                            lowerView = 'Department';
+                            lowerView = self.hierarchy[init[0]][1];
                         }
+                        // this really only handles hierarchies w/ up to 3 levels (like Fund Type)
+                        // tweak this code if there is a drilldown hierarchy w/ more than 3 levels
                         if(init.length > 2){
                             name = init[2];
-                            lowerView = 'Expense Line';
-                            filter['Department Slug'] = name;
-                            title = self.findWhere(filter).get('Department');
+                            lowerView = self.hierarchy[init[0]][2];
+                            key = init[1] + ' Slug'
+                            filter[key] = name;
+                            //set title?
+                            //title = self.findWhere(filter).get('Department');
                         }
                         self.updateTables(lowerView, title, filter, year);
                     }
@@ -985,7 +990,6 @@
             this.collection.bootstrap(init, year);
         },
         getInitYear: function(view, topName, secondName){
-            console.log("*** in Router getInitYear")
             var init = [view];
             var top = topName;
             var idx = topName.indexOf('?');
