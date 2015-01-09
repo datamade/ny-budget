@@ -11,11 +11,9 @@ var BudgetHelpers = {
   },
   // Given a year and category, returns the column name to search for
   getColumnName: function(year, category){
-      var next_year = (year+1)%100;
-      if (next_year === 0){next_year = '00'}
-      else if (next_year < 10){next_year = '0'+next_year}
-      var col_name = year + '-' + next_year + '  ' + category;
-      return col_name
+    var year_range = this.convertYearToRange(year)
+    var col_name = year_range + '  ' + category;
+    return col_name
   },
   convertToMoney: function(input) {
     if (isNaN(input)){
