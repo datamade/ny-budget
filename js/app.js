@@ -702,7 +702,7 @@
             }
             if (this.$el.next().hasClass('expanded-content')){
                 this.$el.next().remove();
-                this.$el.find('img').attr('src', 'images/expand.png')
+                this.$el.find('i').attr('class', 'fa fa-caret-right fa-lg fa-fw')
             } else {
                 var filter = {};
                 var type = this.model.get('type');
@@ -736,7 +736,7 @@
                 this.detailView = new app.BreakdownDetail({model:this.model});
                 this.detailView.render().$el.insertAfter(this.$el);
                 this.detailView.updateChart();
-                this.$el.find('img').attr('src', 'images/collapse.png')
+                this.$el.find('i').attr('class', 'fa fa-caret-down fa-lg fa-fw')
 
                 sel_chart_slug = "#"+this.model.get('slug') + "-selected-chart"
                 if(this.model.get('appropChange') == null){
