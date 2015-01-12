@@ -20,7 +20,8 @@ var BudgetHelpers = {
       return null
     }
     else {
-      return accounting.formatMoney(input)
+      // to show decimals, return accounting.formatMoney(input)
+      return accounting.formatMoney(input, '$', 0)
     }
   },
   convertYearToRange: function(year){
