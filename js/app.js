@@ -39,7 +39,7 @@
                 'appropChange': appropChange,
                 'viewYear': year,
                 'prevYear': year - 1,
-                'yearRange': BudgetHelpers.convertYearToRange(year),
+                'viewYearRange': BudgetHelpers.convertYearToRange(year),
                 'prevYearRange': BudgetHelpers.convertYearToRange(year-1)
             });
         }
