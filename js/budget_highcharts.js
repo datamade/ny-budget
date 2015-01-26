@@ -29,7 +29,7 @@ window.mainChartOpts = {
         x: -20,
         y: 10,
         floating: true,
-        backgroundColor: "#ffffff",
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
         borderColor: "#cccccc"
       },
       plotOptions: {
@@ -64,13 +64,13 @@ window.mainChartOpts = {
           $.each(this.points, function(i, point) {
             s = "<strong>" + year_range + "</strong><br /><span style=\"color: " + point.series.color + "\">" + point.series.name + ":</span> $" + Highcharts.numberFormat(point.y, 0);
           });
-          
+
           return s;
         },
         shared: true
       },
       xAxis: {
-        gridLineColor: "#ddd",
+        gridLineColor: "#eee",
         gridLineWidth: 1,
         type: "datetime",
         tickInterval: 365 * 24 * 36e5, // one week
@@ -79,7 +79,7 @@ window.mainChartOpts = {
         }
       },
       yAxis: {
-        gridLineColor: "#ddd",
+        gridLineColor: "#eee",
         lineWidth: 1,
         labels: {
           formatter: function() { return window.formatAmount(this.value); }
