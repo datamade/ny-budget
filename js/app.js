@@ -255,8 +255,12 @@
         },
         initDataTable: function(){
             console.log("*** in BudgetColl initDataTable")
+            var sort_col = 2
+            if (this.mainChartData.get('selectedApprop')){
+                sort_col = 1
+            };
             this.dataTable = $("#breakdown").dataTable({
-                "aaSorting": [[1, "desc"]],
+                "aaSorting": [[sort_col, "desc"]],
                 "aoColumns": [
                     null,
                     {'sType': 'currency'},
