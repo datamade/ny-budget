@@ -97,22 +97,20 @@ a.details:hover, a.details:active, a.details:visited, a.details:link { text-deco
 }
 
 /* Bars */
-  .bars span { border-style: solid; border-width: 5px 0; display: block; height: 1px; margin: 1px 0; text-indent: -5000px;}
+  .bars span { height: 12px; display: block; text-indent: -5000px; margin: 4px;}
 
 .bars .budgeted {
-    background: none repeat scroll 0 0 #6e6e6e;
-    border-color: #6e6e6e;
+    background-color: #6e6e6e;
+    border-left: solid 2px #6e6e6e;
 }
 .bars .spent {
-    background: none repeat scroll 0 0 #23387E;
-    border-color: #23387E;
+    background-color: #23387E;
+    border-left: solid 2px #23387E;
 }
 
   /* Colors */
   .appropriations { color: #6e6e6e; }
   .expenditures { color: #23387E; }
-  .bars .appropriations { background: #6e6e6e; border-color: #6e6e6e; }
-  .bars .expenditures { background: #23387E; border-color: #23387E; }
 
 /* Expanded rows */
 #breakdown .expanded-content td {

@@ -88,12 +88,16 @@
                 $('.expenditures.num').hide();
                 $('#scorecard-app').show();
                 $('#scorecard-exp').hide();
+                $('.budgeted').show();
+                $('.spent').hide();
             };
             if(total_app == 0){
                 $('.expenditures.num').show();
                 $('.appropriations.num').hide();
                 $('#scorecard-exp').show();
                 $('#scorecard-app').hide();
+                $('.spent').show();
+                $('.budgeted').hide();
             };
         }
     });
@@ -240,12 +244,16 @@
                 $('.expenditures.num').hide();
                 $('#scorecard-app').show();
                 $('#scorecard-exp').hide();
+                $('.budgeted').show();
+                $('.spent').hide();
             };
             if(total_app == 0){
                 $('.expenditures.num').show();
                 $('.appropriations.num').hide();
                 $('#scorecard-exp').show();
                 $('#scorecard-app').hide();
+                $('.spent').show();
+                $('.budgeted').hide();
             };
 
             this.mainChartView = new app.MainChartView({
