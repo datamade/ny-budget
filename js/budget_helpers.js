@@ -25,6 +25,8 @@ var BudgetHelpers = {
     }
   },
   convertYearToRange: function(year){
+    // 2015 -> 2014-15
+    year = year - 1
     var next_year = (parseInt(year)+1)%100;
     if (next_year === 0){next_year = '00'}
     else if (next_year < 10){next_year = '0'+next_year}

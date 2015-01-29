@@ -46,7 +46,7 @@ window.mainChartOpts = {
       tooltip: {
         borderColor: "#000",
         formatter: function() {
-          year = parseInt(Highcharts.dateFormat("%Y", this.x))
+          year = parseInt(Highcharts.dateFormat("%Y", this.x)) - 1
           var next_year = (year+1)%100;
           if (next_year === 0){next_year = '00'}
           else if (next_year < 10){next_year = '0'+next_year}

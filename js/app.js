@@ -2,9 +2,9 @@
     var app = {}
 
     // Configuration variables to set
-    startYear   = 1994;  // first year of budget data
-    endYear     = 2015;  // last year of budget data
-    activeYear  = 2015;  // default year to select
+    startYear   = 1995;  // first year of budget data
+    endYear     = 2016;  // last year of budget data
+    activeYear  = 2016;  // default year to select
     debugMode   = false; // change to true for debugging message in the javascript console
     municipalityName = 'State of New York'; // name of budget municipality 
     apropTitle  = 'Estimates'; // label for first chart line
