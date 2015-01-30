@@ -52,6 +52,18 @@ var BudgetHelpers = {
     })
     return adjusted
   },
+  unadjustedObj: function(series, startYear){
+    var year = startYear;
+    var values = {};
+    $.each(series, function(i, val){
+      if (isNaN(val))
+        values[year] = null;
+      else
+        values[year] = parseInt(val/1000)
+      year = year + 1
+    })
+    return values
+  },
 
   // Builds a cache of templates that get fetched and rendered by views
   template_cache: function(tmpl_name, tmpl_data){

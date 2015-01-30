@@ -636,9 +636,15 @@
                   // This only takes one series in the tooltip - makes estimate override expenditure if estimate exists
                   // (this is for when app & exp span different years, & is necessary
                   // b/c of the hack to fill in the space between apps & exps)
-                  $.each(this.points, function(i, point) {
-                    s = "<strong>" + year_range + "</strong><br /><span style=\"color: " + point.series.color + "\">" + point.series.name + ":</span> $" + Highcharts.numberFormat(point.y, 0);
-                  });
+                    var series_name;
+                    $.each(this.points, function(i, point) {
+                        s = "<strong>" + year_range + "</strong><br /><span style=\"color: " + point.series.color + "\">" + point.series.name + ":</span> $" + Highcharts.numberFormat(point.y, 0);
+                        series_name = point.series.name;
+                    });
+                    var unadjusted = {}
+                    unadjusted['Actuals'] = BudgetHelpers.unadjustedObj(exps, startYear)
+                    unadjusted['Estimates'] = BudgetHelpers.unadjustedObj(approps, startYear)
+                    s+= "<br><span style=\"color:#7e7e7e\">(Unadjusted: "+ BudgetHelpers.convertToMoney(unadjusted[series_name][year])+"k)</span>"
 
                   return s;
                 },
