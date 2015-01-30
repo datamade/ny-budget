@@ -82,7 +82,7 @@ a.details:hover, a.details:active, a.details:visited, a.details:link { text-deco
 #breakdown .num { text-align: right; }
 #breakdown td, #breakdown th { border: 0px; border-bottom: 1px solid #ddd; font-size: 14px; padding: 0.3em 10px; }
 #breakdown th { background: #dddddd; font-size: 12px; font-weight: bold; text-align: left; }
-#breakdown th.charts { width: 50%; }
+#breakdown th.bars { width: 15%; }
 #breakdown th.controls { width: 20px; }
 #breakdown th span { color: #1b3364; cursor: pointer; }
 
