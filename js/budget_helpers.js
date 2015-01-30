@@ -39,6 +39,19 @@ var BudgetHelpers = {
     else{ var pretty = parseInt(percent)+'%'; }
     return pretty
   },
+  inflationAdjust: function(series, inflation_idx, benchmark, startYear){
+    var year = startYear;
+    var adjusted = [];
+    $.each(series, function(i, val){
+      if (isNaN(val))
+        val = null;
+      else if (inflation_idx[year])
+        val = parseInt(val/inflation_idx[year]*inflation_idx[benchmark]);
+      adjusted.push(val);
+      year = year + 1
+    })
+    return adjusted
+  },
 
   // Builds a cache of templates that get fetched and rendered by views
   template_cache: function(tmpl_name, tmpl_data){

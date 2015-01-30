@@ -10,6 +10,16 @@
     apropTitle  = 'Estimates'; // label for first chart line
     expendTitle = 'Actuals';   // label for second chart line
 
+    // Inflation Index (for inflation adjusted dollars)
+    benchmark = 2015;
+    inflation_idx = {
+        1995: 149.3, 1996: 153.4, 1997: 158.0, 1998: 161.1, 1999: 163.7,
+        2000: 167.9, 2001: 173.6, 2002: 177.6, 2003: 181.2, 2004: 184.8,
+        2005: 190.3, 2006: 197.0, 2007: 202.8, 2008: 209.5, 2009: 215.2,
+        2010: 215.8, 2011: 219.2, 2012: 226.5, 2013: 230.6, 2014: 233.8,
+        2015: 237.3
+    }
+
     // CSV data source for budget data
     dataSource  = window.location.origin + '/data/budget_cleaned.csv';
     
@@ -565,22 +575,9 @@
                 console.log(approps);
             }
 
-            var exp = [];
-            var approp = [];
-            $.each(exps, function(i, e){
-                if (isNaN(e))
-                    e = null;
-                else
-                    e = parseInt(e);
-                exp.push(e);
-            })
-            $.each(approps, function(i, e){
-                if (isNaN(e))
-                    e = null;
-                else
-                    e = parseInt(e);
-                approp.push(e);
-            });
+            var exp = BudgetHelpers.inflationAdjust(exps, inflation_idx, benchmark, startYear);
+            var approp = BudgetHelpers.inflationAdjust(approps, inflation_idx, benchmark, startYear);
+
             var minValuesArray = $.grep(approp.concat(exp),
               function(val) { return val != null; });
             var globalOpts = app.GlobalChartOpts;
