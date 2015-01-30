@@ -33,6 +33,12 @@ var BudgetHelpers = {
     var year_range = year + '-' + next_year
     return year_range
   },
+  prettyPercent: function(num, denom){
+    var percent = parseFloat((num/denom) * 100)
+    if (percent > 0 && percent < 1){ var pretty = '<1%'; }
+    else{ var pretty = parseInt(percent)+'%'; }
+    return pretty
+  },
 
   // Builds a cache of templates that get fetched and rendered by views
   template_cache: function(tmpl_name, tmpl_data){

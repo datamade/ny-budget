@@ -65,6 +65,8 @@
                 row.yearIndex = index;
                 all_nums.push(row.get('appropriations'));
                 all_nums.push(row.get('expenditures'));
+                total_exp = total_exp + row.get('expenditures')
+                total_app = total_app + row.get('appropriations')
             });
             all_nums = all_nums.filter(Boolean);
             this.maxNum = all_nums.sort(function(a,b){return b-a})[0];
@@ -74,26 +76,27 @@
                 var exps = row.get('expenditures');
                 if (isNaN(apps)){apps = 0};
                 if (isNaN(exps)){exps = 0};
-                total_app = total_app + apps
-                total_exp = total_exp + exps
 
-                var app_perc = parseFloat((apps/self.maxNum) * 100) + '%';
-                var exp_perc = parseFloat((exps/self.maxNum) * 100) + '%';
-                row.set({app_perc:app_perc, exp_perc:exp_perc});
+                var exp_perc = BudgetHelpers.prettyPercent(exps, total_exp);
+                var app_perc = BudgetHelpers.prettyPercent(apps, total_app);
+
+                var app_perc_bar = parseFloat((apps/self.maxNum) * 100) + '%';
+                var exp_perc_bar = parseFloat((exps/self.maxNum) * 100) + '%';
+                row.set({app_perc_bar:app_perc_bar, exp_perc_bar:exp_perc_bar, app_perc:app_perc, exp_perc:exp_perc});
             });
 
             // hide column in table if all zeros
-            if(total_exp == 0){
-                $('.appropriations.num').show();
-                $('.expenditures.num').hide();
+            if(isNaN(total_exp)){
+                $('.appropriations').show();
+                $('.expenditures').hide();
                 $('#scorecard-app').show();
                 $('#scorecard-exp').hide();
                 $('.budgeted').show();
                 $('.spent').hide();
             };
-            if(total_app == 0){
-                $('.expenditures.num').show();
-                $('.appropriations.num').hide();
+            if(isNaN(total_app)){
+                $('.expenditures').show();
+                $('.appropriations').hide();
                 $('#scorecard-exp').show();
                 $('#scorecard-app').hide();
                 $('.spent').show();
@@ -197,6 +200,8 @@
             // chartGuts holds the values of the view (e.g. fund)
             var chartGuts = this.pluck(view).getUnique();
             var all_nums = []
+            var total_exp = 0
+            var total_app = 0
             console.log("   *** loop through chartGuts(x13)")
             $.each(chartGuts, function(i, name){
                 console.log("   *** inside loop, calls getSummary")
@@ -210,9 +215,12 @@
                     bd.push(row);
                     all_nums.push(summary['expenditures']);
                     all_nums.push(summary['appropriations']);
+                    total_exp = total_exp + summary['expenditures']
+                    total_app = total_app + summary['appropriations']
                 }
             });
             console.log("   *** loop through chartGuts finish")
+
 
             if (debugMode == true) console.log("all breakdown numbers: " + all_nums);
             all_nums = all_nums.filter(Boolean);
@@ -221,16 +229,14 @@
             this.breakdownChartData.maxNum = maxNum;
             if (debugMode == true) console.log("max bar chart num: " + maxNum);
             console.log("   *** loop through breakdownChartData.forEach (x13)")
-            var total_exp = 0
-            var total_app = 0
             this.breakdownChartData.forEach(function(row){
                 var exps = accounting.unformat(row.get('expenditures'));
                 var apps = accounting.unformat(row.get('appropriations'));
-                total_exp = total_exp + exps
-                total_app = total_app + apps
-                var exp_perc = parseFloat((exps/maxNum) * 100) + '%';
-                var app_perc = parseFloat((apps/maxNum) * 100) + '%';
-                row.set({app_perc:app_perc, exp_perc:exp_perc});
+                var exp_perc = BudgetHelpers.prettyPercent(exps, total_exp);
+                var app_perc = BudgetHelpers.prettyPercent(apps, total_app);
+                var exp_perc_bar = parseFloat((exps/maxNum) * 100) + '%';
+                var app_perc_bar = parseFloat((apps/maxNum) * 100) + '%';
+                row.set({app_perc_bar:app_perc_bar, exp_perc_bar:exp_perc_bar, app_perc:app_perc, exp_perc:exp_perc});
                 var rowView = new app.BreakdownSummary({model:row});
                 // add all content to the sortable table html
                 $('#breakdown-table-body').append(rowView.render().el);
@@ -239,17 +245,17 @@
             console.log("   *** loop through breakdownChartData.forEach finish")
 
             // hide column in table if all zeros
-            if(total_exp == 0){
-                $('.appropriations.num').show();
-                $('.expenditures.num').hide();
+            if(isNaN(total_exp)){
+                $('.appropriations').show();
+                $('.expenditures').hide();
                 $('#scorecard-app').show();
                 $('#scorecard-exp').hide();
                 $('.budgeted').show();
                 $('.spent').hide();
             };
-            if(total_app == 0){
-                $('.expenditures.num').show();
-                $('.appropriations.num').hide();
+            if(isNaN(total_app)){
+                $('.expenditures').show();
+                $('.appropriations').hide();
                 $('#scorecard-exp').show();
                 $('#scorecard-app').hide();
                 $('.spent').show();
@@ -263,7 +269,7 @@
         },
         initDataTable: function(){
             console.log("*** in BudgetColl initDataTable")
-            var sort_col = 2
+            var sort_col = 3
             if (this.mainChartData.get('selectedApprop')){
                 sort_col = 1
             };
@@ -271,6 +277,8 @@
                 "aaSorting": [[sort_col, "desc"]],
                 "aoColumns": [
                     null,
+                    {'sType': 'currency'},
+                    {'sType': 'currency'},
                     {'sType': 'currency'},
                     {'sType': 'currency'},
                     null
@@ -701,7 +709,9 @@
                 expenditures: {selector: '[name="expenditures"]', converter: this.moneyChanger},
                 appropriations: {selector: '[name="appropriations"]', converter: this.moneyChanger},
                 app_perc: {selector: '[name=app_perc]'},
-                exp_perc: {selector: '[name=exp_perc]'}
+                exp_perc: {selector: '[name=exp_perc]'},
+                app_perc_bar: {selector: '[name=app_perc_bar]'},
+                exp_perc_bar: {selector: '[name=exp_perc_bar]'}
             });
             return this;
         },
