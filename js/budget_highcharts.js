@@ -43,32 +43,6 @@ window.mainChartOpts = {
         }
       },
       title: null,
-      tooltip: {
-        borderColor: "#000",
-        formatter: function() {
-          year = parseInt(Highcharts.dateFormat("%Y", this.x)) - 1
-          var next_year = (year+1)%100;
-          if (next_year === 0){next_year = '00'}
-          else if (next_year < 10){next_year = '0'+next_year}
-          var year_range = year + '-' + next_year
-          // // Use this code to display both series in the tooltip
-          // // (for when years have both app & exp data)
-          // var s = "<strong>" + year_range + "</strong>";
-          // $.each(this.points, function(i, point) {
-          //   s += "<br /><span style=\"color: " + point.series.color + "\">" + point.series.name + ":</span> $" + Highcharts.numberFormat(point.y, 0);
-          // });
-          
-          // This only takes one series in the tooltip - makes estimate override expenditure if estimate exists
-          // (this is for when app & exp span different years, & is necessary
-          // b/c of the hack to fill in the space between apps & exps)
-          $.each(this.points, function(i, point) {
-            s = "<strong>" + year_range + "</strong><br /><span style=\"color: " + point.series.color + "\">" + point.series.name + ":</span> $" + Highcharts.numberFormat(point.y, 0);
-          });
-
-          return s;
-        },
-        shared: true
-      },
       xAxis: {
         gridLineColor: "#eee",
         gridLineWidth: 1,
