@@ -24,9 +24,9 @@ window.mainChartOpts = {
       },
       credits: { enabled: false },
       legend: {
-        align: "right",
+        align: "left",
         verticalAlign: "top",
-        x: -20,
+        x: 80,
         y: 10,
         floating: true,
         backgroundColor: 'rgba(255, 255, 255, 0.1)',
