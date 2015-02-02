@@ -620,6 +620,9 @@
                 name: globalOpts.expendTitle
             }];
             this.chartOpts.yAxis.min = 0
+            this.chartOpts.yAxis.title = {
+                enabled: true,
+                text: 'Adjusted '+benchmark+' dollars'}
             this.chartOpts.tooltip = {
                 borderColor: "#000",
                 formatter: function() {
@@ -638,21 +641,18 @@
                   // b/c of the hack to fill in the space between apps & exps)
                     var series_name;
                     $.each(this.points, function(i, point) {
-                        s = "<strong>" + year_range + "</strong><br /><span style=\"color: " + point.series.color + "\">" + point.series.name + ":</span> $" + Highcharts.numberFormat(point.y, 0);
+                        s = "<strong>" + year_range + " <span style=\"color: " + point.series.color + "\">" + point.series.name + "</span></strong><br />Real: $" + Highcharts.numberFormat(point.y, 0);
                         series_name = point.series.name;
                     });
                     var unadjusted = {}
                     unadjusted['Actuals'] = BudgetHelpers.unadjustedObj(exps, startYear)
                     unadjusted['Estimates'] = BudgetHelpers.unadjustedObj(approps, startYear)
-                    s+= "<br><span style=\"color:#7e7e7e\">(Unadjusted: "+ BudgetHelpers.convertToMoney(unadjusted[series_name][year])+"k)</span>"
+                    s+= "<br><span style=\"color:#7e7e7e\">Nominal: "+ BudgetHelpers.convertToMoney(unadjusted[series_name][year])+"</span>"
 
-                  return s;
+                    return s;
                 },
                 shared: true
             }
-
-
-
 
             var selectedYearIndex = year - collection.startYear;
             this.highChart = new Highcharts.Chart(this.chartOpts, function(){

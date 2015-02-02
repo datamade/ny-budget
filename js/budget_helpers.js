@@ -59,7 +59,7 @@ var BudgetHelpers = {
       if (isNaN(val))
         values[year] = null;
       else
-        values[year] = parseInt(val/1000)
+        values[year] = parseInt(val)
       year = year + 1
     })
     return values
