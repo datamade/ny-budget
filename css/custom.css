@@ -170,3 +170,9 @@ a.breakdown-choice:hover{
 }
 
 .about { font-size: 16px;}
+
+.tooltip > .tooltip-inner{
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #333;
+}
