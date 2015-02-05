@@ -4,7 +4,7 @@ import xlrd
 def cleanup():
     # no longer need to convert from excel
     # csv_from_excel('SpendingData.xlsx', 'SpendingData.csv')
-    f = open('NYSDOB_Exec_Budget&Actuals.csv', 'rU')
+    f = open('budget_raw.csv', 'rU')
     reader = csv.DictReader(f)
     all_rows = []
     for row in reader:
