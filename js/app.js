@@ -876,21 +876,21 @@
                 delete this.highChart;
             }
             var data = this.model;
-            var exp = [];
-            var approp = [];
+            var nom_exps = [];
+            var nom_approps = [];
             $.each(data.allExpenditures, function(i, e){
                 if (isNaN(e)){
                     e = null;
                 }
-                exp.push(e);
+                nom_exps.push(e);
             })
             $.each(data.allAppropriations, function(i, e){
                 if (isNaN(e)){
                     e = null;
                 }
-                approp.push(e);
+                nom_approps.push(e);
             });
-            var minValuesArray = $.grep(approp.concat(exp),
+            var minValuesArray = $.grep(nom_approps.concat(nom_exps),
               function(val) { return val != null; });
             if (debugMode == true){
                 console.log("minValuesArray");
@@ -916,20 +916,20 @@
                 }
 
             // adjust for inflation
-            exp = BudgetHelpers.inflationAdjust(exp, inflation_idx, benchmark, startYear);
-            approp = BudgetHelpers.inflationAdjust(approp, inflation_idx, benchmark, startYear);
+            exps = BudgetHelpers.inflationAdjust(nom_exps, inflation_idx, benchmark, startYear);
+            approps = BudgetHelpers.inflationAdjust(nom_approps, inflation_idx, benchmark, startYear);
 
             // copy over the last actual value as first estimated value, to fill gap in line
-            for (var i = 1; i < approp.length; i++) {
-                if (approp[i]!==null && exp[i-1]!==null){
-                    extra_point['y']= exp[i-1]
-                    approp[i-1] = extra_point
+            for (var i = 1; i < approps.length; i++) {
+                if (approps[i]!==null && exps[i-1]!==null){
+                    extra_point['y']= exps[i-1]
+                    approps[i-1] = extra_point
                 }
             }
 
             this.chartOpts.series = [{
                 color: globalOpts.apropColor,
-                data: approp,
+                data: approps,
                 marker: {
                   radius: 4,
                   symbol: globalOpts.apropSymbol
@@ -937,13 +937,43 @@
                 name: globalOpts.apropTitle
               }, {
                 color: globalOpts.expendColor,
-                data: exp,
+                data: exps,
                 marker: {
                   radius: 5,
                   symbol: globalOpts.expendSybmol
                 },
                 name: globalOpts.expendTitle
               }]
+
+            this.chartOpts.tooltip = {
+                borderColor: "#000",
+                formatter: function() {
+                  year = parseInt(Highcharts.dateFormat("%Y", this.x))
+                  var year_range = BudgetHelpers.convertYearToRange(year);
+                
+                  // // Use this code to display both series in the tooltip
+                  // // (for when years have both app & exp data)
+                  // var s = "<strong>" + year_range + "</strong>";
+                  // $.each(this.points, function(i, point) {
+                  //   s += "<br /><span style=\"color: " + point.series.color + "\">" + point.series.name + ":</span> $" + Highcharts.numberFormat(point.y, 0);
+                  // });
+                  
+                  // This only takes one series in the tooltip - makes estimate override expenditure if estimate exists
+                  // (this is for when app & exp span different years, & is necessary
+                  // b/c of the hack to fill in the space between apps & exps)
+                    var series_name;
+                    $.each(this.points, function(i, point) {
+                        s = "<strong>" + year_range + " <span style=\"color: " + point.series.color + "\">" + point.series.name + "</span></strong><br />Real: $" + Highcharts.numberFormat(point.y, 0);
+                        series_name = point.series.name;
+                    });
+                    var unadjusted = {}
+                    unadjusted['Actuals'] = BudgetHelpers.unadjustedObj(nom_exps, startYear)
+                    unadjusted['Estimates'] = BudgetHelpers.unadjustedObj(nom_approps, startYear)
+                    s+= "<br><span style=\"color:#7e7e7e\">Nominal: "+ BudgetHelpers.convertToMoney(unadjusted[series_name][year])+"</span>"
+                    return s;
+                },
+                shared: true
+            }
             // select current year
             var selectedYearIndex = this.model.get('year') - collection.startYear;
             this.highChart = new Highcharts.Chart(this.chartOpts, function(){

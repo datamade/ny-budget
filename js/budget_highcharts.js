@@ -82,17 +82,6 @@ window.sparkLineOpts =  {
           }
         },
         title: null,
-        tooltip: {
-          borderColor: "#000",
-          formatter: function() {
-            var s = "<strong>" + Highcharts.dateFormat("%Y", this.x) + "</strong>";
-            $.each(this.points, function(i, point) {
-              s += "<br /><span style=\"color: " + point.series.color + "\">" + point.series.name + ":</span> $" + Highcharts.numberFormat(point.y, 0);
-            });
-            return s;
-          },
-          shared: true
-        },
         xAxis: {
           dateTimeLabelFormats: { year: "%Y" },
           gridLineWidth: 0,
