@@ -434,6 +434,7 @@
             $.each(guts, function(i, item){
                 summary['rowName'] = item.get(view);
                 summary['prevYear'] = year - 1;
+                summary['prevYearRange'] = BudgetHelpers.convertYearToRange(year-1)
                 summary['year'] = year;
                 summary['description'] = item.get(view + ' Description');
                 summary['expenditures'] = self.reduceTotals(exp);
@@ -795,12 +796,16 @@
 
                 sel_chart_slug = "#"+this.model.get('slug') + "-selected-chart"
                 if(this.model.get('appropChange') == null){
-                    $(sel_chart_slug).parent().find('.sparkline-spent').show()
                     $(sel_chart_slug).parent().find('.sparkline-budgeted').hide()
                 }
+                else{
+                    $(sel_chart_slug).parent().find('.sparkline-budgeted').show()
+                }
                 if(this.model.get('expChange') == null){
-                    $(sel_chart_slug).parent().find(".sparkline-budgeted").show()
                     $(sel_chart_slug).parent().find(".sparkline-spent").hide()
+                }
+                else{
+                    $(sel_chart_slug).parent().find(".sparkline-spent").show()
                 }
             }
         }
@@ -822,7 +827,7 @@
             console.log("*** in BreakdownDetail render")
             this.$el.html(BudgetHelpers.template_cache('breakdownDetail', {model: this.model}));
             this._modelBinder.bind(this.model, this.el, {
-                prevYearRange: '.prevYear',
+                prevYearRange: '.prevYearRange',
                 expChange: '.expChange',
                 appropChange: '.appropChange'
             });
