@@ -623,7 +623,7 @@
             this.chartOpts.yAxis.min = 0
             this.chartOpts.yAxis.title = {
                 enabled: true,
-                text: 'Adjusted '+benchmark+' dollars'}
+                text: 'Real dollars ('+benchmark+')'}
             this.chartOpts.tooltip = {
                 borderColor: "#000",
                 formatter: function() {
@@ -905,6 +905,8 @@
             this.chartOpts.plotOptions.area.pointStart = Date.UTC(collection.startYear, 1, 1)
             this.chartOpts.yAxis.min = Math.min.apply( Math, minValuesArray )
             this.chartOpts.plotOptions.series.point.events.click = this.pointClick;
+            this.chartOpts.yAxis.title = {  enabled: true,
+                                            text: 'Real dollars ('+benchmark+')' }
             var extra_point = {
                     y: 0,
                     marker: {
