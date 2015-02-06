@@ -43,7 +43,7 @@ var BudgetHelpers = {
     var year = startYear;
     var adjusted = [];
     $.each(series, function(i, val){
-      if (isNaN(val))
+      if (isNaN(val) || val == null)
         val = null;
       else if (inflation_idx[year])
         val = parseInt(val/inflation_idx[year]*inflation_idx[benchmark]);

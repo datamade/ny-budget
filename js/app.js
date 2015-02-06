@@ -896,6 +896,7 @@
                 console.log("minValuesArray");
                 console.log(minValuesArray);
             }
+
             var globalOpts = app.GlobalChartOpts;
             // chart options for detail charts
             this.chartOpts.chart.renderTo = data.get('slug') + "-selected-chart";
@@ -911,6 +912,11 @@
                     },
                     enableMouseTracking: false
                 }
+
+            // adjust for inflation
+            exp = BudgetHelpers.inflationAdjust(exp, inflation_idx, benchmark, startYear);
+            approp = BudgetHelpers.inflationAdjust(approp, inflation_idx, benchmark, startYear);
+
             // copy over the last actual value as first estimated value, to fill gap in line
             for (var i = 1; i < approp.length; i++) {
                 if (approp[i]!==null && exp[i-1]!==null){
@@ -918,6 +924,7 @@
                     approp[i-1] = extra_point
                 }
             }
+
             this.chartOpts.series = [{
                 color: globalOpts.apropColor,
                 data: approp,
