@@ -115,17 +115,9 @@ var BudgetHelpers = {
         return null
     }
     if (isNaN(prev_app)){
-        var change = parseFloat(((cur_app - prev_exp) / prev_exp) * 100);
+      var change = BudgetHelpers.calc_change(cur_app, prev_exp);
     } else{
-        var change = parseFloat(((cur_app - prev_app) / prev_app) * 100);
-    }
-    if (isNaN(change)){
-        return null
-    }
-    if (change < 0){
-        change = change.toFixed(1) + '%';
-    } else {
-        change = '+' + change.toFixed(1) + '%';
+      var change = BudgetHelpers.calc_change(cur_app, prev_app)
     }
     return change
   },
