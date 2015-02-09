@@ -1,23 +1,3 @@
-app.MainChartModel = Backbone.Model.extend({
-    setYear: function(year, index){
-        console.log("*** in MainChartModel setYear")
-        var exp = this.get('expenditures');
-        var approp = this.get('appropriations');
-        var expChange = BudgetHelpers.calc_change(exp[index], exp[index - 1]);
-        var appropChange = BudgetHelpers.calc_approp_change(approp[index], approp[index - 1], exp[index - 1]);
-        this.set({
-            'selectedExp': BudgetHelpers.convertToMoney(exp[index]),
-            'selectedApprop': BudgetHelpers.convertToMoney(approp[index]),
-            'expChange': expChange,
-            'appropChange': appropChange,
-            'viewYear': year,
-            'prevYear': year - 1,
-            'viewYearRange': BudgetHelpers.convertYearToRange(year),
-            'prevYearRange': BudgetHelpers.convertYearToRange(year-1)
-        });
-    }
-});
-
 app.BreakdownRow = Backbone.Model.extend({
     yearIndex: null
 });
