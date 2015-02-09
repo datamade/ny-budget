@@ -37,24 +37,6 @@ app.BreakdownColl = Backbone.Collection.extend({
             var exp_perc_bar = parseFloat((exps/self.maxNum) * 100) + '%';
             row.set({app_perc_bar:app_perc_bar, exp_perc_bar:exp_perc_bar, app_perc:app_perc, exp_perc:exp_perc});
         });
-
-        // hide column in table if all zeros
-        if(isNaN(total_exp)){
-            $('.appropriations').show();
-            $('.expenditures').hide();
-            $('#scorecard-app').show();
-            $('#scorecard-exp').hide();
-            $('.budgeted').show();
-            $('.spent').hide();
-        };
-        if(isNaN(total_app)){
-            $('.expenditures').show();
-            $('.appropriations').hide();
-            $('#scorecard-exp').show();
-            $('#scorecard-app').hide();
-            $('.spent').show();
-            $('.budgeted').hide();
-        };
     }
 });
 

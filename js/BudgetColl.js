@@ -14,6 +14,7 @@ app.BudgetColl = Backbone.Collection.extend({
         this.breakdownChartData.setRows(year, yearIndex);
         this.dataTable.fnDestroy();
         this.initDataTable();
+        this.hideMissing();
         $.each(expanded, function(i, name){
             var sel = 'a.details:contains("' + name + '")';
             $(sel).first().trigger('click');
@@ -58,9 +59,7 @@ app.BudgetColl = Backbone.Collection.extend({
         }
         var yearRange = this.getYearRange()
         //loop through years in range & get estimated & actual values for line chart
-        console.log("*** in BudgetColl updateTables    loop through each year & getTotals for exp/app")
         $.each(yearRange, function(i, year){
-            console.log("*** loop calls getTotals")
             exp_col_name = BudgetHelpers.getColumnName(year, expendTitle);
             approp_col_name = BudgetHelpers.getColumnName(year, apropTitle);
 
@@ -95,9 +94,7 @@ app.BudgetColl = Backbone.Collection.extend({
         var all_nums = []
         var total_exp = 0
         var total_app = 0
-        console.log("   *** loop through chartGuts(x13)")
         $.each(chartGuts, function(i, name){
-            console.log("   *** inside loop, calls getSummary")
             if (!incomingFilter){
                 filter = {}
             }
@@ -112,8 +109,6 @@ app.BudgetColl = Backbone.Collection.extend({
                 total_app = total_app + summary['appropriations']
             }
         });
-        console.log("   *** loop through chartGuts finish")
-
 
         if (debugMode == true) console.log("all breakdown numbers: " + all_nums);
         all_nums = all_nums.filter(Boolean);
@@ -137,28 +132,11 @@ app.BudgetColl = Backbone.Collection.extend({
         });
         console.log("   *** loop through breakdownChartData.forEach finish")
 
-        // hide column in table if all zeros
-        if(isNaN(total_exp)){
-            $('.appropriations').show();
-            $('.expenditures').hide();
-            $('#scorecard-app').show();
-            $('#scorecard-exp').hide();
-            $('.budgeted').show();
-            $('.spent').hide();
-        };
-        if(isNaN(total_app)){
-            $('.expenditures').show();
-            $('.appropriations').hide();
-            $('#scorecard-exp').show();
-            $('#scorecard-app').hide();
-            $('.spent').show();
-            $('.budgeted').hide();
-        };
-
         this.mainChartView = new app.MainChartView({
             model: self.mainChartData
         });
         this.initDataTable();
+        this.hideMissing();
     },
     initDataTable: function(){
         console.log("*** in BudgetColl initDataTable")
@@ -197,7 +175,6 @@ app.BudgetColl = Backbone.Collection.extend({
                     console.log(data);
                 }
                 var loadit = []
-                console.log("*** in BudgetColl bootstrap - start loop through rows")
                 $.each(json, function(i, j){
                     if (debugMode == true){
                         console.log("Process row");
@@ -218,7 +195,6 @@ app.BudgetColl = Backbone.Collection.extend({
 
                     loadit.push(j)
                 });
-                console.log("*** in BudgetColl bootstrap - finish loop through rows")
                 self.reset(loadit);
                 if (debugMode == true){
                     console.log("Reset loadit");
@@ -350,5 +326,33 @@ app.BudgetColl = Backbone.Collection.extend({
         } else {
             return null
         }
-    }
+    },
+    hideMissing: function(){
+        console.log("*** in BudgetColl hideMissing")
+
+        sel_exp = this.mainChartData.get('selectedExp')
+        sel_app = this.mainChartData.get('selectedApprop')
+
+        console.log(sel_app)
+        if(sel_exp == null){
+            $('.expenditures').hide();
+            $('#scorecard-exp').hide();
+            $('.spent').hide();
+        }
+        else{
+            $('.expenditures').show();
+            $('#scorecard-exp').show();
+            $('.spent').show();
+        }
+        if(sel_app == null){
+            $('.appropriations').hide();
+            $('#scorecard-app').hide();
+            $('.budgeted').hide();
+        }
+        else{
+            $('.appropriations').show();
+            $('#scorecard-app').show();
+            $('.budgeted').show();
+        }
+    },
 });
