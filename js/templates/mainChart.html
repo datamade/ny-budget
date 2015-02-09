@@ -53,16 +53,16 @@
             <p id='actual-change-percent'></p>
           </td>
           <td id="scorecard-app">
-            <h2 class="appropriations"><%= model.get('selectedApprop') %></h2>
-            <p class="main-approp">
-              <strong class="appropChange"><%= model.get('appropChange') %>%</strong> budgeted from
+            <h2 class="estimates"><%= model.get('selectedEst') %></h2>
+            <p class="main-est">
+              <strong class="estChange"><%= model.get('estChange') %>%</strong> budgeted from
               <span class="prevYear"><%= model.get('prevYear') %></span>
             </p>
           </td>
           <td id="scorecard-exp">
-            <h2 class="expenditures"><%= model.get('selectedExp') %></h2>
+            <h2 class="actuals"><%= model.get('selectedExp') %></h2>
             <p class="main-exp">
-              <strong class="expChange"><%= model.get('appropChange') %>%</strong> spent from
+              <strong class="expChange"><%= model.get('estChange') %>%</strong> spent from
               <span class="prevYear"><%= model.get('prevYear') %></span>
             </p>
           </td>

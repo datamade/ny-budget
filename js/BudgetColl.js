@@ -45,7 +45,7 @@ app.BudgetColl = Backbone.Collection.extend({
             year = this.activeYear;
         }
         var exp = [];
-        var approp = [];
+        var est = [];
         var self = this;
         var values = this.toJSON();
         if (debugMode == true){
@@ -61,30 +61,30 @@ app.BudgetColl = Backbone.Collection.extend({
         //loop through years in range & get estimated & actual values for line chart
         $.each(yearRange, function(i, year){
             exp_col_name = BudgetHelpers.getColumnName(year, expendTitle);
-            approp_col_name = BudgetHelpers.getColumnName(year, apropTitle);
+            est_col_name = BudgetHelpers.getColumnName(year, apropTitle);
 
             exp.push(self.getTotals(values, exp_col_name));
-            approp.push(self.getTotals(values, approp_col_name));
+            est.push(self.getTotals(values, est_col_name));
         });
         var yearIndex = yearRange.indexOf(parseInt(year))
         var selExp = exp[yearIndex];
         var prevExp = exp[yearIndex - 1];
         var expChange = BudgetHelpers.calc_change(selExp, prevExp);
-        var selApprop = approp[yearIndex];
-        var prevApprop = approp[yearIndex - 1];
-        var appropChange = BudgetHelpers.calc_approp_change(selApprop, prevApprop, prevExp);
+        var selEst = est[yearIndex];
+        var prevEst = est[yearIndex - 1];
+        var estChange = BudgetHelpers.calc_est_change(selEst, prevEst, prevExp);
         this.mainChartData = new app.MainChartModel({
-            expenditures: exp,
-            appropriations: approp,
+            actuals: exp,
+            estimates: est,
             title: title,
             viewYear: year,
             prevYear: year-1,
             viewYearRange: BudgetHelpers.convertYearToRange(year),
             prevYearRange: BudgetHelpers.convertYearToRange(year-1),
             selectedExp: BudgetHelpers.convertToMoney(selExp),
-            selectedApprop: BudgetHelpers.convertToMoney(selApprop),
+            selectedEst: BudgetHelpers.convertToMoney(selEst),
             // this is the +/- percentage summary below main line chart
-            appropChange: appropChange,
+            estChange: estChange,
             expChange: expChange,
             view: self.topLevelView
         });
@@ -103,10 +103,10 @@ app.BudgetColl = Backbone.Collection.extend({
             if (summary){
                 var row = new app.BreakdownRow(summary);
                 bd.push(row);
-                all_nums.push(summary['expenditures']);
-                all_nums.push(summary['appropriations']);
-                total_exp = total_exp + summary['expenditures']
-                total_app = total_app + summary['appropriations']
+                all_nums.push(summary['actuals']);
+                all_nums.push(summary['estimates']);
+                total_exp = total_exp + summary['actuals']
+                total_app = total_app + summary['estimates']
             }
         });
 
@@ -118,8 +118,8 @@ app.BudgetColl = Backbone.Collection.extend({
         if (debugMode == true) console.log("max bar chart num: " + maxNum);
         console.log("   *** loop through breakdownChartData.forEach (x13)")
         this.breakdownChartData.forEach(function(row){
-            var exps = accounting.unformat(row.get('expenditures'));
-            var apps = accounting.unformat(row.get('appropriations'));
+            var exps = accounting.unformat(row.get('actuals'));
+            var apps = accounting.unformat(row.get('estimates'));
             var exp_perc = BudgetHelpers.prettyPercent(exps, total_exp);
             var app_perc = BudgetHelpers.prettyPercent(apps, total_app);
             var exp_perc_bar = parseFloat((exps/maxNum) * 100) + '%';
@@ -141,7 +141,7 @@ app.BudgetColl = Backbone.Collection.extend({
     initDataTable: function(){
         console.log("*** in BudgetColl initDataTable")
         var sort_col = 3
-        if (this.mainChartData.get('selectedApprop')){
+        if (this.mainChartData.get('selectedEst')){
             sort_col = 1
         };
         this.dataTable = $("#breakdown").dataTable({
@@ -283,11 +283,11 @@ app.BudgetColl = Backbone.Collection.extend({
         var summary = {};
         var self = this;
         var exp = self.getChartTotals(expendTitle, guts, year);
-        var approp = self.getChartTotals(apropTitle, guts, year);
+        var est = self.getChartTotals(apropTitle, guts, year);
         var prevExp = self.getChartTotals(expendTitle, guts, year - 1);
-        var prevApprop = self.getChartTotals(apropTitle, guts, year - 1);
+        var prevEst = self.getChartTotals(apropTitle, guts, year - 1);
         var expChange = BudgetHelpers.calc_change(self.reduceTotals(exp), self.reduceTotals(prevExp));
-        var appropChange = BudgetHelpers.calc_approp_change(self.reduceTotals(approp), self.reduceTotals(prevApprop), self.reduceTotals(prevExp));
+        var estChange = BudgetHelpers.calc_est_change(self.reduceTotals(est), self.reduceTotals(prevEst), self.reduceTotals(prevExp));
         var self = this;
         // get info for each row of the sortable chart
         $.each(guts, function(i, item){
@@ -296,10 +296,10 @@ app.BudgetColl = Backbone.Collection.extend({
             summary['prevYearRange'] = BudgetHelpers.convertYearToRange(year-1)
             summary['year'] = year;
             summary['description'] = item.get(view + ' Description');
-            summary['expenditures'] = self.reduceTotals(exp);
-            summary['appropriations'] = self.reduceTotals(approp);
+            summary['actuals'] = self.reduceTotals(exp);
+            summary['estimates'] = self.reduceTotals(est);
             summary['expChange'] = expChange;
-            summary['appropChange'] = appropChange;
+            summary['estChange'] = estChange;
             summary['rowId'] = item.get(view + ' ID');
             summary['type'] = view
             summary['link'] = item.get('Link to Website');
@@ -320,7 +320,7 @@ app.BudgetColl = Backbone.Collection.extend({
             }
             summary['slug'] = item.get(view + ' Slug');
         });
-        if (typeof summary['expenditures'] !== 'undefined'){
+        if (typeof summary['actuals'] !== 'undefined'){
             return summary
         } else {
             return null
@@ -330,36 +330,36 @@ app.BudgetColl = Backbone.Collection.extend({
         console.log("*** in BudgetColl hideMissing")
 
         sel_exp = this.mainChartData.get('selectedExp')
-        sel_app = this.mainChartData.get('selectedApprop')
+        sel_app = this.mainChartData.get('selectedEst')
 
         if(!sel_exp){
-            $('.expenditures').hide();
+            $('.actuals').hide();
             $('#scorecard-exp').hide();
             $('.spent').hide();
         }
         else{
-            $('.expenditures').show();
+            $('.actuals').show();
             $('#scorecard-exp').show();
             $('.spent').show();
         }
         if(!sel_app){
-            $('.appropriations').hide();
+            $('.estimates').hide();
             $('#scorecard-app').hide();
             $('.budgeted').hide();
         }
         else{
-            $('.appropriations').show();
+            $('.estimates').show();
             $('#scorecard-app').show();
             $('.budgeted').show();
         }
 
         exp_change = this.mainChartData.get('expChange')
-        app_change = this.mainChartData.get('appropChange')
+        app_change = this.mainChartData.get('estChange')
 
         if(!app_change){
-            $('.main-approp').hide();
+            $('.main-est').hide();
         } else {
-            $('.main-approp').show();
+            $('.main-est').show();
         }
         if(!exp_change){
             $('.main-exp').hide();

@@ -1,15 +1,15 @@
 app.MainChartModel = Backbone.Model.extend({
     setYear: function(year, index){
         console.log("*** in MainChartModel setYear")
-        var exp = this.get('expenditures');
-        var approp = this.get('appropriations');
+        var exp = this.get('actuals');
+        var est = this.get('estimates');
         var expChange = BudgetHelpers.calc_change(exp[index], exp[index - 1]);
-        var appropChange = BudgetHelpers.calc_approp_change(approp[index], approp[index - 1], exp[index - 1]);
+        var estChange = BudgetHelpers.calc_est_change(est[index], est[index - 1], exp[index - 1]);
         this.set({
             'selectedExp': BudgetHelpers.convertToMoney(exp[index]),
-            'selectedApprop': BudgetHelpers.convertToMoney(approp[index]),
+            'selectedEst': BudgetHelpers.convertToMoney(est[index]),
             'expChange': expChange,
-            'appropChange': appropChange,
+            'estChange': estChange,
             'viewYear': year,
             'prevYear': year - 1,
             'viewYearRange': BudgetHelpers.convertYearToRange(year),
@@ -80,10 +80,10 @@ app.MainChartView = Backbone.View.extend({
         this._modelBinder.bind(this.model, this.el, {
             viewYearRange: '.viewYear',
             prevYearRange: '.prevYear',
-            selectedExp: '.expenditures',
-            selectedApprop: '.appropriations',
+            selectedExp: '.actuals',
+            selectedEst: '.estimates',
             expChange: '.expChange',
-            appropChange: '.appropChange'
+            estChange: '.estChange'
         });
         this.updateChart(this.model, this.model.get('viewYear'));
         return this;
@@ -93,19 +93,19 @@ app.MainChartView = Backbone.View.extend({
         if (typeof this.highChart !== 'undefined'){
             delete this.highChart;
         }
-        var exps = jQuery.extend(true, [], data.get('expenditures'));
-        var approps = jQuery.extend(true, [], data.get('appropriations'));
+        var exps = jQuery.extend(true, [], data.get('actuals'));
+        var ests = jQuery.extend(true, [], data.get('estimates'));
 
         if (debugMode == true) {
             console.log('main chart data:')
             console.log(exps);
-            console.log(approps);
+            console.log(ests);
         }
 
         var exp = BudgetHelpers.inflationAdjust(exps, inflation_idx, benchmark, startYear);
-        var approp = BudgetHelpers.inflationAdjust(approps, inflation_idx, benchmark, startYear);
+        var est = BudgetHelpers.inflationAdjust(ests, inflation_idx, benchmark, startYear);
 
-        var minValuesArray = $.grep(approp.concat(exp),
+        var minValuesArray = $.grep(est.concat(exp),
           function(val) { return val != null; });
         var globalOpts = app.GlobalChartOpts;
         // chart options for main chart
@@ -121,15 +121,15 @@ app.MainChartView = Backbone.View.extend({
                 enableMouseTracking: false
             }
         // copy over the last actual value as first estimated value, to fill gap in line
-        for (var i = 1; i < approp.length; i++) {
-            if (approp[i]!==null && exp[i-1]!==null){
+        for (var i = 1; i < est.length; i++) {
+            if (est[i]!==null && exp[i-1]!==null){
                 extra_point['y']= exp[i-1]
-                approp[i-1] = extra_point
+                est[i-1] = extra_point
             }
         }
         this.chartOpts.series = [{
             color: globalOpts.apropColor,
-            data: approp,
+            data: est,
             legendIndex: 2,
             marker: {
                 radius: 6,
@@ -173,7 +173,7 @@ app.MainChartView = Backbone.View.extend({
                 });
                 var unadjusted = {}
                 unadjusted['Actuals'] = BudgetHelpers.unadjustedObj(exps, startYear)
-                unadjusted['Estimates'] = BudgetHelpers.unadjustedObj(approps, startYear)
+                unadjusted['Estimates'] = BudgetHelpers.unadjustedObj(ests, startYear)
                 s+= "<br><span style=\"color:#7e7e7e\">Nominal: "+ BudgetHelpers.convertToMoney(unadjusted[series_name][year])+"</span>"
 
                 return s;

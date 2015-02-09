@@ -109,8 +109,8 @@ var BudgetHelpers = {
       }
       return change
   },
-  // if year is first in approp series, will grab the previous years exp
-  calc_approp_change: function(cur_app, prev_app, prev_exp){
+  // if year is first in estimates series, will grab the previous years exp
+  calc_est_change: function(cur_app, prev_app, prev_exp){
     if (isNaN(cur_app)){
         return null
     }

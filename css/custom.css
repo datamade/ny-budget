@@ -108,8 +108,8 @@ a.details:hover, a.details:active, a.details:visited, a.details:link { text-deco
 }
 
   /* Colors */
-  .appropriations { color: #6e6e6e; }
-  .expenditures { color: #23387E; }
+  .estimates { color: #6e6e6e; }
+  .actuals { color: #23387E; }
 
 /* Expanded rows */
 #breakdown .expanded-content td {

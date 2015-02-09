@@ -18,7 +18,7 @@ This is based on [Look at Cook](http://lookatcook.com) by Derek Eder and Nick Ro
 ## How to Re-Deploy
 This code can be customized to visualize another data set.
 ####Data Prepatation
-The budget data can be in various forms (csv, google doc, google fusion table), but must adhere to a fixed format in order for the app to process it properly. Budget column headers include: Fund ID, Fund, Department ID, Department, Short Title, Link to Website, Department Description, and Control Officer. Values for appropriations and expenditures must be broken down into a separate column for each year.
+The budget data can be in various forms (csv, google doc, google fusion table), but must adhere to a fixed format in order for the app to process it properly. Budget column headers include: Fund ID, Fund, Department ID, Department, Short Title, Link to Website, Department Description, and Control Officer. Values for estimates and actuals must be broken down into a separate column for each year.
 
 See examples of prepped data:
   - [New Orleans](https://docs.google.com/spreadsheet/ccc?key=0AswuyKhD7LxVdGlERGdEckpaRDc4Q1RCN0tjZ2tMMGc&usp=sharing_eil#gid=0)

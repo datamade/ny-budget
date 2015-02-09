@@ -16,17 +16,17 @@ app.BreakdownColl = Backbone.Collection.extend({
             var summ = collection.getSummary(row.get('type'), query, year)
             row.set(summ);
             row.yearIndex = index;
-            all_nums.push(row.get('appropriations'));
-            all_nums.push(row.get('expenditures'));
-            total_exp = total_exp + row.get('expenditures')
-            total_app = total_app + row.get('appropriations')
+            all_nums.push(row.get('estimates'));
+            all_nums.push(row.get('actuals'));
+            total_exp = total_exp + row.get('actuals')
+            total_app = total_app + row.get('estimates')
         });
         all_nums = all_nums.filter(Boolean);
         this.maxNum = all_nums.sort(function(a,b){return b-a})[0];
         $.each(this.models, function(i, row){
 
-            var apps = row.get('appropriations');
-            var exps = row.get('expenditures');
+            var apps = row.get('estimates');
+            var exps = row.get('actuals');
             if (isNaN(apps)){apps = 0};
             if (isNaN(exps)){exps = 0};
 
@@ -53,9 +53,9 @@ app.BreakdownSummary = Backbone.View.extend({
         var self = this;
         this.model.on('change', function(model){
             var sel = '#' + model.get('slug') + '-selected-chart';
-            var exp = accounting.unformat(model.get('expenditures'));
-            var approp = accounting.unformat(model.get('appropriations'));
-            if((exp + approp) == 0){
+            var exp = accounting.unformat(model.get('actuals'));
+            var est = accounting.unformat(model.get('estimates'));
+            if((exp + est) == 0){
                 $(self.el).hide();
                 if($(self.el).next().is(':visible')){
                     $(self.el).next().hide();
@@ -68,8 +68,8 @@ app.BreakdownSummary = Backbone.View.extend({
     render: function(){
         this.$el.html(BudgetHelpers.template_cache('breakdownSummary', {model:this.model}));
         this._modelBinder.bind(this.model, this.el, {
-            expenditures: {selector: '[name="expenditures"]', converter: this.moneyChanger},
-            appropriations: {selector: '[name="appropriations"]', converter: this.moneyChanger},
+            actuals: {selector: '[name="actuals"]', converter: this.moneyChanger},
+            estimates: {selector: '[name="estimates"]', converter: this.moneyChanger},
             app_perc: {selector: '[name=app_perc]'},
             exp_perc: {selector: '[name=exp_perc]'},
             app_perc_bar: {selector: '[name=app_perc_bar]'},
@@ -97,35 +97,35 @@ app.BreakdownSummary = Backbone.View.extend({
             if(parent_type){
                 filter[parent_type] = this.model.get('parent');
             }
-            var expenditures = [];
-            var appropriations = [];
+            var actuals = [];
+            var estimates = [];
             $.each(collection.getYearRange(), function(i, year){
                 var exps = collection.where(filter)
                 console.log("*** in BreakdownSummary details     calls getChartTotals twice")
                 var exp = collection.getChartTotals(expendTitle, exps, year);
                 if (exp.length > 1){
-                    expenditures.push(collection.reduceTotals(exp));
+                    actuals.push(collection.reduceTotals(exp));
                 } else {
-                    expenditures.push(parseFloat(exp[0]));
+                    actuals.push(parseFloat(exp[0]));
                 }
                 var apps = collection.where(filter);
-                var approp = collection.getChartTotals(apropTitle, apps, year);
-                if (approp.length > 1){
-                    appropriations.push(collection.reduceTotals(approp));
+                var est = collection.getChartTotals(apropTitle, apps, year);
+                if (est.length > 1){
+                    estimates.push(collection.reduceTotals(est));
                 } else {
-                    appropriations.push(parseFloat(approp[0]));
+                    estimates.push(parseFloat(est[0]));
                 }
             });
 
-            this.model.allExpenditures = expenditures;
-            this.model.allAppropriations = appropriations;
+            this.model.allActuals = actuals;
+            this.model.allEstimates = estimates;
             this.detailView = new app.BreakdownDetail({model:this.model});
             this.detailView.render().$el.insertAfter(this.$el);
             this.detailView.updateChart();
             this.$el.find('i').attr('class', 'fa fa-caret-down fa-lg fa-fw')
 
             sel_chart_slug = "#"+this.model.get('slug') + "-selected-chart"
-            if(this.model.get('appropChange') == null){
+            if(this.model.get('estChange') == null){
                 $(sel_chart_slug).parent().find('.sparkline-budgeted').hide()
             }
             else{
@@ -159,7 +159,7 @@ app.BreakdownDetail = Backbone.View.extend({
         this._modelBinder.bind(this.model, this.el, {
             prevYearRange: '.prevYearRange',
             expChange: '.expChange',
-            appropChange: '.appropChange'
+            estChange: '.estChange'
         });
         return this;
     },
@@ -207,20 +207,20 @@ app.BreakdownDetail = Backbone.View.extend({
         }
         var data = this.model;
         var nom_exps = [];
-        var nom_approps = [];
-        $.each(data.allExpenditures, function(i, e){
+        var nom_est = [];
+        $.each(data.allActuals, function(i, e){
             if (isNaN(e)){
                 e = null;
             }
             nom_exps.push(e);
         })
-        $.each(data.allAppropriations, function(i, e){
+        $.each(data.allEstimates, function(i, e){
             if (isNaN(e)){
                 e = null;
             }
-            nom_approps.push(e);
+            nom_est.push(e);
         });
-        var minValuesArray = $.grep(nom_approps.concat(nom_exps),
+        var minValuesArray = $.grep(nom_est.concat(nom_exps),
           function(val) { return val != null; });
         if (debugMode == true){
             console.log("minValuesArray");
@@ -247,19 +247,19 @@ app.BreakdownDetail = Backbone.View.extend({
 
         // adjust for inflation
         exps = BudgetHelpers.inflationAdjust(nom_exps, inflation_idx, benchmark, startYear);
-        approps = BudgetHelpers.inflationAdjust(nom_approps, inflation_idx, benchmark, startYear);
+        est = BudgetHelpers.inflationAdjust(nom_est, inflation_idx, benchmark, startYear);
 
         // copy over the last actual value as first estimated value, to fill gap in line
-        for (var i = 1; i < approps.length; i++) {
-            if (approps[i]!==null && exps[i-1]!==null){
+        for (var i = 1; i < est.length; i++) {
+            if (est[i]!==null && exps[i-1]!==null){
                 extra_point['y']= exps[i-1]
-                approps[i-1] = extra_point
+                est[i-1] = extra_point
             }
         }
 
         this.chartOpts.series = [{
             color: globalOpts.apropColor,
-            data: approps,
+            data: est,
             marker: {
               radius: 4,
               symbol: globalOpts.apropSymbol
@@ -298,7 +298,7 @@ app.BreakdownDetail = Backbone.View.extend({
                 });
                 var unadjusted = {}
                 unadjusted['Actuals'] = BudgetHelpers.unadjustedObj(nom_exps, startYear)
-                unadjusted['Estimates'] = BudgetHelpers.unadjustedObj(nom_approps, startYear)
+                unadjusted['Estimates'] = BudgetHelpers.unadjustedObj(nom_est, startYear)
                 s+= "<br><span style=\"color:#7e7e7e\">Nominal: "+ BudgetHelpers.convertToMoney(unadjusted[series_name][year])+"</span>"
                 return s;
             },
