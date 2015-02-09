@@ -34,28 +34,6 @@ app.MainChartView = Backbone.View.extend({
         this._modelBinder = new Backbone.ModelBinder();
         this.render();
         this.updateCrumbs();
-        if(!this.model.get('appropChange')){
-            $('.main-approp').hide();
-        } else {
-            $('.main-approp').show();
-        }
-        if(!this.model.get('expChange')){
-            $('.main-exp').hide();
-        } else {
-            $('.main-exp').show();
-        }
-        this.model.on('change', function(model){
-            if(!model.get('appropChange')){
-                $('.main-approp').hide();
-            } else {
-                $('.main-approp').show();
-            }
-            if(!model.get('expChange')){
-                $('.main-exp').hide();
-            } else {
-                $('.main-exp').show();
-            }
-        });
     },
     updateCrumbs: function(){
         console.log("*** in MainChartView pdateCrumbs")

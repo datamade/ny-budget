@@ -320,7 +320,6 @@ app.BudgetColl = Backbone.Collection.extend({
             }
             summary['slug'] = item.get(view + ' Slug');
         });
-        //console.log("*** in BudgetColl getSummary - END LOOP")
         if (typeof summary['expenditures'] !== 'undefined'){
             return summary
         } else {
@@ -333,8 +332,7 @@ app.BudgetColl = Backbone.Collection.extend({
         sel_exp = this.mainChartData.get('selectedExp')
         sel_app = this.mainChartData.get('selectedApprop')
 
-        console.log(sel_app)
-        if(sel_exp == null){
+        if(!sel_exp){
             $('.expenditures').hide();
             $('#scorecard-exp').hide();
             $('.spent').hide();
@@ -344,7 +342,7 @@ app.BudgetColl = Backbone.Collection.extend({
             $('#scorecard-exp').show();
             $('.spent').show();
         }
-        if(sel_app == null){
+        if(!sel_app){
             $('.appropriations').hide();
             $('#scorecard-app').hide();
             $('.budgeted').hide();
@@ -353,6 +351,20 @@ app.BudgetColl = Backbone.Collection.extend({
             $('.appropriations').show();
             $('#scorecard-app').show();
             $('.budgeted').show();
+        }
+
+        exp_change = this.mainChartData.get('expChange')
+        app_change = this.mainChartData.get('appropChange')
+
+        if(!app_change){
+            $('.main-approp').hide();
+        } else {
+            $('.main-approp').show();
+        }
+        if(!exp_change){
+            $('.main-exp').hide();
+        } else {
+            $('.main-exp').show();
         }
     },
 });
