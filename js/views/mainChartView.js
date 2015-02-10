@@ -117,14 +117,14 @@ app.MainChartView = Backbone.View.extend({
             },
             name: globalOpts.estTitle
           }, {
-            color: globalOpts.expendColor,
+            color: globalOpts.actualColor,
             data: exp,
             legendIndex: 1,
             marker: {
                 radius: 6,
-                symbol: globalOpts.expendSymbol
+                symbol: globalOpts.actualSymbol
             },
-            name: globalOpts.expendTitle
+            name: globalOpts.actualTitle
         }];
         this.chartOpts.yAxis.min = 0
         this.chartOpts.yAxis.title = {
@@ -143,7 +143,7 @@ app.MainChartView = Backbone.View.extend({
               //   s += "<br /><span style=\"color: " + point.series.color + "\">" + point.series.name + ":</span> $" + Highcharts.numberFormat(point.y, 0);
               // });
               
-              // This only takes one series in the tooltip - makes estimate override expenditure if estimate exists
+              // This only takes one series in the tooltip - makes estimate override actual if estimate exists
               // (this is for when estimates & actuals span different years, & is necessary
               // b/c of the hack to fill in the space between estimates & actuals series)
                 var series_name;

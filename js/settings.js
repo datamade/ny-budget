@@ -6,7 +6,7 @@ activeYear  = 2016;  // default year to select
 debugMode   = false; // change to true for debugging message in the javascript console
 municipalityName = 'State of New York'; // name of budget municipality 
 estTitle  = 'Estimates'; // label for first chart line
-expendTitle = 'Actuals';   // label for second chart line
+actualTitle = 'Actuals';   // label for second chart line
 
 // Inflation Index (for inflation adjusted dollars)
 benchmark = 2015;
@@ -25,10 +25,10 @@ app.GlobalChartOpts = {
     estColor:   '#6e6e6e',
     estSymbol:  'circle',
     
-    expendColor:  '#23387E',
-    expendSymbol: 'square',
+    actualColor:  '#23387E',
+    actualSymbol: 'square',
 
     estTitle:   estTitle, 
-    expendTitle:  expendTitle, 
+    actualTitle:  actualTitle, 
     pointInterval: 365 * 24 * 3600 * 1000 // chart interval set to one year (in ms)
 }

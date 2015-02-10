@@ -60,7 +60,7 @@ app.BreakdownSummary = Backbone.View.extend({
             $.each(collection.getYearRange(), function(i, year){
                 var exps = collection.where(filter)
                 console.log("*** in BreakdownSummary details     calls getChartTotals twice")
-                var exp = collection.getChartTotals(expendTitle, exps, year);
+                var exp = collection.getChartTotals(actualTitle, exps, year);
                 if (exp.length > 1){
                     actuals.push(collection.reduceTotals(exp));
                 } else {
@@ -90,10 +90,10 @@ app.BreakdownSummary = Backbone.View.extend({
                 $(sel_chart_slug).parent().find('.sparkline-estimates').show()
             }
             if(this.model.get('expChange') == null){
-                $(sel_chart_slug).parent().find(".sparkline-spent").hide()
+                $(sel_chart_slug).parent().find(".sparkline-actuals").hide()
             }
             else{
-                $(sel_chart_slug).parent().find(".sparkline-spent").show()
+                $(sel_chart_slug).parent().find(".sparkline-actuals").show()
             }
         }
     }

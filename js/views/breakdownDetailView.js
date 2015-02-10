@@ -123,13 +123,13 @@ app.BreakdownDetail = Backbone.View.extend({
             },
             name: globalOpts.estTitle
           }, {
-            color: globalOpts.expendColor,
+            color: globalOpts.actualColor,
             data: exps,
             marker: {
               radius: 5,
-              symbol: globalOpts.expendSymbol
+              symbol: globalOpts.actualSymbol
             },
-            name: globalOpts.expendTitle
+            name: globalOpts.actualTitle
           }]
 
         this.chartOpts.tooltip = {
@@ -145,7 +145,7 @@ app.BreakdownDetail = Backbone.View.extend({
               //   s += "<br /><span style=\"color: " + point.series.color + "\">" + point.series.name + ":</span> $" + Highcharts.numberFormat(point.y, 0);
               // });
               
-              // This only takes one series in the tooltip - makes estimate override expenditure if estimate exists
+              // This only takes one series in the tooltip - makes estimate override actuals if estimate exists
               // (this is for when est & exp span different years, & is necessary
               // b/c of the hack to fill in the space between ests & exps)
                 var series_name;

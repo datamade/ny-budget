@@ -102,7 +102,7 @@ a.details:hover, a.details:active, a.details:visited, a.details:link { text-deco
     background-color: #6e6e6e;
     border-left: solid 2px #6e6e6e;
 }
-.bars .spent {
+.bars .actuals {
     background-color: #23387E;
     border-left: solid 2px #23387E;
 }

@@ -58,7 +58,7 @@ app.BudgetCollection = Backbone.Collection.extend({
         var yearRange = this.getYearRange()
         //loop through years in range & get estimated & actual values for line chart
         $.each(yearRange, function(i, year){
-            exp_col_name = BudgetHelpers.getColumnName(year, expendTitle);
+            exp_col_name = BudgetHelpers.getColumnName(year, actualTitle);
             est_col_name = BudgetHelpers.getColumnName(year, estTitle);
 
             exp.push(self.getTotals(values, exp_col_name));
@@ -276,9 +276,9 @@ app.BudgetCollection = Backbone.Collection.extend({
         }
         var summary = {};
         var self = this;
-        var exp = self.getChartTotals(expendTitle, guts, year);
+        var exp = self.getChartTotals(actualTitle, guts, year);
         var est = self.getChartTotals(estTitle, guts, year);
-        var prevExp = self.getChartTotals(expendTitle, guts, year - 1);
+        var prevExp = self.getChartTotals(actualTitle, guts, year - 1);
         var prevEst = self.getChartTotals(estTitle, guts, year - 1);
         var expChange = BudgetHelpers.calc_change(self.reduceTotals(exp), self.reduceTotals(prevExp));
         var estChange = BudgetHelpers.calc_est_change(self.reduceTotals(est), self.reduceTotals(prevEst), self.reduceTotals(prevExp));
@@ -328,12 +328,10 @@ app.BudgetCollection = Backbone.Collection.extend({
         if(!sel_exp){
             $('.actuals').hide();
             $('#scorecard-exp').hide();
-            $('.spent').hide();
         }
         else{
             $('.actuals').show();
             $('#scorecard-exp').show();
-            $('.spent').show();
         }
         if(!sel_est){
             $('.estimates').hide();
