@@ -1,9 +1,8 @@
-app.BudgetColl = Backbone.Collection.extend({
+app.BudgetCollection = Backbone.Collection.extend({
     startYear: startYear,
     endYear: endYear,
     activeYear: activeYear,
     updateYear: function(year, yearIndex){
-        console.log("*** in BudgetColl updateYear")
         var expanded = [];
         $.each($('tr.expanded-content'), function(i, row){
             var name = $(row).prev().find('a.rowName').text();
@@ -21,7 +20,6 @@ app.BudgetColl = Backbone.Collection.extend({
         })
     },
     updateTables: function(view, title, filter, year){
-        console.log("*** in BudgetColl updateTables")
         // Various cleanup is needed when running this a second time.
         if(typeof this.mainChartView !== 'undefined'){
             this.mainChartView.undelegateEvents();
@@ -61,7 +59,7 @@ app.BudgetColl = Backbone.Collection.extend({
         //loop through years in range & get estimated & actual values for line chart
         $.each(yearRange, function(i, year){
             exp_col_name = BudgetHelpers.getColumnName(year, expendTitle);
-            est_col_name = BudgetHelpers.getColumnName(year, apropTitle);
+            est_col_name = BudgetHelpers.getColumnName(year, estTitle);
 
             exp.push(self.getTotals(values, exp_col_name));
             est.push(self.getTotals(values, est_col_name));
@@ -93,7 +91,7 @@ app.BudgetColl = Backbone.Collection.extend({
         var chartGuts = this.pluck(view).getUnique();
         var all_nums = []
         var total_exp = 0
-        var total_app = 0
+        var total_est = 0
         $.each(chartGuts, function(i, name){
             if (!incomingFilter){
                 filter = {}
@@ -106,25 +104,25 @@ app.BudgetColl = Backbone.Collection.extend({
                 all_nums.push(summary['actuals']);
                 all_nums.push(summary['estimates']);
                 total_exp = total_exp + summary['actuals']
-                total_app = total_app + summary['estimates']
+                total_est = total_est + summary['estimates']
             }
         });
 
         if (debugMode == true) console.log("all breakdown numbers: " + all_nums);
         all_nums = all_nums.filter(Boolean);
         var maxNum = all_nums.sort(function(a,b){return b-a})[0];
-        this.breakdownChartData = new app.BreakdownColl(bd);
+        this.breakdownChartData = new app.BreakdownCollection(bd);
         this.breakdownChartData.maxNum = maxNum;
         if (debugMode == true) console.log("max bar chart num: " + maxNum);
         console.log("   *** loop through breakdownChartData.forEach (x13)")
         this.breakdownChartData.forEach(function(row){
             var exps = accounting.unformat(row.get('actuals'));
-            var apps = accounting.unformat(row.get('estimates'));
+            var ests = accounting.unformat(row.get('estimates'));
             var exp_perc = BudgetHelpers.prettyPercent(exps, total_exp);
-            var app_perc = BudgetHelpers.prettyPercent(apps, total_app);
+            var est_perc = BudgetHelpers.prettyPercent(ests, total_est);
             var exp_perc_bar = parseFloat((exps/maxNum) * 100) + '%';
-            var app_perc_bar = parseFloat((apps/maxNum) * 100) + '%';
-            row.set({app_perc_bar:app_perc_bar, exp_perc_bar:exp_perc_bar, app_perc:app_perc, exp_perc:exp_perc});
+            var est_perc_bar = parseFloat((ests/maxNum) * 100) + '%';
+            row.set({est_perc_bar:est_perc_bar, exp_perc_bar:exp_perc_bar, est_perc:est_perc, exp_perc:exp_perc});
             var rowView = new app.BreakdownSummary({model:row});
             // add all content to the sortable table html
             $('#breakdown-table-body').append(rowView.render().el);
@@ -139,7 +137,6 @@ app.BudgetColl = Backbone.Collection.extend({
         this.hideMissing();
     },
     initDataTable: function(){
-        console.log("*** in BudgetColl initDataTable")
         var sort_col = 3
         if (this.mainChartData.get('selectedEst')){
             sort_col = 1
@@ -162,7 +159,6 @@ app.BudgetColl = Backbone.Collection.extend({
         });
     },
     bootstrap: function(init, year){
-        console.log("*** in BudgetColl bootstrap")
         var self = this;
         this.spin('#main-chart', 'large');
 
@@ -240,13 +236,11 @@ app.BudgetColl = Backbone.Collection.extend({
         );
     },
     spin: function(element, option){
-        console.log("*** in BudgetColl spin")
         // option is either size of spinner or false to cancel it
         $(element).spin(option);
     },
     // Returns an array of valid years.
     getYearRange: function(){
-        console.log("*** in BudgetColl getYearRange")
         return Number.range(this.startYear, this.endYear + 1);
     },
     reduceTotals: function(totals){
@@ -283,9 +277,9 @@ app.BudgetColl = Backbone.Collection.extend({
         var summary = {};
         var self = this;
         var exp = self.getChartTotals(expendTitle, guts, year);
-        var est = self.getChartTotals(apropTitle, guts, year);
+        var est = self.getChartTotals(estTitle, guts, year);
         var prevExp = self.getChartTotals(expendTitle, guts, year - 1);
-        var prevEst = self.getChartTotals(apropTitle, guts, year - 1);
+        var prevEst = self.getChartTotals(estTitle, guts, year - 1);
         var expChange = BudgetHelpers.calc_change(self.reduceTotals(exp), self.reduceTotals(prevExp));
         var estChange = BudgetHelpers.calc_est_change(self.reduceTotals(est), self.reduceTotals(prevEst), self.reduceTotals(prevExp));
         var self = this;
@@ -327,10 +321,9 @@ app.BudgetColl = Backbone.Collection.extend({
         }
     },
     hideMissing: function(){
-        console.log("*** in BudgetColl hideMissing")
 
         sel_exp = this.mainChartData.get('selectedExp')
-        sel_app = this.mainChartData.get('selectedEst')
+        sel_est = this.mainChartData.get('selectedEst')
 
         if(!sel_exp){
             $('.actuals').hide();
@@ -342,21 +335,19 @@ app.BudgetColl = Backbone.Collection.extend({
             $('#scorecard-exp').show();
             $('.spent').show();
         }
-        if(!sel_app){
+        if(!sel_est){
             $('.estimates').hide();
-            $('#scorecard-app').hide();
-            $('.budgeted').hide();
+            $('#scorecard-est').hide();
         }
         else{
             $('.estimates').show();
-            $('#scorecard-app').show();
-            $('.budgeted').show();
+            $('#scorecard-est').show();
         }
 
         exp_change = this.mainChartData.get('expChange')
-        app_change = this.mainChartData.get('estChange')
+        est_change = this.mainChartData.get('estChange')
 
-        if(!app_change){
+        if(!est_change){
             $('.main-est').hide();
         } else {
             $('.main-est').show();

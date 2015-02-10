@@ -6,12 +6,12 @@
     <a href="javascript://" class="details rowName"><%= model.get('rowName') %></a>
 </td>
 <td class='num estimates' name="estimates"><%= model.get('estimates') %></td>
-<td class='num estimates' name="app_perc"><%= model.get('app_perc') %></td>
+<td class='num estimates' name="est_perc"><%= model.get('est_perc') %></td>
 <td class='num actuals' name="actuals"><%= model.get('actuals') %></td>
 <td class='num actuals' name="exp_perc"><%= model.get('exp_perc') %></td>
 <td>
     <div class="bars">
-        <span class="budgeted outer" name="app_perc_bar" style="width: <%= model.get('app_perc_bar') %>;"></span>
+        <span class="estimates outer" name="est_perc_bar" style="width: <%= model.get('est_perc_bar') %>;"></span>
         <span class="spent inner" name="exp_perc_bar" style="width: <%= model.get('exp_perc_bar') %>;"></span>
     </div>
 </td>

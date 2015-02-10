@@ -1,23 +1,3 @@
-app.MainChartModel = Backbone.Model.extend({
-    setYear: function(year, index){
-        console.log("*** in MainChartModel setYear")
-        var exp = this.get('actuals');
-        var est = this.get('estimates');
-        var expChange = BudgetHelpers.calc_change(exp[index], exp[index - 1]);
-        var estChange = BudgetHelpers.calc_est_change(est[index], est[index - 1], exp[index - 1]);
-        this.set({
-            'selectedExp': BudgetHelpers.convertToMoney(exp[index]),
-            'selectedEst': BudgetHelpers.convertToMoney(est[index]),
-            'expChange': expChange,
-            'estChange': estChange,
-            'viewYear': year,
-            'prevYear': year - 1,
-            'viewYearRange': BudgetHelpers.convertYearToRange(year),
-            'prevYearRange': BudgetHelpers.convertYearToRange(year-1)
-        });
-    }
-});
-
 app.MainChartView = Backbone.View.extend({
     el: $('#main-chart'),
 
@@ -128,21 +108,21 @@ app.MainChartView = Backbone.View.extend({
             }
         }
         this.chartOpts.series = [{
-            color: globalOpts.apropColor,
+            color: globalOpts.estColor,
             data: est,
             legendIndex: 2,
             marker: {
                 radius: 6,
-                symbol: globalOpts.apropSymbol
+                symbol: globalOpts.estSymbol
             },
-            name: globalOpts.apropTitle
+            name: globalOpts.estTitle
           }, {
             color: globalOpts.expendColor,
             data: exp,
             legendIndex: 1,
             marker: {
                 radius: 6,
-                symbol: globalOpts.expendSybmol
+                symbol: globalOpts.expendSymbol
             },
             name: globalOpts.expendTitle
         }];
@@ -157,15 +137,15 @@ app.MainChartView = Backbone.View.extend({
               var year_range = BudgetHelpers.convertYearToRange(year);
             
               // // Use this code to display both series in the tooltip
-              // // (for when years have both app & exp data)
+              // // (for when years have both estimates & actual data)
               // var s = "<strong>" + year_range + "</strong>";
               // $.each(this.points, function(i, point) {
               //   s += "<br /><span style=\"color: " + point.series.color + "\">" + point.series.name + ":</span> $" + Highcharts.numberFormat(point.y, 0);
               // });
               
               // This only takes one series in the tooltip - makes estimate override expenditure if estimate exists
-              // (this is for when app & exp span different years, & is necessary
-              // b/c of the hack to fill in the space between apps & exps)
+              // (this is for when estimates & actuals span different years, & is necessary
+              // b/c of the hack to fill in the space between estimates & actuals series)
                 var series_name;
                 $.each(this.points, function(i, point) {
                     s = "<strong>" + year_range + " <span style=\"color: " + point.series.color + "\">" + point.series.name + "</span></strong><br />Real: $" + Highcharts.numberFormat(point.y, 0);

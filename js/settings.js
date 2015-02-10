@@ -5,7 +5,7 @@ endYear     = 2016;  // last year of budget data
 activeYear  = 2016;  // default year to select
 debugMode   = false; // change to true for debugging message in the javascript console
 municipalityName = 'State of New York'; // name of budget municipality 
-apropTitle  = 'Estimates'; // label for first chart line
+estTitle  = 'Estimates'; // label for first chart line
 expendTitle = 'Actuals';   // label for second chart line
 
 // Inflation Index (for inflation adjusted dollars)
@@ -22,13 +22,13 @@ inflation_idx = {
 dataSource  = window.location.origin + '/data/budget_cleaned.csv';
 
 app.GlobalChartOpts = {
-    apropColor:   '#6e6e6e',
-    apropSymbol:  'circle',
+    estColor:   '#6e6e6e',
+    estSymbol:  'circle',
     
     expendColor:  '#23387E',
-    expendSybmol: 'square',
+    expendSymbol: 'square',
 
-    apropTitle:   apropTitle, 
+    estTitle:   estTitle, 
     expendTitle:  expendTitle, 
     pointInterval: 365 * 24 * 3600 * 1000 // chart interval set to one year (in ms)
 }

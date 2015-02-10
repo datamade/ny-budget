@@ -110,14 +110,14 @@ var BudgetHelpers = {
       return change
   },
   // if year is first in estimates series, will grab the previous years exp
-  calc_est_change: function(cur_app, prev_app, prev_exp){
-    if (isNaN(cur_app)){
+  calc_est_change: function(cur_est, prev_est, prev_exp){
+    if (isNaN(cur_est)){
         return null
     }
-    if (isNaN(prev_app)){
-      var change = BudgetHelpers.calc_change(cur_app, prev_exp);
+    if (isNaN(prev_est)){
+      var change = BudgetHelpers.calc_change(cur_est, prev_exp);
     } else{
-      var change = BudgetHelpers.calc_change(cur_app, prev_app)
+      var change = BudgetHelpers.calc_change(cur_est, prev_est)
     }
     return change
   },

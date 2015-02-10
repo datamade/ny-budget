@@ -1,4 +1,4 @@
-var collection = new app.BudgetColl();
+var collection = new app.BudgetCollection();
 var app_router = new app.Router({collection: collection});
 Backbone.history.start();
 $(document).ready(function() {
