@@ -3,7 +3,7 @@ app.BreakdownCollection = Backbone.Collection.extend({
         var self = this;
         var all_nums = []
         var total_est = 0
-        var total_exp = 0
+        var total_actual = 0
         $.each(this.models, function(i, row){
             var query = {}
             query[row.get('type')] = row.get('rowName')
@@ -13,7 +13,7 @@ app.BreakdownCollection = Backbone.Collection.extend({
             row.yearIndex = index;
             all_nums.push(row.get('estimates'));
             all_nums.push(row.get('actuals'));
-            total_exp = total_exp + row.get('actuals')
+            total_actual = total_actual + row.get('actuals')
             total_est = total_est + row.get('estimates')
         });
         all_nums = all_nums.filter(Boolean);
@@ -21,16 +21,16 @@ app.BreakdownCollection = Backbone.Collection.extend({
         $.each(this.models, function(i, row){
 
             var ests = row.get('estimates');
-            var exps = row.get('actuals');
+            var actuals = row.get('actuals');
             if (isNaN(ests)){ests = 0};
-            if (isNaN(exps)){exps = 0};
+            if (isNaN(actuals)){actuals = 0};
 
-            var exp_perc = BudgetHelpers.prettyPercent(exps, total_exp);
+            var actual_perc = BudgetHelpers.prettyPercent(actuals, total_actual);
             var est_perc = BudgetHelpers.prettyPercent(ests, total_est);
 
             var est_perc_bar = parseFloat((ests/self.maxNum) * 100) + '%';
-            var exp_perc_bar = parseFloat((exps/self.maxNum) * 100) + '%';
-            row.set({est_perc_bar:est_perc_bar, exp_perc_bar:exp_perc_bar, est_perc:est_perc, exp_perc:exp_perc});
+            var actual_perc_bar = parseFloat((actuals/self.maxNum) * 100) + '%';
+            row.set({est_perc_bar:est_perc_bar, actual_perc_bar:actual_perc_bar, est_perc:est_perc, actual_perc:actual_perc});
         });
     }
 });

@@ -60,9 +60,9 @@ app.MainChartView = Backbone.View.extend({
         this._modelBinder.bind(this.model, this.el, {
             viewYearRange: '.viewYear',
             prevYearRange: '.prevYear',
-            selectedExp: '.actuals',
+            selectedActual: '.actuals',
             selectedEst: '.estimates',
-            expChange: '.expChange',
+            actualChange: '.actualChange',
             estChange: '.estChange'
         });
         this.updateChart(this.model, this.model.get('viewYear'));
@@ -73,19 +73,19 @@ app.MainChartView = Backbone.View.extend({
         if (typeof this.highChart !== 'undefined'){
             delete this.highChart;
         }
-        var exps = jQuery.extend(true, [], data.get('actuals'));
+        var actuals = jQuery.extend(true, [], data.get('actuals'));
         var ests = jQuery.extend(true, [], data.get('estimates'));
 
         if (debugMode == true) {
             console.log('main chart data:')
-            console.log(exps);
+            console.log(actuals);
             console.log(ests);
         }
 
-        var exp = BudgetHelpers.inflationAdjust(exps, inflation_idx, benchmark, startYear);
+        var actual = BudgetHelpers.inflationAdjust(actuals, inflation_idx, benchmark, startYear);
         var est = BudgetHelpers.inflationAdjust(ests, inflation_idx, benchmark, startYear);
 
-        var minValuesArray = $.grep(est.concat(exp),
+        var minValuesArray = $.grep(est.concat(actual),
           function(val) { return val != null; });
         var globalOpts = app.GlobalChartOpts;
         // chart options for main chart
@@ -102,8 +102,8 @@ app.MainChartView = Backbone.View.extend({
             }
         // copy over the last actual value as first estimated value, to fill gap in line
         for (var i = 1; i < est.length; i++) {
-            if (est[i]!==null && exp[i-1]!==null){
-                extra_point['y']= exp[i-1]
+            if (est[i]!==null && actual[i-1]!==null){
+                extra_point['y']= actual[i-1]
                 est[i-1] = extra_point
             }
         }
@@ -118,7 +118,7 @@ app.MainChartView = Backbone.View.extend({
             name: globalOpts.estTitle
           }, {
             color: globalOpts.actualColor,
-            data: exp,
+            data: actual,
             legendIndex: 1,
             marker: {
                 radius: 6,
@@ -152,7 +152,7 @@ app.MainChartView = Backbone.View.extend({
                     series_name = point.series.name;
                 });
                 var unadjusted = {}
-                unadjusted['Actuals'] = BudgetHelpers.unadjustedObj(exps, startYear)
+                unadjusted['Actuals'] = BudgetHelpers.unadjustedObj(actuals, startYear)
                 unadjusted['Estimates'] = BudgetHelpers.unadjustedObj(ests, startYear)
                 s+= "<br><span style=\"color:#7e7e7e\">Nominal: "+ BudgetHelpers.convertToMoney(unadjusted[series_name][year])+"</span>"
 

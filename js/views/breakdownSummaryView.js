@@ -11,9 +11,9 @@ app.BreakdownSummary = Backbone.View.extend({
         var self = this;
         this.model.on('change', function(model){
             var sel = '#' + model.get('slug') + '-selected-chart';
-            var exp = accounting.unformat(model.get('actuals'));
+            var actual = accounting.unformat(model.get('actuals'));
             var est = accounting.unformat(model.get('estimates'));
-            if((exp + est) == 0){
+            if((actual + est) == 0){
                 $(self.el).hide();
                 if($(self.el).next().is(':visible')){
                     $(self.el).next().hide();
@@ -29,9 +29,9 @@ app.BreakdownSummary = Backbone.View.extend({
             actuals: {selector: '[name="actuals"]', converter: this.moneyChanger},
             estimates: {selector: '[name="estimates"]', converter: this.moneyChanger},
             est_perc: {selector: '[name=est_perc]'},
-            exp_perc: {selector: '[name=exp_perc]'},
+            actual_perc: {selector: '[name=actual_perc]'},
             est_perc_bar: {selector: '[name=est_perc_bar]'},
-            exp_perc_bar: {selector: '[name=exp_perc_bar]'}
+            actual_perc_bar: {selector: '[name=actual_perc_bar]'}
         });
         return this;
     },
@@ -58,13 +58,13 @@ app.BreakdownSummary = Backbone.View.extend({
             var actuals = [];
             var estimates = [];
             $.each(collection.getYearRange(), function(i, year){
-                var exps = collection.where(filter)
+                var actuals = collection.where(filter)
                 console.log("*** in BreakdownSummary details     calls getChartTotals twice")
-                var exp = collection.getChartTotals(actualTitle, exps, year);
-                if (exp.length > 1){
-                    actuals.push(collection.reduceTotals(exp));
+                var actual = collection.getChartTotals(actualTitle, actuals, year);
+                if (actual.length > 1){
+                    actuals.push(collection.reduceTotals(actual));
                 } else {
-                    actuals.push(parseFloat(exp[0]));
+                    actuals.push(parseFloat(actual[0]));
                 }
                 var ests = collection.where(filter);
                 var est = collection.getChartTotals(estTitle, ests, year);
@@ -89,7 +89,7 @@ app.BreakdownSummary = Backbone.View.extend({
             else{
                 $(sel_chart_slug).parent().find('.sparkline-estimates').show()
             }
-            if(this.model.get('expChange') == null){
+            if(this.model.get('actualChange') == null){
                 $(sel_chart_slug).parent().find(".sparkline-actuals").hide()
             }
             else{

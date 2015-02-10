@@ -15,7 +15,7 @@ app.BreakdownDetail = Backbone.View.extend({
         this.$el.html(BudgetHelpers.template_cache('breakdownDetail', {model: this.model}));
         this._modelBinder.bind(this.model, this.el, {
             prevYearRange: '.prevYearRange',
-            expChange: '.expChange',
+            actualChange: '.actualChange',
             estChange: '.estChange'
         });
         return this;
@@ -63,13 +63,13 @@ app.BreakdownDetail = Backbone.View.extend({
             delete this.highChart;
         }
         var data = this.model;
-        var nom_exps = [];
+        var nom_actuals = [];
         var nom_est = [];
         $.each(data.allActuals, function(i, e){
             if (isNaN(e)){
                 e = null;
             }
-            nom_exps.push(e);
+            nom_actuals.push(e);
         })
         $.each(data.allEstimates, function(i, e){
             if (isNaN(e)){
@@ -77,7 +77,7 @@ app.BreakdownDetail = Backbone.View.extend({
             }
             nom_est.push(e);
         });
-        var minValuesArray = $.grep(nom_est.concat(nom_exps),
+        var minValuesArray = $.grep(nom_est.concat(nom_actuals),
           function(val) { return val != null; });
         if (debugMode == true){
             console.log("minValuesArray");
@@ -103,13 +103,13 @@ app.BreakdownDetail = Backbone.View.extend({
             }
 
         // adjust for inflation
-        exps = BudgetHelpers.inflationAdjust(nom_exps, inflation_idx, benchmark, startYear);
+        actual = BudgetHelpers.inflationAdjust(nom_actuals, inflation_idx, benchmark, startYear);
         est = BudgetHelpers.inflationAdjust(nom_est, inflation_idx, benchmark, startYear);
 
         // copy over the last actual value as first estimated value, to fill gap in line
         for (var i = 1; i < est.length; i++) {
-            if (est[i]!==null && exps[i-1]!==null){
-                extra_point['y']= exps[i-1]
+            if (est[i]!==null && actual[i-1]!==null){
+                extra_point['y']= actual[i-1]
                 est[i-1] = extra_point
             }
         }
@@ -124,7 +124,7 @@ app.BreakdownDetail = Backbone.View.extend({
             name: globalOpts.estTitle
           }, {
             color: globalOpts.actualColor,
-            data: exps,
+            data: actual,
             marker: {
               radius: 5,
               symbol: globalOpts.actualSymbol
@@ -146,16 +146,16 @@ app.BreakdownDetail = Backbone.View.extend({
               // });
               
               // This only takes one series in the tooltip - makes estimate override actuals if estimate exists
-              // (this is for when est & exp span different years, & is necessary
-              // b/c of the hack to fill in the space between ests & exps)
+              // (this is for when estimates & actuals span different years, & is necessary
+              // b/c of the hack to fill in the space between estimates & actuals series)
                 var series_name;
                 $.each(this.points, function(i, point) {
                     s = "<strong>" + year_range + " <span style=\"color: " + point.series.color + "\">" + point.series.name + "</span></strong><br />Real: $" + Highcharts.numberFormat(point.y, 0);
                     series_name = point.series.name;
                 });
                 var unadjusted = {}
-                unadjusted['Actuals'] = BudgetHelpers.unadjustedObj(nom_exps, startYear)
-                unadjusted['Estimates'] = BudgetHelpers.unadjustedObj(nom_est, startYear)
+                unadjusted[globalOpts.actualTitle] = BudgetHelpers.unadjustedObj(nom_actuals, startYear)
+                unadjusted[globalOpts.estTitle] = BudgetHelpers.unadjustedObj(nom_est, startYear)
                 s+= "<br><span style=\"color:#7e7e7e\">Nominal: "+ BudgetHelpers.convertToMoney(unadjusted[series_name][year])+"</span>"
                 return s;
             },
