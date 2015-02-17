@@ -5,8 +5,12 @@ endYear     = 2016;  // last year of budget data
 activeYear  = 2016;  // default year to select
 debugMode   = false; // change to true for debugging message in the javascript console
 municipalityName = 'State of New York'; // name of budget municipality 
+
+
 estTitle  = 'Estimates'; // label for first chart line
 actualTitle = 'Actuals';   // label for second chart line
+projectionStartYear = 2015; // if some numbers are projections into the future, set as year of first projection. otherwise, set null. it is assumed that estEndYear = endYear. this determines the chart x axis band
+
 
 // Inflation Index (for inflation adjusted dollars)
 benchmark = 2015;
