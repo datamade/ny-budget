@@ -58,16 +58,15 @@ app.BreakdownSummary = Backbone.View.extend({
             var actuals = [];
             var estimates = [];
             $.each(collection.getYearRange(), function(i, year){
-                var actuals = collection.where(filter)
+                var all = collection.where(filter)
                 console.log("*** in BreakdownSummary details     calls getChartTotals twice")
-                var actual = collection.getChartTotals(actualTitle, actuals, year);
+                var actual = collection.getChartTotals(actualTitle, all, year);
                 if (actual.length > 1){
                     actuals.push(collection.reduceTotals(actual));
                 } else {
                     actuals.push(parseFloat(actual[0]));
                 }
-                var ests = collection.where(filter);
-                var est = collection.getChartTotals(estTitle, ests, year);
+                var est = collection.getChartTotals(estTitle, all, year);
                 if (est.length > 1){
                     estimates.push(collection.reduceTotals(est));
                 } else {
