@@ -93,45 +93,53 @@ app.MainChartView = Backbone.View.extend({
         this.chartOpts.plotOptions.area.pointInterval = globalOpts.pointInterval;
         this.chartOpts.plotOptions.area.pointStart = Date.UTC(collection.startYear, 1, 1);
         this.chartOpts.plotOptions.series.point.events.click = this.pointClick;
-        var extra_point = {
-                y: 0,
+        if (mergeSeries){
+            // add estimates to the end of actuals series
+            for (var i = 1; i < est.length; i++) {
+                if (est[i]!==null && actual[i]==null){
+                    actual[i] = est[i]
+                }
+            }
+            this.chartOpts.series = [{
+                color: globalOpts.actualColor,
+                data: actual,
+                legendIndex: 1,
                 marker: {
-                    enabled: false
+                    radius: 6,
+                    symbol: globalOpts.actualSymbol
                 },
-                enableMouseTracking: false
-            }
-        // copy over the last actual value as first estimated value, to fill gap in line
-        for (var i = 1; i < est.length; i++) {
-            if (est[i]!==null && actual[i-1]!==null){
-                extra_point['y']= actual[i-1]
-                est[i-1] = extra_point
-            }
+                name: globalOpts.actualTitle
+            }];
         }
-        this.chartOpts.series = [{
-            color: globalOpts.estColor,
-            data: est,
-            legendIndex: 2,
-            marker: {
-                radius: 6,
-                symbol: globalOpts.estSymbol
-            },
-            name: globalOpts.estTitle
-          }, {
-            color: globalOpts.actualColor,
-            data: actual,
-            legendIndex: 1,
-            marker: {
-                radius: 6,
-                symbol: globalOpts.actualSymbol
-            },
-            name: globalOpts.actualTitle
-        }];
+        else{
+            this.chartOpts.series = [{
+                color: globalOpts.estColor,
+                data: est,
+                legendIndex: 2,
+                marker: {
+                    radius: 6,
+                    symbol: globalOpts.estSymbol
+                },
+                name: globalOpts.estTitle
+                }, {
+                color: globalOpts.actualColor,
+                data: actual,
+                legendIndex: 1,
+                marker: {
+                    radius: 6,
+                    symbol: globalOpts.actualSymbol
+                },
+                name: globalOpts.actualTitle
+            }];
+
+        }
+
 
         if (projectionStartYear){
             this.chartOpts.xAxis.plotBands = [{
                     from: Date.UTC(projectionStartYear, -5, 0),
                     to: Date.UTC(endYear, 1, 0),
-                    color: '#f5f5f5',
+                    color: globalOpts.projectionBandColor,
                     label: {
                         text: 'Estimated'
                     }
@@ -175,7 +183,7 @@ app.MainChartView = Backbone.View.extend({
         var selectedYearIndex = year - collection.startYear;
         this.highChart = new Highcharts.Chart(this.chartOpts, function(){
             this.series[0].data[selectedYearIndex].select(true, true);
-            this.series[1].data[selectedYearIndex].select(true, true);
+            if(this.series[1]) this.series[1].data[selectedYearIndex].select(true, true);
         });
     },
     pointClick: function(e){

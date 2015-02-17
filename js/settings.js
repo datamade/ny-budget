@@ -6,9 +6,11 @@ activeYear  = 2016;  // default year to select
 debugMode   = false; // change to true for debugging message in the javascript console
 municipalityName = 'State of New York'; // name of budget municipality 
 
+// these are passed into getColumnName to read data from the source
+estTitle  = 'Estimates';    // title for first series
+actualTitle = 'Actuals';    // title for second series
 
-estTitle  = 'Estimates'; // label for first chart line
-actualTitle = 'Actuals';   // label for second chart line
+mergeSeries = true;         // true if estimates & actuals span different years & can be merged into one line, otherwise false
 projectionStartYear = 2015; // if some numbers are projections into the future, set as year of first projection. otherwise, set null. it is assumed that estEndYear = endYear. this determines the chart x axis band
 
 
@@ -34,5 +36,7 @@ app.GlobalChartOpts = {
 
     estTitle:   estTitle, 
     actualTitle:  actualTitle, 
-    pointInterval: 365 * 24 * 3600 * 1000 // chart interval set to one year (in ms)
+    pointInterval: 365 * 24 * 3600 * 1000, // chart interval set to one year (in ms)
+
+    projectionBandColor: '#e4e4e4'
 }
