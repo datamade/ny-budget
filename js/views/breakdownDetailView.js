@@ -90,82 +90,87 @@ app.BreakdownDetail = Backbone.View.extend({
         this.chartOpts.chart.marginBottom = 20;
         this.chartOpts.plotOptions.area.pointInterval = globalOpts.pointInterval
         this.chartOpts.plotOptions.area.pointStart = Date.UTC(collection.startYear, 1, 1)
-        this.chartOpts.yAxis.min = Math.min.apply( Math, minValuesArray )
+
+        if (projectionStartYear){
+            this.chartOpts.xAxis.plotBands = [{
+                    from: Date.UTC(projectionStartYear, -5, 0),
+                    to: Date.UTC(endYear, 1, 0),
+                    color: globalOpts.projectionBandColor
+                }]
+            }
+
+        this.chartOpts.yAxis.min = 0
         this.chartOpts.plotOptions.series.point.events.click = this.pointClick;
         this.chartOpts.yAxis.title = {  enabled: true,
                                         text: 'Real dollars ('+benchmark+')' }
-        var extra_point = {
-                y: 0,
-                marker: {
-                    enabled: false
-                },
-                enableMouseTracking: false
-            }
 
         // adjust for inflation
         actual = BudgetHelpers.inflationAdjust(nom_actuals, inflation_idx, benchmark, startYear);
         est = BudgetHelpers.inflationAdjust(nom_est, inflation_idx, benchmark, startYear);
 
-        // copy over the last actual value as first estimated value, to fill gap in line
-        for (var i = 1; i < est.length; i++) {
-            if (est[i]!==null && actual[i-1]!==null){
-                extra_point['y']= actual[i-1]
-                est[i-1] = extra_point
+        if (mergeSeries){
+            // add estimates to the end of actuals series
+            for (var i = 1; i < est.length; i++) {
+                if (est[i]!==null && actual[i]==null){
+                    actual[i] = est[i]
+                }
             }
+            this.chartOpts.series = [{
+                color: globalOpts.actualColor,
+                data: actual,
+                marker: {
+                  radius: 5,
+                  symbol: globalOpts.actualSymbol
+                },
+                name: globalOpts.actualTitle
+            }]
+        }
+        else{
+            this.chartOpts.series = [{
+                color: globalOpts.estColor,
+                data: est,
+                marker: {
+                  radius: 4,
+                  symbol: globalOpts.estSymbol
+                },
+                name: globalOpts.estTitle
+                }, {
+                color: globalOpts.actualColor,
+                data: actual,
+                marker: {
+                  radius: 5,
+                  symbol: globalOpts.actualSymbol
+                },
+                name: globalOpts.actualTitle
+            }]
         }
 
-        this.chartOpts.series = [{
-            color: globalOpts.estColor,
-            data: est,
-            marker: {
-              radius: 4,
-              symbol: globalOpts.estSymbol
-            },
-            name: globalOpts.estTitle
-          }, {
-            color: globalOpts.actualColor,
-            data: actual,
-            marker: {
-              radius: 5,
-              symbol: globalOpts.actualSymbol
-            },
-            name: globalOpts.actualTitle
-          }]
 
         this.chartOpts.tooltip = {
             borderColor: "#000",
             formatter: function() {
-              year = parseInt(Highcharts.dateFormat("%Y", this.x))
-              var year_range = BudgetHelpers.convertYearToRange(year);
+                year = parseInt(Highcharts.dateFormat("%Y", this.x))
+                var year_range = BudgetHelpers.convertYearToRange(year);
             
-              // // Use this code to display both series in the tooltip
-              // // (for when years have both estimated & actual data)
-              // var s = "<strong>" + year_range + "</strong>";
-              // $.each(this.points, function(i, point) {
-              //   s += "<br /><span style=\"color: " + point.series.color + "\">" + point.series.name + ":</span> $" + Highcharts.numberFormat(point.y, 0);
-              // });
-              
-              // This only takes one series in the tooltip - makes estimate override actuals if estimate exists
-              // (this is for when estimates & actuals span different years, & is necessary
-              // b/c of the hack to fill in the space between estimates & actuals series)
-                var series_name;
+                var s = "<strong>" + year_range + "</strong>";
                 $.each(this.points, function(i, point) {
-                    s = "<strong>" + year_range + " <span style=\"color: " + point.series.color + "\">" + point.series.name + "</span></strong><br />Real: $" + Highcharts.numberFormat(point.y, 0);
-                    series_name = point.series.name;
+                    s += "<br /><span style=\"color: " + point.series.color + "\">" + point.series.name + ":</span> $" + Highcharts.numberFormat(point.y, 0);
                 });
+              
                 var unadjusted = {}
                 unadjusted[globalOpts.actualTitle] = BudgetHelpers.unadjustedObj(nom_actuals, startYear)
                 unadjusted[globalOpts.estTitle] = BudgetHelpers.unadjustedObj(nom_est, startYear)
-                s+= "<br><span style=\"color:#7e7e7e\">Nominal: "+ BudgetHelpers.convertToMoney(unadjusted[series_name][year])+"</span>"
+                s+= "<br><span style=\"color:#7e7e7e\">Nominal: "+ BudgetHelpers.convertToMoney(unadjusted[globalOpts.actualTitle][year])+"</span>" // FIX THIS
                 return s;
             },
             shared: true
         }
+
         // select current year
         var selectedYearIndex = this.model.get('year') - collection.startYear;
         this.highChart = new Highcharts.Chart(this.chartOpts, function(){
             this.series[0].data[selectedYearIndex].select(true, true);
-            this.series[1].data[selectedYearIndex].select(true, true);
+            if(this.series[1]) this.series[1].data[selectedYearIndex].select(true, true);
         });
     },
 

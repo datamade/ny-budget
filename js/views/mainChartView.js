@@ -134,7 +134,6 @@ app.MainChartView = Backbone.View.extend({
 
         }
 
-
         if (projectionStartYear){
             this.chartOpts.xAxis.plotBands = [{
                     from: Date.UTC(projectionStartYear, -5, 0),
@@ -145,6 +144,7 @@ app.MainChartView = Backbone.View.extend({
                     }
                 }]
             }
+
         this.chartOpts.yAxis.min = 0
         this.chartOpts.yAxis.title = {
             enabled: true,
@@ -152,28 +152,18 @@ app.MainChartView = Backbone.View.extend({
         this.chartOpts.tooltip = {
             borderColor: "#000",
             formatter: function() {
-              year = parseInt(Highcharts.dateFormat("%Y", this.x))
-              var year_range = BudgetHelpers.convertYearToRange(year);
+                year = parseInt(Highcharts.dateFormat("%Y", this.x))
+                var year_range = BudgetHelpers.convertYearToRange(year);
             
-              // // Use this code to display both series in the tooltip
-              // // (for when years have both estimates & actual data)
-              // var s = "<strong>" + year_range + "</strong>";
-              // $.each(this.points, function(i, point) {
-              //   s += "<br /><span style=\"color: " + point.series.color + "\">" + point.series.name + ":</span> $" + Highcharts.numberFormat(point.y, 0);
-              // });
-              
-              // This only takes one series in the tooltip - makes estimate override actual if estimate exists
-              // (this is for when estimates & actuals span different years, & is necessary
-              // b/c of the hack to fill in the space between estimates & actuals series)
-                var series_name;
+                var s = "<strong>" + year_range + "</strong>";
                 $.each(this.points, function(i, point) {
-                    s = "<strong>" + year_range + " <span style=\"color: " + point.series.color + "\">" + point.series.name + "</span></strong><br />Real: $" + Highcharts.numberFormat(point.y, 0);
-                    series_name = point.series.name;
+                    s += "<br /><span style=\"color: " + point.series.color + "\">" + point.series.name + ":</span> $" + Highcharts.numberFormat(point.y, 0);
                 });
+              
                 var unadjusted = {}
                 unadjusted['Actuals'] = BudgetHelpers.unadjustedObj(actuals, startYear)
                 unadjusted['Estimates'] = BudgetHelpers.unadjustedObj(ests, startYear)
-                s+= "<br><span style=\"color:#7e7e7e\">Nominal: "+ BudgetHelpers.convertToMoney(unadjusted[series_name][year])+"</span>"
+                s+= "<br><span style=\"color:#7e7e7e\">Nominal: "+ BudgetHelpers.convertToMoney(unadjusted['Actuals'][year])+"</span>" // FIX THIS
 
                 return s;
             },
