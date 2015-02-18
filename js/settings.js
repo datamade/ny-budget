@@ -23,6 +23,7 @@ inflation_idx = {
     2010: 215.8, 2011: 219.2, 2012: 226.5, 2013: 230.6, 2014: 233.8,
     2015: 237.3
 }
+enable_inflation_toggle = true; // by default, show inflation adjusted (real) numbers. toggle to show nominal (unadjusted) numbers
 
 // CSV data source for budget data
 dataSource  = window.location.origin + '/data/budget_cleaned.csv';

@@ -84,7 +84,9 @@ app.BudgetCollection = Backbone.Collection.extend({
             // this is the +/- percentage summary below main line chart
             estChange: estChange,
             actualChange: actualChange,
-            view: self.topLevelView
+            view: self.topLevelView,
+            isInflationAdjusted: false, ////// update this accordingly ****************
+            showInflationToggle: enable_inflation_toggle
         });
         var bd = []
         // chartGuts holds the values of the view (e.g. fund)
