@@ -6,7 +6,8 @@ app.MainChartView = Backbone.View.extend({
     chartOpts: window.mainChartOpts,
 
     events: {
-        'click .breakdown-choice': 'breakIt'
+        'click .breakdown-choice': 'breakIt',
+        'click .onoffswitch-checkbox': 'changeAdjustment'
     },
 
     // Render the view when you initialize it.
@@ -222,5 +223,10 @@ app.MainChartView = Backbone.View.extend({
         }
         app_router.navigate('?year=' + year);
         collection.updateTables(view, municipalityName, undefined, year);
+    },
+    changeAdjustment: function(e){
+        console.log("*** in MainChartView changeAdjustment")
+        if ($(e.currentTarget).is(":checked")) console.log("is checked");
+        else console.log("not checked");
     }
 })
