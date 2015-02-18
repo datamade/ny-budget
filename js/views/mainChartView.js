@@ -66,16 +66,16 @@ app.MainChartView = Backbone.View.extend({
             actualChange: '.actualChange',
             estChange: '.estChange'
         });
-        this.updateChart(this.model, this.model.get('viewYear'));
+        this.updateChart(this.model, this.model.get('viewYear'), this.model.get('isInflationAdjusted'));
         return this;
     },
-    updateChart: function(data, year){
+    updateChart: function(data, year, isInflationAdjusted){
         console.log("*** in MainChartView updateChart")
         if (typeof this.highChart !== 'undefined'){
             delete this.highChart;
         }
-        var actuals = jQuery.extend(true, [], data.get('actuals'));
-        var ests = jQuery.extend(true, [], data.get('estimates'));
+        var nominal_actuals = jQuery.extend(true, [], data.get('actuals'));
+        var nominal_ests = jQuery.extend(true, [], data.get('estimates'));
 
         if (debugMode == true) {
             console.log('main chart data:')
@@ -83,10 +83,16 @@ app.MainChartView = Backbone.View.extend({
             console.log(ests);
         }
 
-        var actual = BudgetHelpers.inflationAdjust(actuals, inflation_idx, benchmark, startYear);
-        var est = BudgetHelpers.inflationAdjust(ests, inflation_idx, benchmark, startYear);
+        if (isInflationAdjusted){
+            var main_chart_actuals = BudgetHelpers.inflationAdjust(nominal_actuals, inflation_idx, benchmark, startYear);
+            var main_chart_ests = BudgetHelpers.inflationAdjust(nominal_ests, inflation_idx, benchmark, startYear);
+        }
+        else{
+            var main_chart_actuals = nominal_actuals
+            var main_chart_ests = nominal_ests
+        }
 
-        var minValuesArray = $.grep(est.concat(actual),
+        var minValuesArray = $.grep(main_chart_ests.concat(main_chart_actuals),
           function(val) { return val != null; });
         var globalOpts = app.GlobalChartOpts;
         // chart options for main chart
@@ -96,14 +102,16 @@ app.MainChartView = Backbone.View.extend({
         this.chartOpts.plotOptions.series.point.events.click = this.yearClick;
         if (mergeSeries){
             // add estimates to the end of actuals series
-            for (var i = 1; i < est.length; i++) {
-                if (est[i]!==null && actual[i]==null){
-                    actual[i] = est[i]
+            console.log(main_chart_actuals)
+            console.log(main_chart_ests)
+            for (var i = 1; i < main_chart_ests.length; i++) {
+                if (main_chart_ests[i] && (main_chart_actuals[i]==null || isNaN(main_chart_actuals))){
+                    main_chart_actuals[i] = main_chart_ests[i]
                 }
             }
             this.chartOpts.series = [{
                 color: globalOpts.actualColor,
-                data: actual,
+                data: main_chart_actuals,
                 legendIndex: 1,
                 marker: {
                     radius: 6,
@@ -115,7 +123,7 @@ app.MainChartView = Backbone.View.extend({
         else{
             this.chartOpts.series = [{
                 color: globalOpts.estColor,
-                data: est,
+                data: main_chart_ests,
                 legendIndex: 2,
                 marker: {
                     radius: 6,
@@ -124,7 +132,7 @@ app.MainChartView = Backbone.View.extend({
                 name: globalOpts.estTitle
                 }, {
                 color: globalOpts.actualColor,
-                data: actual,
+                data: main_chart_actuals,
                 legendIndex: 1,
                 marker: {
                     radius: 6,
@@ -157,12 +165,6 @@ app.MainChartView = Backbone.View.extend({
                 $.each(this.points, function(i, point) {
                     s += "<br /><span style=\"color: " + point.series.color + "\">" + point.series.name + ":</span> $" + Highcharts.numberFormat(point.y, 0);
                 });
-              
-                var unadjusted = {}
-                unadjusted['Actuals'] = BudgetHelpers.unadjustedObj(actuals, startYear)
-                unadjusted['Estimates'] = BudgetHelpers.unadjustedObj(ests, startYear)
-                s+= "<br><span style=\"color:#7e7e7e\">Nominal: "+ BudgetHelpers.convertToMoney(unadjusted['Actuals'][year])+"</span>" // FIX THIS
-
                 return s;
             },
             shared: true
