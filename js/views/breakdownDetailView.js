@@ -100,7 +100,7 @@ app.BreakdownDetail = Backbone.View.extend({
             }
 
         this.chartOpts.yAxis.min = 0
-        this.chartOpts.plotOptions.series.point.events.click = this.pointClick;
+        this.chartOpts.plotOptions.series.point.events.click = this.yearClick;
         this.chartOpts.yAxis.title = {  enabled: true,
                                         text: 'Real dollars ('+benchmark+')' }
 
@@ -175,8 +175,8 @@ app.BreakdownDetail = Backbone.View.extend({
     },
 
     // Handler for the click events on the points on the chart
-    pointClick: function(e){
-        console.log("*** in BreakdownDetail pointClick")
+    yearClick: function(e){
+        console.log("*** in BreakdownDetail yearClick")
         $("#readme").fadeOut("fast");
         $.cookie("budgetbreakdownreadme", "read", { expires: 7 });
         var x = this.x,

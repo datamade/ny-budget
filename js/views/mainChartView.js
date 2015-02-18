@@ -93,7 +93,7 @@ app.MainChartView = Backbone.View.extend({
         this.chartOpts.chart.borderWidth = 0;
         this.chartOpts.plotOptions.area.pointInterval = globalOpts.pointInterval;
         this.chartOpts.plotOptions.area.pointStart = Date.UTC(collection.startYear, 1, 1);
-        this.chartOpts.plotOptions.series.point.events.click = this.pointClick;
+        this.chartOpts.plotOptions.series.point.events.click = this.yearClick;
         if (mergeSeries){
             // add estimates to the end of actuals series
             for (var i = 1; i < est.length; i++) {
@@ -177,8 +177,8 @@ app.MainChartView = Backbone.View.extend({
             if(this.series[1]) this.series[1].data[selectedYearIndex].select(true, true);
         });
     },
-    pointClick: function(e){
-        console.log("*** in MainChartView pointClick")
+    yearClick: function(e){
+        console.log("*** in MainChartView yearClick")
         $("#readme").fadeOut("fast");
         $.cookie("budgetbreakdownreadme", "read", { expires: 7 });
         var x = this.x,
