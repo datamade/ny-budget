@@ -147,9 +147,6 @@ app.MainChartView = Backbone.View.extend({
             }
 
         this.chartOpts.yAxis.min = 0
-        this.chartOpts.yAxis.title = {
-            enabled: true,
-            text: 'Real dollars ('+benchmark+')'}
         this.chartOpts.tooltip = {
             borderColor: "#000",
             formatter: function() {

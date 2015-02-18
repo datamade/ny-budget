@@ -101,8 +101,6 @@ app.BreakdownDetail = Backbone.View.extend({
 
         this.chartOpts.yAxis.min = 0
         this.chartOpts.plotOptions.series.point.events.click = this.yearClick;
-        this.chartOpts.yAxis.title = {  enabled: true,
-                                        text: 'Real dollars ('+benchmark+')' }
 
         // adjust for inflation
         actual = BudgetHelpers.inflationAdjust(nom_actuals, inflation_idx, benchmark, startYear);
