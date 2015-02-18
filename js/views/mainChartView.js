@@ -6,7 +6,7 @@ app.MainChartView = Backbone.View.extend({
     chartOpts: window.mainChartOpts,
 
     events: {
-        'click .breakdown-choice': 'breakIt',
+        'click .breakdown-choice': 'changeBreakdown',
         'click .onoffswitch-checkbox': 'changeAdjustment'
     },
 
@@ -213,8 +213,8 @@ app.MainChartView = Backbone.View.extend({
             $(bar).css('width', width);
         });
     },
-    breakIt: function(e){
-        console.log("*** in MainChartView breakIt")
+    changeBreakdown: function(e){
+        console.log("*** in MainChartView changeBreakdown")
         e.preventDefault();
         var view = $(e.currentTarget).data('choice');
         var year = window.location.hash.split('=')[1];
