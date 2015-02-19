@@ -65,12 +65,21 @@ app.BudgetCollection = Backbone.Collection.extend({
             est.push(self.getTotals(values, est_col_name));
         });
         var yearIndex = yearRange.indexOf(parseInt(year))
-        var selActual = actual[yearIndex];
-        var prevActual = actual[yearIndex - 1];
-        var actualChange = BudgetHelpers.calc_change(selActual, prevActual);
-        var selEst = est[yearIndex];
-        var prevEst = est[yearIndex - 1];
-        var estChange = BudgetHelpers.calc_est_change(selEst, prevEst, prevActual);
+
+        // this is the data for the summary section
+        var sel_actual_sum = actual[yearIndex];
+        var prev_actual_sum = actual[yearIndex - 1];
+        var sel_est_sum = est[yearIndex]
+        var prev_est_sum = est[yearIndex - 1]
+        if(isInflationAdjusted){
+            sel_actual_sum = BudgetHelpers.inflationAdjust(sel_actual_sum, year, benchmark)
+            sel_est_sum = BudgetHelpers.inflationAdjust(sel_est_sum, year, benchmark)
+            prev_actual_sum = BudgetHelpers.inflationAdjust(prev_actual_sum, year-1, benchmark)
+            prev_est_sum = BudgetHelpers.inflationAdjust(prev_est_sum, year-1, benchmark)
+        }
+
+        var actualChange = BudgetHelpers.calc_change(sel_actual_sum, prev_actual_sum);
+        var estChange = BudgetHelpers.calc_est_change(sel_actual_sum, prev_est_sum, prev_actual_sum);
         this.mainChartData = new app.MainChartModel({
             actuals: actual,
             estimates: est,
@@ -79,8 +88,8 @@ app.BudgetCollection = Backbone.Collection.extend({
             prevYear: year-1,
             viewYearRange: BudgetHelpers.convertYearToRange(year),
             prevYearRange: BudgetHelpers.convertYearToRange(year-1),
-            selectedActual: BudgetHelpers.convertToMoney(selActual),
-            selectedEst: BudgetHelpers.convertToMoney(selEst),
+            selectedActual: BudgetHelpers.convertToMoney(sel_actual_sum),
+            selectedEst: BudgetHelpers.convertToMoney(sel_est_sum),
             // this is the +/- percentage summary below main line chart
             estChange: estChange,
             actualChange: actualChange,
