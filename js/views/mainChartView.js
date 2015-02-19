@@ -221,11 +221,21 @@ app.MainChartView = Backbone.View.extend({
             year = activeYear;
         }
         app_router.navigate('?year=' + year);
-        collection.updateTables(view, municipalityName, undefined, year);
+        collection.updateTables(view, municipalityName, undefined, year, true); //CHANGE THIS
     },
     changeAdjustment: function(e){
         console.log("*** in MainChartView changeAdjustment")
-        if ($(e.currentTarget).is(":checked")) console.log("is checked");
-        else console.log("not checked");
+        var view = 'Function' //// CHANGE THIS
+        var year = window.location.hash.split('=')[1];
+        if (year==undefined){
+            year = activeYear;
+        }
+        if ($(e.currentTarget).is(":checked")){
+            collection.updateTables(view, municipalityName, undefined, year, true);
+        }
+        else{
+            collection.updateTables(view, municipalityName, undefined, year, false);
+        }
+
     }
 })

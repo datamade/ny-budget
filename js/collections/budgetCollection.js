@@ -19,7 +19,7 @@ app.BudgetCollection = Backbone.Collection.extend({
             $(sel).first().trigger('click');
         })
     },
-    updateTables: function(view, title, filter, year){
+    updateTables: function(view, title, filter, year, isInflationAdjusted){
         // Various cleanup is needed when running this a second time.
         if(typeof this.mainChartView !== 'undefined'){
             this.mainChartView.undelegateEvents();
@@ -85,7 +85,7 @@ app.BudgetCollection = Backbone.Collection.extend({
             estChange: estChange,
             actualChange: actualChange,
             view: self.topLevelView,
-            isInflationAdjusted: false, ////// update this accordingly ****************
+            isInflationAdjusted: isInflationAdjusted,
             showInflationToggle: enable_inflation_toggle
         });
         var bd = []
@@ -208,7 +208,7 @@ app.BudgetCollection = Backbone.Collection.extend({
                     if (!year){
                         year = activeYear;
                     }
-                    self.updateTables('Function', municipalityName, undefined, year);
+                    self.updateTables('Function', municipalityName, undefined, year, true);
                 } else {
                     self.topLevelView = init[0];
                     var lowerView = init[0];
@@ -231,7 +231,7 @@ app.BudgetCollection = Backbone.Collection.extend({
                         //set title?
                         //title = self.findWhere(filter).get('Department');
                     }
-                    self.updateTables(lowerView, title, filter, year);
+                    self.updateTables(lowerView, title, filter, year, true);
                 }
                 // self.searchView = new app.SearchView();
             }
