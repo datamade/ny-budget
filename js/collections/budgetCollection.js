@@ -133,7 +133,7 @@ app.BudgetCollection = Backbone.Collection.extend({
             var est_perc = BudgetHelpers.prettyPercent(ests, total_est);
             var actual_perc_bar = parseFloat((actuals/maxNum) * 100) + '%';
             var est_perc_bar = parseFloat((ests/maxNum) * 100) + '%';
-            row.set({est_perc_bar:est_perc_bar, actual_perc_bar:actual_perc_bar, est_perc:est_perc, actual_perc:actual_perc});
+            row.set({est_perc_bar:est_perc_bar, actual_perc_bar:actual_perc_bar, est_perc:est_perc, actual_perc:actual_perc, isInflationAdjusted:isInflationAdjusted});
             var rowView = new app.BreakdownSummary({model:row});
             // add all content to the sortable table html
             $('#breakdown-table-body').append(rowView.render().el);

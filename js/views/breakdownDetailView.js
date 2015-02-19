@@ -34,7 +34,7 @@ app.BreakdownDetail = Backbone.View.extend({
             filter[parent_type] = this.model.get('parent');
             path = BudgetHelpers.convertToSlug(this.model.get('parent')) + '/' + this.model.get('slug')
         }
-        collection.updateTables(this.model.get('child'), this.model.get('rowName'), filter, this.model.get('year'));
+        collection.updateTables(this.model.get('child'), this.model.get('rowName'), filter, this.model.get('year'), true); //CHANGE THIS
         document.title = document.title + ' | ' + this.model.get('rowName');
         $('#secondary-title').text(this.model.get('child'));
         var pathStart = null;
@@ -63,21 +63,19 @@ app.BreakdownDetail = Backbone.View.extend({
             delete this.highChart;
         }
         var data = this.model;
-        var nom_actuals = [];
-        var nom_est = [];
-        $.each(data.allActuals, function(i, e){
-            if (isNaN(e)){
-                e = null;
-            }
-            nom_actuals.push(e);
-        })
-        $.each(data.allEstimates, function(i, e){
-            if (isNaN(e)){
-                e = null;
-            }
-            nom_est.push(e);
-        });
-        var minValuesArray = $.grep(nom_est.concat(nom_actuals),
+        var nominal_actuals = data.allActuals;
+        var nominal_ests = data.allEstimates;
+
+        if (this.model.get('isInflationAdjusted')){
+            var detail_chart_actuals = BudgetHelpers.inflationAdjustSeries(nominal_actuals, inflation_idx, benchmark, startYear)
+            var detail_chart_ests = BudgetHelpers.inflationAdjustSeries(nominal_ests, inflation_idx, benchmark, startYear)
+        }
+        else{
+            var detail_chart_actuals = nominal_actuals
+            var detail_chart_ests = nominal_ests
+        }
+
+        var minValuesArray = $.grep(detail_chart_ests.concat(detail_chart_actuals),
           function(val) { return val != null; });
         if (debugMode == true){
             console.log("minValuesArray");
@@ -91,6 +89,7 @@ app.BreakdownDetail = Backbone.View.extend({
         this.chartOpts.plotOptions.area.pointInterval = globalOpts.pointInterval
         this.chartOpts.plotOptions.area.pointStart = Date.UTC(collection.startYear, 1, 1)
 
+        // add a plot band
         if (projectionStartYear){
             this.chartOpts.xAxis.plotBands = [{
                     from: Date.UTC(projectionStartYear, -5, 0),
@@ -102,31 +101,41 @@ app.BreakdownDetail = Backbone.View.extend({
         this.chartOpts.yAxis.min = 0
         this.chartOpts.plotOptions.series.point.events.click = this.yearClick;
 
-        // adjust for inflation
-        actual = BudgetHelpers.inflationAdjust(nom_actuals, inflation_idx, benchmark, startYear);
-        est = BudgetHelpers.inflationAdjust(nom_est, inflation_idx, benchmark, startYear);
-
         if (mergeSeries){
             // add estimates to the end of actuals series
-            for (var i = 1; i < est.length; i++) {
-                if (est[i]!==null && actual[i]==null){
-                    actual[i] = est[i]
+            for (var i = 1; i < detail_chart_ests.length; i++) {
+                if (detail_chart_ests[i] && (detail_chart_actuals[i]==null || isNaN(detail_chart_actuals[i]))){
+                    detail_chart_actuals[i] = detail_chart_ests[i]
                 }
             }
             this.chartOpts.series = [{
                 color: globalOpts.actualColor,
-                data: actual,
+                data: detail_chart_actuals,
                 marker: {
                   radius: 5,
                   symbol: globalOpts.actualSymbol
                 },
-                name: globalOpts.actualTitle
+                name: 'Budget'
             }]
+            this.chartOpts.tooltip = {
+                borderColor: "#000",
+                formatter: function() {
+                    year = parseInt(Highcharts.dateFormat("%Y", this.x))
+                    var year_range = BudgetHelpers.convertYearToRange(year);
+                
+                    var s = "<strong>" + year_range + "</strong>";
+                    $.each(this.points, function(i, point) {
+                        s += "<br /><span style=\"color: " + point.series.color + "\">$" + Highcharts.numberFormat(point.y, 0) + "</span>";
+                    });
+                    return s;
+                },
+                shared: true
+            }
         }
         else{
             this.chartOpts.series = [{
                 color: globalOpts.estColor,
-                data: est,
+                data: detail_chart_ests,
                 marker: {
                   radius: 4,
                   symbol: globalOpts.estSymbol
@@ -134,34 +143,27 @@ app.BreakdownDetail = Backbone.View.extend({
                 name: globalOpts.estTitle
                 }, {
                 color: globalOpts.actualColor,
-                data: actual,
+                data: detail_chart_actuals,
                 marker: {
                   radius: 5,
                   symbol: globalOpts.actualSymbol
                 },
                 name: globalOpts.actualTitle
             }]
-        }
-
-
-        this.chartOpts.tooltip = {
-            borderColor: "#000",
-            formatter: function() {
-                year = parseInt(Highcharts.dateFormat("%Y", this.x))
-                var year_range = BudgetHelpers.convertYearToRange(year);
-            
-                var s = "<strong>" + year_range + "</strong>";
-                $.each(this.points, function(i, point) {
-                    s += "<br /><span style=\"color: " + point.series.color + "\">" + point.series.name + ":</span> $" + Highcharts.numberFormat(point.y, 0);
-                });
-              
-                var unadjusted = {}
-                unadjusted[globalOpts.actualTitle] = BudgetHelpers.unadjustedObj(nom_actuals, startYear)
-                unadjusted[globalOpts.estTitle] = BudgetHelpers.unadjustedObj(nom_est, startYear)
-                s+= "<br><span style=\"color:#7e7e7e\">Nominal: "+ BudgetHelpers.convertToMoney(unadjusted[globalOpts.actualTitle][year])+"</span>" // FIX THIS
-                return s;
-            },
-            shared: true
+            this.chartOpts.tooltip = {
+                borderColor: "#000",
+                formatter: function() {
+                    year = parseInt(Highcharts.dateFormat("%Y", this.x))
+                    var year_range = BudgetHelpers.convertYearToRange(year);
+                
+                    var s = "<strong>" + year_range + "</strong>";
+                    $.each(this.points, function(i, point) {
+                        s += "<br /><span style=\"color: " + point.series.color + "\">" + point.series.name + ":</span> $" + Highcharts.numberFormat(point.y, 0);
+                    });
+                    return s;
+                },
+                shared: true
+            }
         }
 
         // select current year
