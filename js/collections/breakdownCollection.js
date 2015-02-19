@@ -1,5 +1,5 @@
 app.BreakdownCollection = Backbone.Collection.extend({
-    setRows: function(year, index){
+    setRows: function(year, index, isInflationAdjusted){
         var self = this;
         var all_nums = []
         var total_est = 0
@@ -8,7 +8,8 @@ app.BreakdownCollection = Backbone.Collection.extend({
             var query = {}
             query[row.get('type')] = row.get('rowName')
             console.log("  *** call getSummary in .each this.models")
-            var summ = collection.getSummary(row.get('type'), query, year)
+            console.log(this)
+            var summ = collection.getSummary(row.get('type'), query, year, isInflationAdjusted)
             row.set(summ);
             row.yearIndex = index;
             all_nums.push(row.get('estimates'));

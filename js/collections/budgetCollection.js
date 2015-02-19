@@ -10,7 +10,7 @@ app.BudgetCollection = Backbone.Collection.extend({
             $(row).remove();
         })
         this.mainChartData.setYear(year, yearIndex);
-        this.breakdownChartData.setRows(year, yearIndex);
+        this.breakdownChartData.setRows(year, yearIndex, this.mainChartData.get('isInflationAdjusted'));
         this.dataTable.fnDestroy();
         this.initDataTable();
         this.hideMissing();
