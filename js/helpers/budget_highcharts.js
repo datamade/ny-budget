@@ -44,8 +44,7 @@ window.mainChartOpts = {
       },
       title: null,
       xAxis: {
-        gridLineColor: "#eee",
-        gridLineWidth: 1,
+        gridLineWidth: 0,
         type: "datetime",
         tickInterval: 365 * 24 * 36e5, // one week
         labels: {
