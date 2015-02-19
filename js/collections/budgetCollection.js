@@ -99,7 +99,7 @@ app.BudgetCollection = Backbone.Collection.extend({
                 filter = {}
             }
             filter[view] = name;
-            var summary = self.getSummary(view, filter, year);
+            var summary = self.getSummary(view, filter, year, isInflationAdjusted);
             if (summary){
                 var row = new app.BreakdownRow(summary);
                 bd.push(row);
@@ -268,7 +268,7 @@ app.BudgetCollection = Backbone.Collection.extend({
         return totals;
     },
     // getSummary is called for each row in chart
-    getSummary: function(view, query, year){
+    getSummary: function(view, query, year, isInflationAdjusted){
         if (typeof year === 'undefined'){
             year = this.activeYear;
         }
@@ -278,13 +278,22 @@ app.BudgetCollection = Backbone.Collection.extend({
         }
         var summary = {};
         var self = this;
-        var actual = self.getChartTotals(actualTitle, guts, year);
-        var est = self.getChartTotals(estTitle, guts, year);
-        var prevActual = self.getChartTotals(actualTitle, guts, year - 1);
-        var prevEst = self.getChartTotals(estTitle, guts, year - 1);
-        var actualChange = BudgetHelpers.calc_change(self.reduceTotals(actual), self.reduceTotals(prevActual));
-        var estChange = BudgetHelpers.calc_est_change(self.reduceTotals(est), self.reduceTotals(prevEst), self.reduceTotals(prevActual));
+        var actual_sum = self.reduceTotals( self.getChartTotals(actualTitle, guts, year) );
+        var est_sum = self.reduceTotals( self.getChartTotals(estTitle, guts, year) );
+
+        var prev_actual_sum = self.reduceTotals( self.getChartTotals(actualTitle, guts, year - 1) );
+        var prev_est_sum = self.reduceTotals( self.getChartTotals(estTitle, guts, year - 1) );
+        var actualChange = BudgetHelpers.calc_change( actual_sum, prev_actual_sum );
+        var estChange = BudgetHelpers.calc_est_change( est_sum, prev_est_sum, prev_actual_sum);
+
+        if (isInflationAdjusted){
+            actual_sum = BudgetHelpers.inflationAdjust(actual_sum, year, benchmark)
+            est_sum = BudgetHelpers.inflationAdjust(est_sum, year, benchmark)
+        }
+        var actualChange = BudgetHelpers.calc_change( actual_sum, prev_actual_sum );
+        var estChange = BudgetHelpers.calc_est_change( est_sum, prev_est_sum, prev_actual_sum);
         var self = this;
+
         // get info for each row of the sortable chart
         $.each(guts, function(i, item){
             summary['rowName'] = item.get(view);
@@ -292,8 +301,8 @@ app.BudgetCollection = Backbone.Collection.extend({
             summary['prevYearRange'] = BudgetHelpers.convertYearToRange(year-1)
             summary['year'] = year;
             summary['description'] = item.get(view + ' Description');
-            summary['actuals'] = self.reduceTotals(actual);
-            summary['estimates'] = self.reduceTotals(est);
+            summary['actuals'] = actual_sum
+            summary['estimates'] = est_sum
             summary['actualChange'] = actualChange;
             summary['estChange'] = estChange;
             summary['rowId'] = item.get(view + ' ID');

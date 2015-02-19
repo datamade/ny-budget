@@ -104,8 +104,6 @@ app.MainChartView = Backbone.View.extend({
         this.chartOpts.plotOptions.series.point.events.click = this.yearClick;
         if (mergeSeries){
             // add estimates to the end of actuals series
-            console.log(main_chart_actuals)
-            console.log(main_chart_ests)
             for (var i = 1; i < main_chart_ests.length; i++) {
                 if (main_chart_ests[i] && (main_chart_actuals[i]==null || isNaN(main_chart_actuals))){
                     main_chart_actuals[i] = main_chart_ests[i]

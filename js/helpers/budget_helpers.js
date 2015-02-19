@@ -39,7 +39,8 @@ var BudgetHelpers = {
     else{ var pretty = parseInt(percent)+'%'; }
     return pretty
   },
-  inflationAdjust: function(series, inflation_idx, benchmark, startYear){
+  // adjusts inflation for a data series spanning across years, where first figure is startYear (for line charts)
+  inflationAdjustSeries: function(series, inflation_idx, benchmark, startYear){
     var year = startYear;
     var adjusted = [];
     $.each(series, function(i, val){
@@ -51,6 +52,15 @@ var BudgetHelpers = {
       year = year + 1
     })
     return adjusted
+  },
+  // adjusts inflation for a single figure (for table)
+  inflationAdjust: function(nominal_figure, year, benchmark){
+    if (inflation_idx[year])
+      var adjustment = inflation_idx[benchmark]/inflation_idx[year]
+    else
+      var adjustment = 1
+
+    return nominal_figure*adjustment
   },
   unadjustedObj: function(series, startYear){
     var year = startYear;
