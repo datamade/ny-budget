@@ -84,12 +84,14 @@ app.MainChartView = Backbone.View.extend({
         }
 
         if (isInflationAdjusted){
-            var main_chart_actuals = BudgetHelpers.inflationAdjust(nominal_actuals, inflation_idx, benchmark, startYear);
-            var main_chart_ests = BudgetHelpers.inflationAdjust(nominal_ests, inflation_idx, benchmark, startYear);
+            var main_chart_actuals = BudgetHelpers.inflationAdjustSeries(nominal_actuals, inflation_idx, benchmark, startYear);
+            var main_chart_ests = BudgetHelpers.inflationAdjustSeries(nominal_ests, inflation_idx, benchmark, startYear);
+            var legend_append = ' (in '+benchmark+' dollars)'
         }
         else{
             var main_chart_actuals = nominal_actuals
             var main_chart_ests = nominal_ests
+            var legend_append = ' (not adjusted for inflation)'
         }
 
         var minValuesArray = $.grep(main_chart_ests.concat(main_chart_actuals),
@@ -117,8 +119,22 @@ app.MainChartView = Backbone.View.extend({
                     radius: 6,
                     symbol: globalOpts.actualSymbol
                 },
-                name: globalOpts.actualTitle
+                name: 'Budget'
             }];
+            this.chartOpts.tooltip = {
+                borderColor: "#000",
+                formatter: function() {
+                    year = parseInt(Highcharts.dateFormat("%Y", this.x))
+                    var year_range = BudgetHelpers.convertYearToRange(year);
+                
+                    var s = "<strong>" + year_range + "</strong>";
+                    $.each(this.points, function(i, point) {
+                        s += "<br /><span style=\"color: " + point.series.color + "\">$" + Highcharts.numberFormat(point.y, 0) + "</span>";
+                    });
+                    return s;
+                },
+                shared: true
+            }
         }
         else{
             this.chartOpts.series = [{
@@ -140,6 +156,20 @@ app.MainChartView = Backbone.View.extend({
                 },
                 name: globalOpts.actualTitle
             }];
+            this.chartOpts.tooltip = {
+                borderColor: "#000",
+                formatter: function() {
+                    year = parseInt(Highcharts.dateFormat("%Y", this.x))
+                    var year_range = BudgetHelpers.convertYearToRange(year);
+                
+                    var s = "<strong>" + year_range + "</strong>";
+                    $.each(this.points, function(i, point) {
+                        s += "<br /><span style=\"color: " + point.series.color + "\">" + point.series.name + ":</span> $" + Highcharts.numberFormat(point.y, 0);
+                    });
+                    return s;
+                },
+                shared: true
+            }
 
         }
 
@@ -155,20 +185,9 @@ app.MainChartView = Backbone.View.extend({
             }
 
         this.chartOpts.yAxis.min = 0
-        this.chartOpts.tooltip = {
-            borderColor: "#000",
-            formatter: function() {
-                year = parseInt(Highcharts.dateFormat("%Y", this.x))
-                var year_range = BudgetHelpers.convertYearToRange(year);
-            
-                var s = "<strong>" + year_range + "</strong>";
-                $.each(this.points, function(i, point) {
-                    s += "<br /><span style=\"color: " + point.series.color + "\">" + point.series.name + ":</span> $" + Highcharts.numberFormat(point.y, 0);
-                });
-                return s;
-            },
-            shared: true
-        }
+        this.chartOpts.legend.labelFormatter = function () {
+                return this.name + legend_append;
+            }
 
         var selectedYearIndex = year - collection.startYear;
         this.highChart = new Highcharts.Chart(this.chartOpts, function(){
