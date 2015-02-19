@@ -287,21 +287,21 @@ app.BudgetCollection = Backbone.Collection.extend({
         }
         var summary = {};
         var self = this;
+
         var actual_sum = self.reduceTotals( self.getChartTotals(actualTitle, guts, year) );
         var est_sum = self.reduceTotals( self.getChartTotals(estTitle, guts, year) );
-
         var prev_actual_sum = self.reduceTotals( self.getChartTotals(actualTitle, guts, year - 1) );
         var prev_est_sum = self.reduceTotals( self.getChartTotals(estTitle, guts, year - 1) );
-        var actualChange = BudgetHelpers.calc_change( actual_sum, prev_actual_sum );
-        var estChange = BudgetHelpers.calc_est_change( est_sum, prev_est_sum, prev_actual_sum);
 
         if (isInflationAdjusted){
             actual_sum = BudgetHelpers.inflationAdjust(actual_sum, year, benchmark)
             est_sum = BudgetHelpers.inflationAdjust(est_sum, year, benchmark)
+            prev_actual_sum = BudgetHelpers.inflationAdjust(prev_actual_sum, year-1, benchmark)
+            prev_est_sum = BudgetHelpers.inflationAdjust(prev_est_sum, year-1, benchmark)
         }
+
         var actualChange = BudgetHelpers.calc_change( actual_sum, prev_actual_sum );
         var estChange = BudgetHelpers.calc_est_change( est_sum, prev_est_sum, prev_actual_sum);
-        var self = this;
 
         // get info for each row of the sortable chart
         $.each(guts, function(i, item){
