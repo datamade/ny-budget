@@ -8,7 +8,6 @@ app.BreakdownCollection = Backbone.Collection.extend({
             var query = {}
             query[row.get('type')] = row.get('rowName')
             console.log("  *** call getSummary in .each this.models")
-            console.log(this)
             var summ = collection.getSummary(row.get('type'), query, year, isInflationAdjusted)
             row.set(summ);
             row.yearIndex = index;

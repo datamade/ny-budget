@@ -6,24 +6,27 @@ app.Router = Backbone.Router.extend({
     routes: {
         "function-detail/:topName(/:secondName)": "functionDetailRoute",
         "fund-type-detail/:topName(/:secondName)": "fundTypeDetailRoute",
-        "(?year=:year)": "defaultRoute"
+        "(?:q)": "defaultRoute"
     },
     initialize: function(options){
         console.log("*** in Router initialize")
         this.collection = options.collection;
     },
-    defaultRoute: function(year){
+    defaultRoute: function(q){
         console.log("*** in Router defaultRoute")
         $('#secondary-title').text('Function');
         var init = undefined;
-        this.collection.bootstrap(init, year);
+        console.log("!!!!!!!!!!!")
+        var params = this.parseParams(q)
+        console.log(params)
+        this.collection.bootstrap(init, params.year, params.figures);
     },
     functionDetailRoute: function(topName, secondName){
         console.log("*** in Router functionDetailRoute")
         var initYear = this.getInitYear('Function', topName, secondName);
         var init = initYear[0];
         var year = initYear[1];
-        this.collection.bootstrap(init, year);
+        this.collection.bootstrap(init, year, 'real'); // ***CHANGE THIS
     },
     fundTypeDetailRoute: function(topName, secondName){
         console.log("*** in Router fundTypeDetailRoute")
@@ -31,9 +34,9 @@ app.Router = Backbone.Router.extend({
         var initYear = this.getInitYear('Fund Type', topName, secondName);
         var init = initYear[0];
         var year = initYear[1];
-        this.collection.bootstrap(init, year);
+        this.collection.bootstrap(init, year, 'real'); // ***CHANGE THIS
     },
-    getInitYear: function(view, topName, secondName){
+    getInitYear: function(view, topName, secondName){ // ***GET RID OF THIS
         var init = [view];
         var top = topName;
         var idx = topName.indexOf('?');
@@ -53,5 +56,22 @@ app.Router = Backbone.Router.extend({
             init.push(second);
         }
         return [init, year]
+    },
+    parseParams: function(q){
+        console.log("hi")
+        //these are the default params
+        params = {
+            'year': activeYear,
+            'figures': 'real',
+            'breakdown':  'function'
+        }
+        if (q){
+            url_params = q.split('&')
+            $(url_params).each(function(i, param){
+                split = param.split('=')
+                params[split[0]] = split[1]
+            });
+        }
+        return params
     }
 });

@@ -169,9 +169,16 @@ app.BudgetCollection = Backbone.Collection.extend({
             "bAutoWidth": false
         });
     },
-    bootstrap: function(init, year){
+    bootstrap: function(init, year, figures){
         var self = this;
         this.spin('#main-chart', 'large');
+
+        if (figures == 'nominal'){
+            var isInflationAdjusted = false
+        }
+        else{
+            var isInflationAdjusted = true
+        }
 
         $('#download-button').attr('href', dataSource);
         $.when($.get(dataSource)).then(
@@ -217,7 +224,7 @@ app.BudgetCollection = Backbone.Collection.extend({
                     if (!year){
                         year = activeYear;
                     }
-                    self.updateTables('Function', municipalityName, undefined, year, true);
+                    self.updateTables('Function', municipalityName, undefined, year, isInflationAdjusted);
                 } else {
                     self.topLevelView = init[0];
                     var lowerView = init[0];
@@ -240,7 +247,7 @@ app.BudgetCollection = Backbone.Collection.extend({
                         //set title?
                         //title = self.findWhere(filter).get('Department');
                     }
-                    self.updateTables(lowerView, title, filter, year, true);
+                    self.updateTables(lowerView, title, filter, year, isInflationAdjusted);
                 }
                 // self.searchView = new app.SearchView();
             }
