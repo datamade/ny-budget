@@ -16,9 +16,7 @@ app.Router = Backbone.Router.extend({
         console.log("*** in Router defaultRoute")
         $('#secondary-title').text('Function');
         var init = undefined;
-        console.log("!!!!!!!!!!!")
-        var params = this.parseParams(q)
-        console.log(params)
+        var params = this.string2params(q)
         this.collection.bootstrap(init, params.year, params.figures);
     },
     functionDetailRoute: function(topName, secondName){
@@ -57,9 +55,9 @@ app.Router = Backbone.Router.extend({
         }
         return [init, year]
     },
-    parseParams: function(q){
-        console.log("hi")
+    string2params: function(q){
         //these are the default params
+        if (q[0] == '?') q = q.slice(1)
         params = {
             'year': activeYear,
             'figures': 'real',
@@ -73,5 +71,17 @@ app.Router = Backbone.Router.extend({
             });
         }
         return params
+    },
+    params2string: function(params){
+        param_string = ''
+        $(['year', 'figures', 'breakdown']).each(function(i,p){
+            if (params[p] && param_string){
+                param_string = param_string+'&'+p+'='+params[p]
+            }
+            else if (params[p]){
+                param_string = p+'='+params[p]
+            }
+        })
+        return param_string
     }
 });
