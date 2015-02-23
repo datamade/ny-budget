@@ -39,7 +39,8 @@ window.mainChartOpts = {
           point: {
             events: {}
           },
-          shadow: false
+          shadow: false,
+          animation: false
         }
       },
       title: null,
@@ -77,7 +78,8 @@ window.sparkLineOpts =  {
             point: {
               events: {}
             },
-            shadow: false
+            shadow: false,
+            animation: false
           }
         },
         title: null,
