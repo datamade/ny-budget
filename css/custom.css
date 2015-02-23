@@ -28,13 +28,18 @@ a.details:hover, a.details:active, a.details:visited, a.details:link { text-deco
   margin-bottom: 20px;
    }
 #footer{
-  margin-top: 30px;
-  color: #E8EDEE;
-  background-color: #333333;
-}
+  padding-top: 4px;
+  padding-bottom: 4px;
+  color: #333333;
+/*  background-color: #E8EDEE;
+*/}
 
 #footer h2{
   color: #F6A704;
+}
+
+#footer a{
+  font-weight: normal;
 }
 
 #footer .btn { color: #fff; }
