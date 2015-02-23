@@ -57,13 +57,13 @@ app.Router = Backbone.Router.extend({
     },
     string2params: function(q){
         //these are the default params
-        if (q[0] == '?') q = q.slice(1)
         params = {
             'year': activeYear,
             'figures': 'real',
-            'breakdown':  'function'
+            'breakdown':  'Function'
         }
         if (q){
+            if (q[0] == '?') q = q.slice(1)
             url_params = q.split('&')
             $(url_params).each(function(i, param){
                 split = param.split('=')

@@ -248,16 +248,25 @@ app.MainChartView = Backbone.View.extend({
     },
     changeAdjustment: function(e){
         console.log("*** in MainChartView changeAdjustment")
-        var view = 'Function' //// CHANGE THIS
-        var year = window.location.hash.split('=')[1];
-        if (year==undefined){
-            year = activeYear;
+        var hash = window.location.hash;
+        var q = ''
+        if(hash.indexOf('?') >= 0){
+            q = hash.slice(hash.indexOf('?'))
+            hash = hash.slice(0, hash.indexOf('?'));
         }
+        params = app_router.string2params(q)
+
         if ($(e.currentTarget).is(":checked")){
-            collection.updateTables(view, municipalityName, undefined, year, true);
+            params.figures = 'real'
+            var new_q = app_router.params2string(params)
+            app_router.navigate(hash + '?' + new_q );
+            collection.updateTables(params.breakdown, municipalityName, undefined, params.year, true);
         }
         else{
-            collection.updateTables(view, municipalityName, undefined, year, false);
+            params.figures = 'nominal'
+            var new_q = app_router.params2string(params)
+            app_router.navigate(hash + '?' + new_q );
+            collection.updateTables(params.breakdown, municipalityName, undefined, params.year, false);
         }
 
     }

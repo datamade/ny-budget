@@ -202,10 +202,16 @@ app.BreakdownDetail = Backbone.View.extend({
         var clickedYear = new Date(x).getFullYear();
         var yearIndex = this.series.processedYData.indexOf(y);
         var hash = window.location.hash;
+        var q = ''
         if(hash.indexOf('?') >= 0){
+            q = hash.slice(hash.indexOf('?'))
             hash = hash.slice(0, hash.indexOf('?'));
         }
-        app_router.navigate(hash + '?year=' + clickedYear);
+        params = app_router.string2params(q)
+        params.year = clickedYear
+        var new_q = app_router.params2string(params)
+
+        app_router.navigate(hash + '?' + new_q);
         collection.updateYear(clickedYear, yearIndex);
         $.each($('.bars').children(), function(i, bar){
             var width = $(bar).text();
