@@ -67,7 +67,7 @@ app.Router = Backbone.Router.extend({
             url_params = q.split('&')
             $(url_params).each(function(i, param){
                 split = param.split('=')
-                params[split[0]] = split[1]
+                params[split[0]] = split[1].replace('+', ' ')
             });
         }
         return params
@@ -82,6 +82,7 @@ app.Router = Backbone.Router.extend({
                 param_string = p+'='+params[p]
             }
         })
+        param_string = param_string.replace(/ /g,"+");
         return param_string
     }
 });

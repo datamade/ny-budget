@@ -239,12 +239,20 @@ app.MainChartView = Backbone.View.extend({
         console.log("*** in MainChartView changeBreakdown")
         e.preventDefault();
         var view = $(e.currentTarget).data('choice');
-        var year = window.location.hash.split('=')[1];
-        if (year==undefined){
-            year = activeYear;
+        var hash = window.location.hash;
+        var q = ''
+        if(hash.indexOf('?') >= 0){
+            q = hash.slice(hash.indexOf('?'))
+            hash = hash.slice(0, hash.indexOf('?'));
         }
-        app_router.navigate('?year=' + year);
-        collection.updateTables(view, municipalityName, undefined, year, true); //CHANGE THIS
+        params = app_router.string2params(q)
+        params.breakdown = view
+        var new_q = app_router.params2string(params)
+        app_router.navigate(hash + '?' + new_q );
+        if (params.figures == 'real') var isInflationAdjusted = true
+        else var isInflationAdjusted = false
+
+        collection.updateTables(params.breakdown, municipalityName, undefined, params.year, isInflationAdjusted);
     },
     changeAdjustment: function(e){
         console.log("*** in MainChartView changeAdjustment")
