@@ -219,13 +219,16 @@ app.BudgetCollection = Backbone.Collection.extend({
                     "Fund Type": ['Fund Type', 'Fund', 'Subfund Name'],
                     "FP Category": ['FP Category']
                 }
-                if (typeof init === 'undefined'){
+                if (typeof init === 'undefined'){ // *** GET RID OF THIS
                     self.topLevelView = 'Function';
                     if (!year){
                         year = activeYear;
                     }
                     self.updateTables('Function', municipalityName, undefined, year, isInflationAdjusted);
-                } else {
+                } else if (init.length == 1 ){
+                    self.updateTables(init[0], municipalityName, undefined, year, isInflationAdjusted);
+                } 
+                else {
                     self.topLevelView = init[0];
                     var lowerView = init[0];
                     var name = init[1];
