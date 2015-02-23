@@ -73,21 +73,31 @@ a.details:hover, a.details:active, a.details:visited, a.details:link { text-deco
   top: 320px;
 }
 
-#timeline-chart { height: 180px; }
+#timeline-chart {
+  height: 180px;
+  width: 100%;
+  min-width: 500px;
+}
 
 #main-chart {
     min-height: 200px;
+    width: 100%;
+    min-width: 500px;
 }
 
 #breadcrumbs { font-weight: bold; font-size: 20px; }
 
 /* Breakdown table */
+#breakdown{
+  width: 100%;
+  min-width: 500px;
+}
 #breakdown a { cursor: pointer; }
 #breakdown .num { text-align: right; }
-#breakdown td, #breakdown th { border: 0px; border-bottom: 1px solid #ddd; font-size: 14px; padding: 0.3em 10px; }
+#breakdown td, #breakdown th { border: 0px; border-bottom: 1px solid #ddd; font-size: 14px; }
 #breakdown th { background: #dddddd; font-size: 12px; font-weight: bold; text-align: left; }
 #breakdown th.bars { width: 15%; }
-#breakdown th.controls { width: 20px; }
+/*#breakdown th.controls { width: 20px; }*/
 #breakdown th span { color: #1b3364; cursor: pointer; }
 
 #breakdown th.sorting_asc span {
@@ -132,34 +142,38 @@ a.details:hover, a.details:active, a.details:visited, a.details:link { text-deco
 
 /* Nav */
 a.breakdown-choice{
-  border: 2px solid #F6A704;
-  color: #F6A704;
-  background-color: #fff;
+  font-weight: normal;
+  color: #333;
+  background-color: #bbb;
 }
 a.breakdown-choice:hover{
-  color: #F6A704;
-  background-color: #feecc8;
-  border: 2px solid #F6A704;
+  color: #333;
+  background-color: #ddd;
+  text-decoration: none;
 }
+
+
 #breakdown-nav { margin-top: -1px;}
 #breakdown-nav li {display: inline-block;}
-#breakdown-nav a { display: block; padding: 0.4em 1em 0.3em; }
+#breakdown-nav a { display: block; padding: 0.3em 0.5em 0em 0.5em; }
 #breakdown-nav li.current a { 
-  color: #fff;
-  background-color: #F6A704;
-  border: 2px solid #F6A704;
+  color: #333;
+  background-color: #ddd;
 }
-#breakdown-nav ul { list-style: none; margin: 10px 0px 0px 0px; padding: 0; }
+#breakdown-nav ul { list-style: none; margin: 0; padding: 0; }
 
 #department-search { margin: 50px 0 10px 0; }
 #department-search a { color: #fff; }
 
 /* Scorecard */
+#scorecard{
+  width: 100%;
+  min-width: 500px;
+}
 #scorecard { border-top: 3px solid #dddddd; margin: 0; }
 #scorecard h2 { font-size: 20px; }
 #scorecard h2, #scorecard p { margin: 0; }
-#scorecard td { border-bottom: 0; padding: 0.8em 10px; width: 15%; }
-#scorecard td#scorecard-desc { width: 70%; }
+#scorecard td { border-bottom: 0; padding: 0.8em 10px;}
 
 /* Stats */
 .stats { list-style: none; margin: 0 0 0.5em 0; }
