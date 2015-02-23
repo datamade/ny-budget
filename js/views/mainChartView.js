@@ -243,12 +243,11 @@ app.MainChartView = Backbone.View.extend({
         var q = ''
         if(hash.indexOf('?') >= 0){
             q = hash.slice(hash.indexOf('?'))
-            hash = hash.slice(0, hash.indexOf('?'));
         }
         params = app_router.string2params(q)
         params.breakdown = view
         var new_q = app_router.params2string(params)
-        app_router.navigate(hash + '?' + new_q );
+        app_router.navigate('#?' + new_q );
         if (params.figures == 'real') var isInflationAdjusted = true
         else var isInflationAdjusted = false
 
