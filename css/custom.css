@@ -1,6 +1,7 @@
 body {
   background: #ffffff;
   font-family: "Helvetica", "Arial", sans-serif;
+  padding: 5px;
 }
 
 h1, h2, h3, h4, h5, h6 { color: #004B75; }
