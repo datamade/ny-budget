@@ -1,5 +1,6 @@
 import csv
 import xlrd
+import pandas as pd
 
 def cleanup():
     # no longer need to convert from excel
@@ -25,6 +26,18 @@ def cleanup():
     f.close()
     outp.close()
 
+def add_descriptions():
+    breakdowns = ['Fund']
+
+    budget_data = pd.read_csv('budget_cleaned.csv')
+    descriptions = pd.read_csv('descriptions_raw.csv')
+
+    for breakdown in breakdowns:
+        bd_desc = descriptions[[breakdown, breakdown+' Description']]
+        budget_data = budget_data.merge(bd_desc, on=breakdown)
+
+    budget_data.to_csv('budget_finished.csv', index=False)
+
 def csv_from_excel(infile_excel, outfile_csv):
 
     wb = xlrd.open_workbook(infile_excel)
@@ -39,3 +52,4 @@ def csv_from_excel(infile_excel, outfile_csv):
 
 if __name__ == "__main__":
     cleanup()
+    add_descriptions()

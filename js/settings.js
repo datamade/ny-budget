@@ -26,7 +26,7 @@ inflation_idx = {
 enable_inflation_toggle = true; // by default, show inflation adjusted (real) numbers. toggle to show nominal (unadjusted) numbers
 
 // CSV data source for budget data
-dataSource  = window.location.origin + '/data/budget_cleaned.csv';
+dataSource  = window.location.origin + '/data/budget_finished.csv';
 
 app.GlobalChartOpts = {
     estColor:   '#6e6e6e',
