@@ -1,6 +1,6 @@
 app.MainChartModel = Backbone.Model.extend({
     setYear: function(year, index){
-        console.log("*** in MainChartModel setYear")
+        // console.log("*** in MainChartModel setYear")
         var actuals = this.get('actuals');
         var ests = this.get('estimates');
 

@@ -17,7 +17,7 @@ app.MainChartView = Backbone.View.extend({
         this.updateCrumbs();
     },
     updateCrumbs: function(){
-        console.log("*** in MainChartView pdateCrumbs")
+        // console.log("*** in MainChartView pdateCrumbs")
         var links = ['<a href="/">'+municipalityName+'</a>'];
         if(Backbone.history.fragment){
             var parts = Backbone.history.fragment;
@@ -56,7 +56,7 @@ app.MainChartView = Backbone.View.extend({
     // This is where the magic happens. Grab the template from the template_cache function
     // at the top of this file and then update the chart with what's passed in as the model.
     render: function(){
-        console.log("*** in MainChartView render")
+        // console.log("*** in MainChartView render")
         this.$el.html(BudgetHelpers.template_cache('mainChart', {model: this.model}));
         this._modelBinder.bind(this.model, this.el, {
             viewYearRange: '.viewYear',
@@ -70,7 +70,7 @@ app.MainChartView = Backbone.View.extend({
         return this;
     },
     updateChart: function(data, year, isInflationAdjusted){
-        console.log("*** in MainChartView updateChart")
+        // console.log("*** in MainChartView updateChart")
         if (typeof this.highChart !== 'undefined'){
             delete this.highChart;
         }
@@ -194,7 +194,7 @@ app.MainChartView = Backbone.View.extend({
         });
     },
     yearClick: function(e){
-        console.log("*** in MainChartView yearClick")
+        // console.log("*** in MainChartView yearClick")
         $("#readme").fadeOut("fast");
         $.cookie("budgetbreakdownreadme", "read", { expires: 7 });
         var x = this.x,
@@ -236,7 +236,7 @@ app.MainChartView = Backbone.View.extend({
         });
     },
     changeBreakdown: function(e){
-        console.log("*** in MainChartView changeBreakdown")
+        // console.log("*** in MainChartView changeBreakdown")
         e.preventDefault();
         var view = $(e.currentTarget).data('choice');
         var hash = window.location.hash;
@@ -254,7 +254,7 @@ app.MainChartView = Backbone.View.extend({
         collection.updateTables(params.breakdown, municipalityName, undefined, params.year, isInflationAdjusted);
     },
     changeAdjustment: function(e){
-        console.log("*** in MainChartView changeAdjustment")
+        // console.log("*** in MainChartView changeAdjustment")
         var hash = window.location.hash;
         var q = ''
         if(hash.indexOf('?') >= 0){

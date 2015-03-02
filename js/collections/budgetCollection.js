@@ -125,7 +125,7 @@ app.BudgetCollection = Backbone.Collection.extend({
         this.breakdownChartData = new app.BreakdownCollection(bd);
         this.breakdownChartData.maxNum = maxNum;
         if (debugMode == true) console.log("max bar chart num: " + maxNum);
-        console.log("   *** loop through breakdownChartData.forEach (x13)")
+        // console.log("   *** loop through breakdownChartData.forEach (x13)")
         this.breakdownChartData.forEach(function(row){
             var actuals = accounting.unformat(row.get('actuals'));
             var ests = accounting.unformat(row.get('estimates'));
@@ -137,9 +137,9 @@ app.BudgetCollection = Backbone.Collection.extend({
             var rowView = new app.BreakdownSummary({model:row});
             // add all content to the sortable table html
             $('#breakdown-table-body').append(rowView.render().el);
-            console.log("   *** in loop, initialize & render BreakdownSummary")
+            // console.log("   *** in loop, initialize & render BreakdownSummary")
         });
-        console.log("   *** loop through breakdownChartData.forEach finish")
+        // console.log("   *** loop through breakdownChartData.forEach finish")
 
         this.mainChartView = new app.MainChartView({
             model: self.mainChartData

@@ -9,24 +9,24 @@ app.Router = Backbone.Router.extend({
         "(?:q)": "defaultRoute"
     },
     initialize: function(options){
-        console.log("*** in Router initialize")
+        // console.log("*** in Router initialize")
         this.collection = options.collection;
     },
     defaultRoute: function(q){
-        console.log("*** in Router defaultRoute")
+        // console.log("*** in Router defaultRoute")
         $('#secondary-title').text('Function');
         var params = this.string2params(q)
         this.collection.bootstrap([params.breakdown], params.year, params.figures);
     },
     functionDetailRoute: function(topName, secondName){
-        console.log("*** in Router functionDetailRoute")
+        // console.log("*** in Router functionDetailRoute")
         var initYear = this.getInitYear('Function', topName, secondName);
         var init = initYear[0];
         var year = initYear[1];
         this.collection.bootstrap(init, year, 'real'); // ***CHANGE THIS
     },
     fundTypeDetailRoute: function(topName, secondName){
-        console.log("*** in Router fundTypeDetailRoute")
+        // console.log("*** in Router fundTypeDetailRoute")
         $('#secondary-title').text('Fund Type');
         var initYear = this.getInitYear('Fund Type', topName, secondName);
         var init = initYear[0];

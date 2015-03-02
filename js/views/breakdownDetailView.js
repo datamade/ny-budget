@@ -7,11 +7,11 @@ app.BreakdownDetail = Backbone.View.extend({
         'click .breakdown': 'breakdownNav'
     },
     initialize: function(){
-        console.log("*** in BreakdownDetail initialize")
+        // console.log("*** in BreakdownDetail initialize")
         this._modelBinder = new Backbone.ModelBinder();
     },
     render: function(){
-        console.log("*** in BreakdownDetail render")
+        // console.log("*** in BreakdownDetail render")
         this.$el.html(BudgetHelpers.template_cache('breakdownDetail', {model: this.model}));
         this._modelBinder.bind(this.model, this.el, {
             prevYearRange: '.prevYearRange',
@@ -22,7 +22,7 @@ app.BreakdownDetail = Backbone.View.extend({
     },
 
     breakdownNav: function(e){
-        console.log("*** in BreakdownDetail breakdownNav")
+        // console.log("*** in BreakdownDetail breakdownNav")
         var filter = {}
         var typeView = this.model.get('type');
         filter[typeView] = this.model.get('rowName')
@@ -58,7 +58,7 @@ app.BreakdownDetail = Backbone.View.extend({
     },
 
     updateChart: function(){
-        console.log("*** in BreakdownDetail updateChart")
+        // console.log("*** in BreakdownDetail updateChart")
         if (typeof this.highChart !== 'undefined'){
             delete this.highChart;
         }
@@ -176,7 +176,7 @@ app.BreakdownDetail = Backbone.View.extend({
 
     // Handler for the click events on the points on the chart
     yearClick: function(e){
-        console.log("*** in BreakdownDetail yearClick")
+        // console.log("*** in BreakdownDetail yearClick")
         $("#readme").fadeOut("fast");
         $.cookie("budgetbreakdownreadme", "read", { expires: 7 });
         var x = this.x,

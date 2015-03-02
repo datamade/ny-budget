@@ -39,7 +39,7 @@ app.BreakdownSummary = Backbone.View.extend({
         return BudgetHelpers.convertToMoney(value);
     },
     details: function(e){
-        console.log("*** in BreakdownSummary details")
+        // console.log("*** in BreakdownSummary details")
         e.preventDefault();
         if (typeof this.detailView !== 'undefined'){
             this.detailView.undelegateEvents();
@@ -59,7 +59,7 @@ app.BreakdownSummary = Backbone.View.extend({
             var estimates = [];
             $.each(collection.getYearRange(), function(i, year){
                 var all = collection.where(filter)
-                console.log("*** in BreakdownSummary details     loop thru years")
+                // console.log("*** in BreakdownSummary details     loop thru years")
                 var actual = collection.getChartTotals(actualTitle, all, year);
                 if (actual.length > 1){
                     actuals.push(collection.reduceTotals(actual));
