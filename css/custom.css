@@ -200,6 +200,7 @@ a.breakdown-choice:hover{
 /* Inflation Adjustment Switch */
 #inflation-toggle{
   width: 160px;
+  height: 30px;
 }
 #inflation-toggle-label{
   position:absolute;

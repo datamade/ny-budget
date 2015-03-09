@@ -1,7 +1,3 @@
-  <span id="breadcrumbs"></span>
-
-  <span id="budget-tooltip" data-toggle="tooltip" data-placement="bottom" title="Note: These figures are not exact. Budget numbers are published yearly without inflation adjustment and rounded to the nearest thousand. Inflation-adjusted figures are calculated from the rounded numbers.">&nbsp;&nbsp;<i class="fa fa-info-circle fa-lg"></i>
-  </span>
   <% if (model.get('showInflationToggle')){ %>
   <div id="inflation-toggle" class='pull-right'>
     <span id="inflation-toggle-label"><small>Adjust for inflation:</small></span>
@@ -20,6 +16,11 @@
     </span>
   </div>
   <% } %>
+
+  <span id="breadcrumbs"></span>
+
+  <span id="budget-tooltip" data-toggle="tooltip" data-placement="bottom" title="Note: These figures are not exact. Budget numbers are published yearly without inflation adjustment and rounded to the nearest thousand. Inflation-adjusted figures are calculated from the rounded numbers.">&nbsp;&nbsp;<i class="fa fa-info-circle fa-lg"></i>
+  </span>
 
   <div class='clearfix'></div>
 
