@@ -177,7 +177,10 @@ app.MainChartView = Backbone.View.extend({
                     to: Date.UTC(endYear, 1, 0),
                     color: globalOpts.projectionBandColor,
                     label: {
-                        text: 'Estimated'
+                        text: 'Estimated',
+                        rotation: 270,
+                        verticalAlign: 'middle',
+                        style: {color: '#999'}
                     }
                 }]
             }
