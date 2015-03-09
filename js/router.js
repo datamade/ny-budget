@@ -20,27 +20,26 @@ app.Router = Backbone.Router.extend({
     },
     functionDetailRoute: function(topName, secondName){
         // console.log("*** in Router functionDetailRoute")
-        var initYear = this.getInitYear('Function', topName, secondName);
-        var init = initYear[0];
-        var year = initYear[1];
-        this.collection.bootstrap(init, year, 'real'); // ***CHANGE THIS
+        var init = this.getInit('Function', topName, secondName);
+        params = init[1]
+        this.collection.bootstrap(init[0], params.year, params.figures);
     },
     fundTypeDetailRoute: function(topName, secondName){
         // console.log("*** in Router fundTypeDetailRoute")
         $('#secondary-title').text('Fund Type');
-        var initYear = this.getInitYear('Fund Type', topName, secondName);
-        var init = initYear[0];
-        var year = initYear[1];
-        this.collection.bootstrap(init, year, 'real'); // ***CHANGE THIS
+        var init = this.getInit('Fund Type', topName, secondName);
+        var params = init[1]
+        this.collection.bootstrap(init[0], params.year, params.figures);
     },
-    getInitYear: function(view, topName, secondName){ // ***GET RID OF THIS
+    getInit: function(view, topName, secondName){
         var init = [view];
         var top = topName;
         var idx = topName.indexOf('?');
         var year = undefined;
         if (idx >= 0){
             top = topName.slice(0, idx);
-            year = topName.slice(idx+1, topName.length).replace('year=', '');
+            q = topName.slice(idx+1, topName.length)
+            var params = this.string2params(q)
         }
         init.push(top);
         if(secondName){
@@ -48,11 +47,12 @@ app.Router = Backbone.Router.extend({
             var idx = secondName.indexOf('?');
             if (idx >= 0){
                 second = secondName.slice(0, idx);
-                year = secondName.slice(idx+1, secondName.length).replace('year=', '');
+                q = secondName.slice(idx+1, secondName.length)
+                var params = this.string2params(q)
             }
             init.push(second);
         }
-        return [init, year]
+        return [init, params]
     },
     string2params: function(q){
         //these are the default params
