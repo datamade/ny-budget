@@ -58,7 +58,7 @@ app.Router = Backbone.Router.extend({
         //these are the default params
         params = {
             'year': activeYear,
-            'figures': 'real',
+            'figures': 'nominal',
             'breakdown':  'Function'
         }
         if (q){
