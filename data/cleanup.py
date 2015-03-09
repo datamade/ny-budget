@@ -27,14 +27,21 @@ def cleanup():
     outp.close()
 
 def add_descriptions():
-    breakdowns = ['Fund']
+    breakdowns = {
+        'Fund': 'desc_fund_raw.csv',
+        'FP Category': 'desc_fpcategory_raw.csv',
+        'Fund Type': 'desc_fundtype_raw.csv'
+    }
 
     budget_data = pd.read_csv('budget_cleaned.csv')
-    descriptions = pd.read_csv('descriptions_raw.csv')
 
     for breakdown in breakdowns:
-        bd_desc = descriptions[[breakdown, breakdown+' Description']]
+        #print "********" breakdown
+        descriptions = pd.read_csv(breakdowns[breakdown])
+        #print descriptions.head()
+        bd_desc = descriptions[[breakdown, 'Description']]
         budget_data = budget_data.merge(bd_desc, on=breakdown)
+        budget_data.rename(columns={'Description': breakdown+' Description'}, inplace=True)
 
     budget_data.to_csv('budget_finished.csv', index=False)
 
