@@ -16,7 +16,7 @@ app.Router = Backbone.Router.extend({
         // console.log("*** in Router defaultRoute")
         $('#secondary-title').text('Function');
         var params = this.string2params(q)
-        this.collection.bootstrap([params.breakdown], params.year, params.figures);
+        this.collection.bootstrap(["Function"], params.year, params.figures);
     },
     functionDetailRoute: function(topName, secondName){
         // console.log("*** in Router functionDetailRoute")
@@ -52,14 +52,13 @@ app.Router = Backbone.Router.extend({
             }
             init.push(second);
         }
+        params.breakdown = view
         return [init, params]
     },
     string2params: function(q){
-        //these are the default params
-        params = {
+        var params = {
             'year': activeYear,
-            'figures': 'nominal',
-            'breakdown':  'Function'
+            'figures': 'nominal'
         }
         if (q){
             if (q[0] == '?') q = q.slice(1)
