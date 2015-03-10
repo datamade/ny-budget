@@ -36,7 +36,10 @@ app.Router = Backbone.Router.extend({
         var top = topName;
         var idx = topName.indexOf('?');
         var year = undefined;
-        var params = {}
+        var params = {
+            'year': activeYear,
+            'figures': 'nominal'
+        }
         if (idx >= 0){
             top = topName.slice(0, idx);
             q = topName.slice(idx+1, topName.length)
