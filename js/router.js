@@ -36,10 +36,11 @@ app.Router = Backbone.Router.extend({
         var top = topName;
         var idx = topName.indexOf('?');
         var year = undefined;
+        var params = {}
         if (idx >= 0){
             top = topName.slice(0, idx);
             q = topName.slice(idx+1, topName.length)
-            var params = this.string2params(q)
+            params = this.string2params(q)
         }
         init.push(top);
         if(secondName){
@@ -48,7 +49,7 @@ app.Router = Backbone.Router.extend({
             if (idx >= 0){
                 second = secondName.slice(0, idx);
                 q = secondName.slice(idx+1, secondName.length)
-                var params = this.string2params(q)
+                params = this.string2params(q)
             }
             init.push(second);
         }
