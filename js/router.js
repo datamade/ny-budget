@@ -16,7 +16,7 @@ app.Router = Backbone.Router.extend({
         // console.log("*** in Router defaultRoute")
         $('#secondary-title').text('Function');
         var params = this.string2params(q)
-        this.collection.bootstrap(["Function"], params.year, params.figures);
+        this.collection.bootstrap([params.breakdown], params.year, params.figures);
     },
     functionDetailRoute: function(topName, secondName){
         // console.log("*** in Router functionDetailRoute")

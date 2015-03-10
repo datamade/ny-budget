@@ -54,7 +54,12 @@ app.BreakdownDetail = Backbone.View.extend({
             console.log(this.model.get('year'));
 
         }
-        app_router.navigate(pathStart + path + '?year=' + this.model.get('year'));
+        var hash = window.location.hash;
+        var q = ''
+        if(hash.indexOf('?') >= 0){
+            q = hash.slice(hash.indexOf('?'))
+        }
+        app_router.navigate(pathStart + path + q);
         collection.mainChartView.updateCrumbs();
     },
 
