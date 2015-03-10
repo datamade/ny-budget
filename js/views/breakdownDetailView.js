@@ -34,7 +34,8 @@ app.BreakdownDetail = Backbone.View.extend({
             filter[parent_type] = this.model.get('parent');
             path = BudgetHelpers.convertToSlug(this.model.get('parent')) + '/' + this.model.get('slug')
         }
-        collection.updateTables(this.model.get('child'), this.model.get('rowName'), filter, this.model.get('year'), true); //CHANGE THIS
+        isInflationAdjusted = this.model.get('isInflationAdjusted')
+        collection.updateTables(this.model.get('child'), this.model.get('rowName'), filter, this.model.get('year'), isInflationAdjusted);
         document.title = document.title + ' | ' + this.model.get('rowName');
         $('#secondary-title').text(this.model.get('child'));
         var pathStart = null;
