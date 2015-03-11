@@ -37,25 +37,7 @@ app.BreakdownDetail = Backbone.View.extend({
             filter_param_str = 'filter_1='+BudgetHelpers.convertToSlug(this.model.get('parent'))+'&filter_2='+this.model.get('slug')
         }
         isInflationAdjusted = this.model.get('isInflationAdjusted')
-        collection.updateTables(this.model.get('child'), this.model.get('rowName'), filter, this.model.get('year'), isInflationAdjusted);
-        document.title = document.title + ' | ' + this.model.get('rowName');
-        $('#secondary-title').text(this.model.get('child'));
-        var pathStart = null;
-        if(collection.topLevelView == 'Function'){
-            pathStart = 'function-detail/';
-        } else if(collection.topLevelView == 'Fund Type') {
-            pathStart = 'fund-type-detail/';
-        }
-        $('html, body').animate({
-            scrollTop: $('#breadcrumbs').offset().top
-        });
-        if (debugMode == true) {
-            console.log('navigating ...')
-            console.log(pathStart);
-            console.log(path);
-            console.log(this.model.get('year'));
 
-        }
         var hash = window.location.hash;
         var q = ''
         if(hash.indexOf('?') >= 0){
@@ -69,10 +51,35 @@ app.BreakdownDetail = Backbone.View.extend({
             q = q+'&'+filter_param_str
         }
 
+
         clean_params = app_router.string2params(q)
         new_q = app_router.params2string(clean_params)
 
+        var pathStart = null;
+        if (clean_params.breakdown == 'Function'){
+            pathStart = 'function-detail/';
+        } else if(clean_params.breakdown == 'Fund Type') {
+            pathStart = 'fund-type-detail/';
+        }
+
         app_router.navigate(pathStart+path+'?'+new_q);
+
+        collection.updateTables(this.model.get('child'), this.model.get('rowName'), filter, this.model.get('year'), isInflationAdjusted);
+        document.title = document.title + ' | ' + this.model.get('rowName');
+        $('#secondary-title').text(this.model.get('child'));
+
+        $('html, body').animate({
+            scrollTop: $('#breadcrumbs').offset().top
+        });
+
+        if (debugMode == true) {
+            console.log('navigating ...')
+            console.log(pathStart);
+            console.log(path);
+            console.log(this.model.get('year'));
+
+        }
+
         collection.mainChartView.updateCrumbs();
     },
 

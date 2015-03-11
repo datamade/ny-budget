@@ -20,6 +20,15 @@ app.BudgetCollection = Backbone.Collection.extend({
         })
     },
     updateTables: function(view, title, filter, year, isInflationAdjusted){
+
+        var url_hash = window.location.hash;
+        var url_q = ''
+        if(url_hash.indexOf('?') >= 0){
+            url_q = url_hash.slice(url_hash.indexOf('?'))
+        }
+        var url_params = app_router.string2params(url_q)
+
+
         // Various cleanup is needed when running this a second time.
         if(typeof this.mainChartView !== 'undefined'){
             this.mainChartView.undelegateEvents();
