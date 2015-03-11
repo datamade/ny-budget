@@ -27,12 +27,14 @@ app.BreakdownDetail = Backbone.View.extend({
         var typeView = this.model.get('type');
         filter[typeView] = this.model.get('rowName')
         var path = this.model.get('slug');
+        var filter_param_str = 'filter_1='+this.model.get('slug');
         if (this.model.get('parent')){
             var hierarchy = collection.hierarchy[collection.topLevelView]
             var type_pos = hierarchy.indexOf(typeView)
             var parent_type = hierarchy[type_pos - 1];
             filter[parent_type] = this.model.get('parent');
             path = BudgetHelpers.convertToSlug(this.model.get('parent')) + '/' + this.model.get('slug')
+            filter_param_str = 'filter_1='+BudgetHelpers.convertToSlug(this.model.get('parent'))+'&filter_2='+this.model.get('slug')
         }
         isInflationAdjusted = this.model.get('isInflationAdjusted')
         collection.updateTables(this.model.get('child'), this.model.get('rowName'), filter, this.model.get('year'), isInflationAdjusted);
@@ -59,7 +61,18 @@ app.BreakdownDetail = Backbone.View.extend({
         if(hash.indexOf('?') >= 0){
             q = hash.slice(hash.indexOf('?'))
         }
-        app_router.navigate(pathStart + path + q);
+
+        if (q==''){
+            q = '?'+filter_param_str
+        }
+        else{
+            q = q+'&'+filter_param_str
+        }
+
+        clean_params = app_router.string2params(q)
+        new_q = app_router.params2string(clean_params)
+
+        app_router.navigate(pathStart+path+'?'+new_q);
         collection.mainChartView.updateCrumbs();
     },
 

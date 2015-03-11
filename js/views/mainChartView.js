@@ -6,7 +6,7 @@ app.MainChartView = Backbone.View.extend({
     chartOpts: window.mainChartOpts,
 
     events: {
-        'click .breakdown-choice': 'changeBreakdown',
+        'click .breakdown-choice': 'changeBreakdownTab',
         'click .onoffswitch-checkbox': 'changeAdjustment'
     },
 
@@ -238,7 +238,7 @@ app.MainChartView = Backbone.View.extend({
             $(bar).css('width', width);
         });
     },
-    changeBreakdown: function(e){
+    changeBreakdownTab: function(e){
         // console.log("*** in MainChartView changeBreakdown")
         e.preventDefault();
         var view = $(e.currentTarget).data('choice');
@@ -249,6 +249,9 @@ app.MainChartView = Backbone.View.extend({
         }
         params = app_router.string2params(q)
         params.breakdown = view
+        delete params.filter_1
+        delete params.filter_2
+
         var new_q = app_router.params2string(params)
         app_router.navigate('#?' + new_q );
         if (params.figures == 'real') var isInflationAdjusted = true

@@ -77,7 +77,7 @@ app.Router = Backbone.Router.extend({
     },
     params2string: function(params){
         param_string = ''
-        $(['year', 'figures', 'breakdown']).each(function(i,p){
+        $(['year', 'figures', 'breakdown', 'filter_1', 'filter_2']).each(function(i,p){
             if (params[p] && param_string){
                 param_string = param_string+'&'+p+'='+params[p]
             }
