@@ -118,7 +118,7 @@ app.BreakdownDetail = Backbone.View.extend({
         // add a plot band
         if (projectionStartYear){
             this.chartOpts.xAxis.plotBands = [{
-                    from: Date.UTC(projectionStartYear, -5, 0),
+                    from: Date.UTC(projectionStartYear, -1, 0),
                     to: Date.UTC(endYear, 1, 0),
                     color: globalOpts.projectionBandColor
                 }]
