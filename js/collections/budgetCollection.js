@@ -66,6 +66,13 @@ app.BudgetCollection = Backbone.Collection.extend({
             crumb_names = []
         }
 
+        var expanded = [];
+        $.each($('tr.expanded-content'), function(i, row){
+            var name = $(row).prev().find('a.rowName').text();
+            expanded.push(name);
+            $(row).remove();
+        })
+
         // Various cleanup is needed when running this a second time.
         if(typeof this.mainChartView !== 'undefined'){
             this.mainChartView.undelegateEvents();
@@ -198,6 +205,11 @@ app.BudgetCollection = Backbone.Collection.extend({
         });
         this.initDataTable();
         this.hideMissing();
+
+        $.each(expanded, function(i, name){
+            var sel = 'a.details:contains("' + name + '")';
+            $(sel).first().trigger('click');
+        })
     },
     initDataTable: function(){
         var sort_col = 3
