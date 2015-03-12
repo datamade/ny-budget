@@ -54,8 +54,12 @@ app.BudgetCollection = Backbone.Collection.extend({
         }
         else{
             var f = undefined
-            view = 'Function'
             title = municipalityName
+            if ('breakdown' in url_params){
+                view = url_params.breakdown
+            }else{
+                view = 'Function'
+            }
         }
 
         // Various cleanup is needed when running this a second time.
