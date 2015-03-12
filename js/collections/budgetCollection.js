@@ -38,6 +38,7 @@ app.BudgetCollection = Backbone.Collection.extend({
 
         hierarchy_type = url_params.breakdown
         hierarchy_current = this.hierarchy[hierarchy_type]
+        this.hierarchy_current = hierarchy_current
 
         if ( ('filter_1' in url_params) && ('filter_2' in url_params)){
             var f = {}
@@ -84,13 +85,9 @@ app.BudgetCollection = Backbone.Collection.extend({
             this.dataTable.fnClearTable();
             this.dataTable.fnDestroy();
         }
-        // Need to orientate the views to a top level
-        if(typeof this.hierarchy[view] !== 'undefined'){
-            this.topLevelView = view
-        } else {
-            this.bdView = view;
-        }
-        $('#secondary-title').text(this.topLevelView);
+
+        // set secondary-title text
+        //$('#secondary-title').text(    );
 
         if (typeof year === 'undefined'){
             year = this.activeYear;
@@ -146,7 +143,7 @@ app.BudgetCollection = Backbone.Collection.extend({
             // this is the +/- percentage summary below main line chart
             estChange: estChange,
             actualChange: actualChange,
-            view: self.topLevelView,
+            view: hierarchy_current[0],
             isInflationAdjusted: isInflationAdjusted,
             showInflationToggle: enable_inflation_toggle,
             filter: f,
@@ -233,7 +230,7 @@ app.BudgetCollection = Backbone.Collection.extend({
             "bAutoWidth": false
         });
     },
-    bootstrap: function(init, year, figures){
+    bootstrap: function(year, figures){
         var self = this;
         this.spin('#main-chart', 'large');
 
@@ -360,7 +357,7 @@ app.BudgetCollection = Backbone.Collection.extend({
             summary['rowId'] = item.get(view + ' ID');
             summary['type'] = view
             summary['link'] = item.get('Link to Website');
-            var hierarchy = self.hierarchy[self.topLevelView]
+            var hierarchy = self.hierarchy_current
             var ranking = hierarchy.indexOf(view)
             if (ranking == 0){
                 summary['child'] = hierarchy[1];

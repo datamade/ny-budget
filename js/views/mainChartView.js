@@ -32,7 +32,6 @@ app.MainChartView = Backbone.View.extend({
 
         }
         else if ('filter_1' in url_params){
-            console.log(this.model.get('crumb_names'))
             url = ''
             link = '<a href="'+url+'">'+crumb_names[0]+'</a>'
             links.push(link)

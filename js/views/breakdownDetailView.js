@@ -29,7 +29,7 @@ app.BreakdownDetail = Backbone.View.extend({
         var path = this.model.get('slug');
         var filter_param_str = 'filter_1='+this.model.get('slug');
         if (this.model.get('parent')){
-            var hierarchy = collection.hierarchy[collection.topLevelView]
+            var hierarchy = collection.hierarchy_current
             var type_pos = hierarchy.indexOf(typeView)
             var parent_type = hierarchy[type_pos - 1];
             filter[parent_type] = this.model.get('parent');
