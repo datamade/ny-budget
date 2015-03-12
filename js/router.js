@@ -4,8 +4,6 @@ app.Router = Backbone.Router.extend({
     // or something. That would require making sure the correct route is
     // triggered when links are clicked. Not impossible but probably cleaner
     routes: {
-        "function-detail/:topName(/:secondName)": "functionDetailRoute",
-        "fund-type-detail/:topName(/:secondName)": "fundTypeDetailRoute",
         "(?:q)": "defaultRoute"
     },
     initialize: function(options){
@@ -17,47 +15,6 @@ app.Router = Backbone.Router.extend({
         $('#secondary-title').text('Function');
         var params = this.string2params(q)
         this.collection.bootstrap(params.year, params.figures);
-    },
-    functionDetailRoute: function(topName, secondName){
-        // console.log("*** in Router functionDetailRoute")
-        var init = this.getInit('Function', topName, secondName);
-        params = init[1]
-        this.collection.bootstrap(params.year, params.figures);
-    },
-    fundTypeDetailRoute: function(topName, secondName){
-        // console.log("*** in Router fundTypeDetailRoute")
-        $('#secondary-title').text('Fund Type');
-        var init = this.getInit('Fund Type', topName, secondName);
-        var params = init[1]
-        this.collection.bootstrap(params.year, params.figures);
-    },
-    getInit: function(view, topName, secondName){
-        var init = [view];
-        var top = topName;
-        var idx = topName.indexOf('?');
-        var year = undefined;
-        var params = {
-            'year': activeYear,
-            'figures': 'nominal'
-        }
-        if (idx >= 0){
-            top = topName.slice(0, idx);
-            q = topName.slice(idx+1, topName.length)
-            params = this.string2params(q)
-        }
-        init.push(top);
-        if(secondName){
-            var second = secondName;
-            var idx = secondName.indexOf('?');
-            if (idx >= 0){
-                second = secondName.slice(0, idx);
-                q = secondName.slice(idx+1, secondName.length)
-                params = this.string2params(q)
-            }
-            init.push(second);
-        }
-        params.breakdown = view
-        return [init, params]
     },
     string2params: function(q){
         var params = {

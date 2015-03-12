@@ -62,7 +62,7 @@ app.BreakdownDetail = Backbone.View.extend({
             pathStart = 'fund-type-detail/';
         }
 
-        app_router.navigate(pathStart+path+'?'+new_q);
+        app_router.navigate('?'+new_q);
 
         collection.updateTables();
         document.title = document.title + ' | ' + this.model.get('rowName');
@@ -237,7 +237,7 @@ app.BreakdownDetail = Backbone.View.extend({
         params.year = clickedYear
         var new_q = app_router.params2string(params)
 
-        app_router.navigate(hash + '?' + new_q);
+        app_router.navigate('?' + new_q);
         collection.updateYear(clickedYear, yearIndex);
         $.each($('.bars').children(), function(i, bar){
             var width = $(bar).text();

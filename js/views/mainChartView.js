@@ -217,7 +217,7 @@ app.MainChartView = Backbone.View.extend({
         params.year = clickedYear
         var new_q = app_router.params2string(params)
 
-        app_router.navigate(hash + '?' + new_q );
+        app_router.navigate('?' + new_q );
         collection.updateYear(clickedYear, yearIndex);
         $.each($('.bars').children(), function(i, bar){
             var width = $(bar).text();
@@ -258,13 +258,13 @@ app.MainChartView = Backbone.View.extend({
         if ($(e.currentTarget).is(":checked")){
             params.figures = 'real'
             var new_q = app_router.params2string(params)
-            app_router.navigate(hash + '?' + new_q );
+            app_router.navigate('?' + new_q );
             collection.updateTables(); // CLEAN UP
         }
         else{
             params.figures = 'nominal'
             var new_q = app_router.params2string(params)
-            app_router.navigate(hash + '?' + new_q );
+            app_router.navigate('?' + new_q );
             collection.updateTables();
         }
 
