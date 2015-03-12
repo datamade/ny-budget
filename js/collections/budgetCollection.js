@@ -271,39 +271,8 @@ app.BudgetCollection = Backbone.Collection.extend({
                     "Fund Type": ['Fund Type', 'Fund', 'Subfund Name'],
                     "FP Category": ['FP Category']
                 }
-                if (typeof init === 'undefined'){ // *** GET RID OF THIS
-                    self.topLevelView = 'Function';
-                    if (!year){
-                        year = activeYear;
-                    }
-                    self.updateTables(); // CLEAN UP
-                } else if (init.length == 1 ){
-                    self.updateTables();
-                } 
-                else {
-                    self.topLevelView = init[0];
-                    var lowerView = init[0];
-                    var name = init[1];
-                    var filter = {}
-                    var key = init[0] + ' Slug'
-                    filter[key] = name;
-                    var title = self.findWhere(filter).get(init[0])
 
-                    if (init.length == 2){
-                        lowerView = self.hierarchy[init[0]][1];
-                    }
-                    // this really only handles hierarchies w/ up to 3 levels (like Fund Type)
-                    // tweak this code if there is a drilldown hierarchy w/ more than 3 levels
-                    if(init.length > 2){
-                        name = init[2];
-                        lowerView = self.hierarchy[init[0]][2];
-                        key = init[1] + ' Slug'
-                        filter[key] = name;
-                        //set title?
-                        //title = self.findWhere(filter).get('Department');
-                    }
-                    self.updateTables();
-                }
+                self.updateTables();
                 // self.searchView = new app.SearchView();
             }
         );

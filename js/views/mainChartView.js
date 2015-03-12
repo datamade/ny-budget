@@ -21,7 +21,6 @@ app.MainChartView = Backbone.View.extend({
         url_params = this.model.get('url_params')
         crumb_names = this.model.get('crumb_names')
         h = this.model.get('hierarchy_current')
-        console.log("this.model", this.model)
 
         if ( ('filter_1' in url_params) && ('filter_2' in url_params)){
             url1 = ''
