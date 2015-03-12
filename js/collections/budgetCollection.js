@@ -43,13 +43,16 @@ app.BudgetCollection = Backbone.Collection.extend({
             var f = {}
             f[hierarchy_current[0]+' Slug'] = url_params.filter_1
             f[hierarchy_current[1]+' Slug'] = url_params.filter_2
+            prev_title = collection.findWhere(f).get(hierarchy_current[0])
             title = collection.findWhere(f).get(hierarchy_current[1])
+            crumb_names = [prev_title, title]
             view = hierarchy_current[2]
         }
         else if ('filter_1' in url_params){
             var f = {}
             f[hierarchy_current[0]+' Slug'] = url_params.filter_1
             title = collection.findWhere(f).get(hierarchy_current[0])
+            crumb_names = [title]
             view = hierarchy_current[1]
         }
         else{
@@ -60,6 +63,7 @@ app.BudgetCollection = Backbone.Collection.extend({
             }else{
                 view = 'Function'
             }
+            crumb_names = []
         }
 
         // Various cleanup is needed when running this a second time.
@@ -137,7 +141,11 @@ app.BudgetCollection = Backbone.Collection.extend({
             actualChange: actualChange,
             view: self.topLevelView,
             isInflationAdjusted: isInflationAdjusted,
-            showInflationToggle: enable_inflation_toggle
+            showInflationToggle: enable_inflation_toggle,
+            filter: f,
+            url_params: url_params,
+            crumb_names: crumb_names,
+            hierarchy_current: hierarchy_current
         });
         var bd = []
         // chartGuts holds the values of the view (e.g. fund)

@@ -17,40 +17,28 @@ app.MainChartView = Backbone.View.extend({
         this.updateCrumbs();
     },
     updateCrumbs: function(){
-        // console.log("*** in MainChartView pdateCrumbs")
         var links = ['<a href="/">'+municipalityName+'</a>'];
-        if(Backbone.history.fragment){
-            var parts = Backbone.history.fragment;
-            if (parts.indexOf('?') >= 0){
-                var idx = parts.indexOf('?');
-                parts = parts.slice(0,idx).split('/')
-            } else {
-                parts = parts.split('/');
-            }
-            var crumbs = parts.slice(1, parts.length);
-            var topView = collection.topLevelView;
-            var query = {}
-            $.each(crumbs, function(i, crumb){
-                var link = '<a href="#' + parts.slice(0,i+2).join('/') + '">';
-                if(i==0){
-                    var key = topView + ' Slug';
-                    query[key] = crumb;
-                    link += collection.findWhere(query).get(topView);
-                }
-                if(i==1){
-                    var level1 = collection.hierarchy[topView][1]
-                    query[level1 + ' Slug'] = crumb;
-                    link += collection.findWhere(query).get(level1);
-                }
-                if(i==2){
-                    var level2 = collection.hierarchy[topView][2]
-                    query[level2 + ' Slug'] = crumb;
-                    link += collection.findWhere(query).get(level2);
-                }
-                link += '</a>';
-                links.push(link);
-            });
+        url_params = this.model.get('url_params')
+        crumb_names = this.model.get('crumb_names')
+        h = this.model.get('hierarchy_current')
+        console.log("this.model", this.model)
+
+        if ( ('filter_1' in url_params) && ('filter_2' in url_params)){
+            url1 = ''
+            url2 = ''
+            link1 = '<a href="'+url1+'">'+crumb_names[0]+'</a>'
+            link2 = '<a href="'+url2+'">'+crumb_names[1]+'</a>'
+            links.push(link1)
+            links.push(link2)
+
         }
+        else if ('filter_1' in url_params){
+            console.log(this.model.get('crumb_names'))
+            url = ''
+            link = '<a href="'+url+'">'+crumb_names[0]+'</a>'
+            links.push(link)
+        }
+
         $('#breadcrumbs').html(links.join(' > '));
     },
     // This is where the magic happens. Grab the template from the template_cache function
