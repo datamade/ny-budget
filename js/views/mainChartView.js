@@ -23,17 +23,16 @@ app.MainChartView = Backbone.View.extend({
         h = this.model.get('hierarchy_current')
 
         if ( ('filter_1' in url_params) && ('filter_2' in url_params)){
-            url1 = ''
-            url2 = ''
-            link1 = '<a href="'+url1+'">'+crumb_names[0]+'</a>'
-            link2 = '<a href="'+url2+'">'+crumb_names[1]+'</a>'
+            delete url_params.filter_2
+            new_param_str = app_router.params2string(url_params)
+            link1 = '<a href="/#?'+new_param_str+'">'+crumb_names[0]+'</a>'
+            link2 = crumb_names[1]
             links.push(link1)
             links.push(link2)
 
         }
         else if ('filter_1' in url_params){
-            url = ''
-            link = '<a href="'+url+'">'+crumb_names[0]+'</a>'
+            link = crumb_names[0]
             links.push(link)
         }
 
