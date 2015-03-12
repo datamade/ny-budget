@@ -64,7 +64,7 @@ app.BreakdownDetail = Backbone.View.extend({
 
         app_router.navigate(pathStart+path+'?'+new_q);
 
-        collection.updateTables(this.model.get('child'), this.model.get('rowName'), filter, this.model.get('year'), isInflationAdjusted);
+        collection.updateTables();
         document.title = document.title + ' | ' + this.model.get('rowName');
         $('#secondary-title').text(this.model.get('child'));
 

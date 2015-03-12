@@ -19,8 +19,9 @@ app.BudgetCollection = Backbone.Collection.extend({
             $(sel).first().trigger('click');
         })
     },
-    updateTables: function(view, title, filter, year, isInflationAdjusted){
-
+    updateTables: function(){
+        // view is current hierarchy level
+        // title is the title of table, e.g. filter one hierarchy level up, last breakdown clicked
         var url_hash = window.location.hash;
         var url_q = ''
         if(url_hash.indexOf('?') >= 0){
@@ -28,6 +29,34 @@ app.BudgetCollection = Backbone.Collection.extend({
         }
         var url_params = app_router.string2params(url_q)
 
+        year = url_params.year
+        if (url_params.figures=='real'){
+            isInflationAdjusted = true
+        } else{
+            isInflationAdjusted = false
+        }
+
+        hierarchy_type = url_params.breakdown
+        hierarchy_current = this.hierarchy[hierarchy_type]
+
+        if ( ('filter_1' in url_params) && ('filter_2' in url_params)){
+            var f = {}
+            f[hierarchy_current[0]+' Slug'] = url_params.filter_1
+            f[hierarchy_current[1]+' Slug'] = url_params.filter_2
+            title = collection.findWhere(f).get(hierarchy_current[1])
+            view = hierarchy_current[2]
+        }
+        else if ('filter_1' in url_params){
+            var f = {}
+            f[hierarchy_current[0]+' Slug'] = url_params.filter_1
+            title = collection.findWhere(f).get(hierarchy_current[0])
+            view = hierarchy_current[1]
+        }
+        else{
+            var f = undefined
+            view = 'Function'
+            title = municipalityName
+        }
 
         // Various cleanup is needed when running this a second time.
         if(typeof this.mainChartView !== 'undefined'){
@@ -60,8 +89,8 @@ app.BudgetCollection = Backbone.Collection.extend({
             console.log(this);
         }
         var incomingFilter = false;
-        if (typeof filter !== 'undefined'){
-            values = _.where(this.toJSON(), filter);
+        if (typeof f !== 'undefined'){
+            values = _.where(this.toJSON(), f);
             incomingFilter = true;
         }
         var yearRange = this.getYearRange()
@@ -114,10 +143,12 @@ app.BudgetCollection = Backbone.Collection.extend({
         var total_est = 0
         $.each(chartGuts, function(i, name){
             if (!incomingFilter){
-                filter = {}
+                row_filter = {}
+            } else{
+                row_filter = self.clone(f)
             }
-            filter[view] = name;
-            var summary = self.getSummary(view, filter, year, isInflationAdjusted);
+            row_filter[view] = name;
+            var summary = self.getSummary(view, row_filter, year, isInflationAdjusted);
             if (summary){
                 var row = new app.BreakdownRow(summary);
                 bd.push(row);
@@ -233,9 +264,9 @@ app.BudgetCollection = Backbone.Collection.extend({
                     if (!year){
                         year = activeYear;
                     }
-                    self.updateTables('Function', municipalityName, undefined, year, isInflationAdjusted);
+                    self.updateTables(); // CLEAN UP
                 } else if (init.length == 1 ){
-                    self.updateTables(init[0], municipalityName, undefined, year, isInflationAdjusted);
+                    self.updateTables();
                 } 
                 else {
                     self.topLevelView = init[0];
@@ -259,7 +290,7 @@ app.BudgetCollection = Backbone.Collection.extend({
                         //set title?
                         //title = self.findWhere(filter).get('Department');
                     }
-                    self.updateTables(lowerView, title, filter, year, isInflationAdjusted);
+                    self.updateTables();
                 }
                 // self.searchView = new app.SearchView();
             }
@@ -395,4 +426,12 @@ app.BudgetCollection = Backbone.Collection.extend({
             $('.main-actual').show();
         }
     },
+    clone: function(obj) {
+        if (null == obj || "object" != typeof obj) return obj;
+        var copy = obj.constructor();
+        for (var attr in obj) {
+            if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+        }
+        return copy;
+    }
 });

@@ -257,7 +257,7 @@ app.MainChartView = Backbone.View.extend({
         if (params.figures == 'real') var isInflationAdjusted = true
         else var isInflationAdjusted = false
 
-        collection.updateTables(params.breakdown, municipalityName, undefined, params.year, isInflationAdjusted);
+        collection.updateTables();
     },
     changeAdjustment: function(e){
         // console.log("*** in MainChartView changeAdjustment")
@@ -273,13 +273,13 @@ app.MainChartView = Backbone.View.extend({
             params.figures = 'real'
             var new_q = app_router.params2string(params)
             app_router.navigate(hash + '?' + new_q );
-            collection.updateTables(params.breakdown, municipalityName, undefined, params.year, true);
+            collection.updateTables(); // CLEAN UP
         }
         else{
             params.figures = 'nominal'
             var new_q = app_router.params2string(params)
             app_router.navigate(hash + '?' + new_q );
-            collection.updateTables(params.breakdown, municipalityName, undefined, params.year, false);
+            collection.updateTables();
         }
 
     }
