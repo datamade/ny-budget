@@ -176,6 +176,7 @@ a.breakdown-choice:hover{
 #scorecard h2 { font-size: 20px; }
 #scorecard h2, #scorecard p { margin: 0; }
 #scorecard td { border-bottom: 0; padding: 0.8em 10px;}
+#scorecard-actual, #scorecard-est { text-align: right; }
 
 /* Stats */
 .stats { list-style: none; margin: 0 0 0.5em 0; }
