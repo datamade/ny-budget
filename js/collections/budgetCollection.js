@@ -86,8 +86,8 @@ app.BudgetCollection = Backbone.Collection.extend({
             this.dataTable.fnDestroy();
         }
 
-        // set secondary-title text
-        //$('#secondary-title').text(    );
+        // set table header
+        $('#row-title').text(view);
 
         if (typeof year === 'undefined'){
             year = this.activeYear;

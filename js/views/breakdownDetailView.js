@@ -66,7 +66,6 @@ app.BreakdownDetail = Backbone.View.extend({
 
         collection.updateTables();
         document.title = document.title + ' | ' + this.model.get('rowName');
-        $('#secondary-title').text(this.model.get('child'));
 
         $('html, body').animate({
             scrollTop: $('#breadcrumbs').offset().top

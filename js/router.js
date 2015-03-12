@@ -12,7 +12,6 @@ app.Router = Backbone.Router.extend({
     },
     defaultRoute: function(q){
         // console.log("*** in Router defaultRoute")
-        $('#secondary-title').text('Function');
         var params = this.string2params(q)
         this.collection.bootstrap(params.year, params.figures);
     },
