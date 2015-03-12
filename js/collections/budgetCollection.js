@@ -166,12 +166,14 @@ app.BudgetCollection = Backbone.Collection.extend({
             row_filter[view] = name;
             var summary = self.getSummary(view, row_filter, year, isInflationAdjusted);
             if (summary){
-                var row = new app.BreakdownRow(summary);
-                bd.push(row);
-                all_nums.push(summary['actuals']);
-                all_nums.push(summary['estimates']);
-                total_actual = total_actual + summary['actuals']
-                total_est = total_est + summary['estimates']
+                if (summary['actuals']>0 || summary['estimates']>0){
+                    var row = new app.BreakdownRow(summary);
+                    bd.push(row);
+                    all_nums.push(summary['actuals']);
+                    all_nums.push(summary['estimates']);
+                    total_actual = total_actual + summary['actuals']
+                    total_est = total_est + summary['estimates']
+                }
             }
         });
 
@@ -200,6 +202,7 @@ app.BudgetCollection = Backbone.Collection.extend({
         this.mainChartView = new app.MainChartView({
             model: self.mainChartData
         });
+
         this.initDataTable();
         this.hideMissing();
 
