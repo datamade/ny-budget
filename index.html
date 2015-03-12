@@ -12,6 +12,13 @@
     <!-- Customize page title -->
     <title>New York Budget</title>
 
+    <script type="text/javascript">
+        // fix window.location.origin for IE
+        if (!window.location.origin) {
+          window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
+        }
+    </script>
+
     <!-- Bootstrap core CSS -->
     <link rel="shortcut icon" href="/favicon.png">
     <link href="css/bootstrap.min.css" rel="stylesheet">
