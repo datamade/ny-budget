@@ -246,6 +246,14 @@ app.MainChartView = Backbone.View.extend({
     },
     changeAdjustment: function(e){
         // console.log("*** in MainChartView changeAdjustment")
+
+        var expanded = [];
+        $.each($('tr.expanded-content'), function(i, row){
+            var name = $(row).prev().find('a.rowName').text();
+            expanded.push(name);
+            $(row).remove();
+        })
+
         var hash = window.location.hash;
         var q = ''
         if(hash.indexOf('?') >= 0){
@@ -266,6 +274,11 @@ app.MainChartView = Backbone.View.extend({
             app_router.navigate('?' + new_q );
             collection.updateTables();
         }
+
+        $.each(expanded, function(i, name){
+            var sel = 'a.details:contains("' + name + '")';
+            $(sel).first().trigger('click');
+        })
 
     }
 })
