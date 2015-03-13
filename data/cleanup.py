@@ -38,9 +38,8 @@ def add_descriptions():
     for breakdown in breakdowns:
         descriptions = pd.read_csv(breakdowns[breakdown])
         bd_desc = descriptions[[breakdown, 'Description']]
-        budget_data = budget_data.merge(bd_desc, on=breakdown)
+        budget_data = budget_data.merge(bd_desc, how='left', on=breakdown)
         budget_data.rename(columns={'Description': breakdown+' Description'}, inplace=True)
-
 
     # this is code for the new description csv format
     breakdown_types = ['Agency']
@@ -51,7 +50,7 @@ def add_descriptions():
         desc_chunk = desc_chunk[['Name', 'Description']]
         desc_chunk.rename(columns={'Name': breakdown_type}, inplace=True)
 
-        budget_data = budget_data.merge(desc_chunk, on=breakdown_type)
+        budget_data = budget_data.merge(desc_chunk, how='left', on=breakdown_type)
         budget_data.rename(columns={'Description': breakdown_type+' Description'}, inplace=True)
 
     budget_data.to_csv('budget_finished.csv', index=False)
