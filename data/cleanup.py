@@ -27,22 +27,10 @@ def cleanup():
     outp.close()
 
 def add_descriptions():
-    breakdowns = {
-        'Fund': 'desc_fund_raw.csv',
-        'FP Category': 'desc_fpcategory_raw.csv',
-        'Fund Type': 'desc_fundtype_raw.csv'
-    }
 
     budget_data = pd.read_csv('budget_cleaned.csv')
 
-    for breakdown in breakdowns:
-        descriptions = pd.read_csv(breakdowns[breakdown])
-        bd_desc = descriptions[[breakdown, 'Description']]
-        budget_data = budget_data.merge(bd_desc, how='left', on=breakdown)
-        budget_data.rename(columns={'Description': breakdown+' Description'}, inplace=True)
-
-    # this is code for the new description csv format
-    breakdown_types = ['Agency']
+    breakdown_types = ['Agency', 'Fund', 'FP Category', 'Fund Type']
     desc_all = pd.read_csv('descriptions.csv')
 
     for breakdown_type in breakdown_types:
