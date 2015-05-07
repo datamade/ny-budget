@@ -21,7 +21,7 @@ inflation_idx = {
     2000: 167.9, 2001: 173.6, 2002: 177.6, 2003: 181.2, 2004: 184.8,
     2005: 190.3, 2006: 197.0, 2007: 202.8, 2008: 209.5, 2009: 215.2,
     2010: 215.8, 2011: 219.2, 2012: 226.5, 2013: 230.6, 2014: 233.8,
-    2015: 237.3
+    2015: 236.6
 }
 enable_inflation_toggle = true; // by default, show inflation adjusted (real) numbers. toggle to show nominal (unadjusted) numbers
 
