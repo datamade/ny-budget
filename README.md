@@ -9,7 +9,13 @@ This is based on [Look at Cook](http://lookatcook.com) by Derek Eder and Nick Ro
 
 ## How to update this visualization
 
-There are 3 inputs - the budget numbers (```data/budget_raw.csv```), the budget descriptions (```data/descriptions.csv```), and the inflation indices (defined by ```inflation_idx``` in ```js/settings.js```). When updating either ```budget_raw.csv``` or ```descriptions.csv```, run the ```cleanup.py``` script to generate the finished budget, ```budget_finished.csv```:
+The inputs that may need to be updated going forward are:
+
+1. the budget numbers (```data/budget_raw.csv```)
+2. the budget descriptions (```data/descriptions.csv```)
+3. the inflation indices (defined by ```inflation_idx``` in ```js/settings.js```)
+ 
+When updating either ```budget_raw.csv``` or ```descriptions.csv```, run the ```cleanup.py``` script to generate the finished budget, ```budget_finished.csv```:
 
 ```
 > python cleanup.py
@@ -31,8 +37,9 @@ To deploy, push the changes into the ```gh-pages``` branch:
 
 ## How to adapt this to another budget
 This code can be customized to visualize another data set.
+
 ####Data Prepatation
-The budget data can be in various forms (csv, google doc, google fusion table), but must adhere to a fixed format in order for the app to process it properly. Budget column headers include: Fund ID, Fund, Department ID, Department, Short Title, Link to Website, Department Description, and Control Officer. Values for estimates and actuals must be broken down into a separate column for each year.
+The budget data must be a csv that adheres to a fixed format in order for the app to process it properly. Budget column headers include: Fund ID, Fund, Department ID, Department, Short Title, Link to Website, Department Description, and Control Officer. Values for estimates and actuals must be broken down into a separate column for each year.
 
 See examples of prepped data:
   - [New Orleans](https://docs.google.com/spreadsheet/ccc?key=0AswuyKhD7LxVdGlERGdEckpaRDc4Q1RCN0tjZ2tMMGc&usp=sharing_eil#gid=0)
@@ -43,14 +50,7 @@ See examples of prepped data:
 ####Configuration
 1. Once the data is prepared, set dataSource in js/app.js to link up to your data.
   
-  *If your budget data is in CSV form:*
-  Drop the csv file in the data folder, and set dataSource to the file path.
-  
-  *If your data is in a google doc:*
-  You will first need to publish the google doc to the web as a CSV. Then, set dataSource to the URL provided.
-  
-  ![alt-tag](https://cloud.githubusercontent.com/assets/1406537/3767681/94b15ba4-18cf-11e4-96b1-a2dca1f39c73.png) 
-  ![alt-tag](https://cloud.githubusercontent.com/assets/1406537/3767658/55df1880-18cf-11e4-9593-51bc89b0744a.png)
+  Drop your csv file in the data folder, and set dataSource to the file path. If you need to do any preparation on your raw data (e.g. formatting dollar amounts, removing whitespace), do it in a script so that it will be repeatable in the future. See an example script in ```data/cleanup.py```.
   
 2. Next, set the following configuration variables at the top of js/app.js:
   - startYear
