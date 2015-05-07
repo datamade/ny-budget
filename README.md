@@ -3,9 +3,23 @@ ny-budget
 
 Budget visualization for New York. Based on Look at Cook
 
-SCREENSHOT HERE
+![screen shot 2015-05-07 at 3 22 46 pm](https://cloud.githubusercontent.com/assets/1406537/7525268/948cd3a8-f4cd-11e4-9485-2ca92af248ac.png)
 
 This is based on [Look at Cook](http://lookatcook.com) by Derek Eder and Nick Rougeux at [Open City](http://opencityapps.org), and can be easily re-deployed to visualize other budgets.
+
+## How to update this visualization
+
+There are 3 inputs - the budget numbers (```data/budget_raw.csv```), the budget descriptions (```data/descriptions.csv```), and the inflation indices (defined by ```inflation_idx``` in ```js/settings.js```). When updating either ```budget_raw.csv``` or ```descriptions.csv```, run the ```cleanup.py``` script to generate the finished budget, ```budget_finished.csv```:
+
+```
+> python cleanup.py
+```
+
+To deploy, push the changes into the ```gh-pages``` branch:
+```
+> git push origin master
+> git push origin master:gh-pages
+```
 
 #### Dependencies
 
@@ -15,7 +29,7 @@ This is based on [Look at Cook](http://lookatcook.com) by Derek Eder and Nick Ro
 - [Highcharts](http://www.highcharts.com/) (charting library)
 - [Datatables](http://datatables.net) (sortable HTML tables)
 
-## How to Re-Deploy
+## How to adapt this to another budget
 This code can be customized to visualize another data set.
 ####Data Prepatation
 The budget data can be in various forms (csv, google doc, google fusion table), but must adhere to a fixed format in order for the app to process it properly. Budget column headers include: Fund ID, Fund, Department ID, Department, Short Title, Link to Website, Department Description, and Control Officer. Values for estimates and actuals must be broken down into a separate column for each year.
