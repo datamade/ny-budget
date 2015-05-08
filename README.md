@@ -15,15 +15,14 @@ This is based on [Look at Cook](http://lookatcook.com) by Derek Eder and Nick Ro
 - [Highcharts](http://www.highcharts.com/) (charting library)
 - [Datatables](http://datatables.net) (sortable HTML tables)
 
-## How to update this visualization
+## How to update this New York visualization
 
-The inputs that may need to be updated going forward are:
+The csv inputs that may need to be updated going forward are:
 
 - the budget numbers (```data/budget_raw.csv```)
 - the budget descriptions (```data/descriptions.csv```)
-- the inflation indices (defined by ```inflation_idx``` in ```js/settings.js```)
  
-When updating either ```budget_raw.csv``` or ```descriptions.csv```, run the ```cleanup.py``` script to generate the finished budget, ```budget_finished.csv```:
+When updating either of the above csvs, run the ```cleanup.py``` script to generate the finished budget, ```budget_finished.csv```:
 
 ```
 > python cleanup.py
@@ -34,6 +33,8 @@ The settings in ```js/settings.js``` that may need to be updated going forward a
 - ```activeYear```
 - ```projectionStartYear``` (for example, if the first year of estimates is '2015-16', set this to 2016)
 - ```projectionOffset``` (if there are multiple years of estimates, set this to -1 for styling, otherwise set it to a higher number for more space)
+- ```inflation_idx```
+- ```benchmark```
 
 
 To deploy, push the changes into the ```gh-pages``` branch:
