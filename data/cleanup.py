@@ -12,6 +12,11 @@ def cleanup():
         for k,v in row.items():
             if 'Actuals' in k or 'Estimates' in k:
                 v = v.replace('$', '').replace(',','')
+
+                if len(v)>1:
+                    if v[0]=='(' and v[-1]==')':
+                        v = '-'+v[1:-1]
+
                 try:
                     v = float(v)
                 except:
