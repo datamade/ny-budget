@@ -19,15 +19,22 @@ This is based on [Look at Cook](http://lookatcook.com) by Derek Eder and Nick Ro
 
 The inputs that may need to be updated going forward are:
 
-1. the budget numbers (```data/budget_raw.csv```)
-2. the budget descriptions (```data/descriptions.csv```)
-3. the inflation indices (defined by ```inflation_idx``` in ```js/settings.js```)
+- the budget numbers (```data/budget_raw.csv```)
+- the budget descriptions (```data/descriptions.csv```)
+- the inflation indices (defined by ```inflation_idx``` in ```js/settings.js```)
  
 When updating either ```budget_raw.csv``` or ```descriptions.csv```, run the ```cleanup.py``` script to generate the finished budget, ```budget_finished.csv```:
 
 ```
 > python cleanup.py
 ```
+
+The settings in ```js/settings.js``` that may need to be updated going forward are:
+- ```endYear``` (for example, if the last year in the budget is '2015-16', set the end year to 2016)
+- ```activeYear```
+- ```projectionStartYear``` (for example, if the first year of estimates is '2015-16', set this to 2016)
+- ```projectionOffset``` (if there are multiple years of estimates, set this to -1 for styling, otherwise set it to a higher number for more space)
+
 
 To deploy, push the changes into the ```gh-pages``` branch:
 ```
