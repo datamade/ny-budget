@@ -25,7 +25,7 @@ The csv inputs that may need to be updated going forward are:
 When updating either of the above csvs, run the ```cleanup.py``` script to generate the finished budget, ```budget_finished.csv```:
 
 ```
-> python cleanup.py
+python cleanup.py
 ```
 
 The settings in ```js/settings.js``` that may need to be updated going forward are:
@@ -39,8 +39,8 @@ The settings in ```js/settings.js``` that may need to be updated going forward a
 
 To deploy, push the changes into the ```gh-pages``` branch:
 ```
-> git push origin master
-> git push origin master:gh-pages
+git push origin master
+git push origin master:gh-pages
 ```
 
 ## How to adapt this to another budget
