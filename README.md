@@ -32,7 +32,7 @@ The settings in ```js/settings.js``` that may need to be updated going forward a
 - ```endYear``` (for example, if the last year in the budget is '2015-16', set the end year to 2016)
 - ```activeYear```
 - ```projectionStartYear``` (for example, if the first year of estimates is '2015-16', set this to 2016)
-- ```projectionOffset``` (if there are multiple years of estimates, set this to -1 for styling, otherwise set it to a higher number for more space)
+- ```plotBandBuffer``` (this determines the # months of padding for the beginning of the estimates plot band. if there are multiple years of estimates, set a small buffer like -1, otherwise set it to a larger negative number, e.g. -7, for more space)
 - ```inflation_idx```
 - ```benchmark```
 
