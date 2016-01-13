@@ -17,6 +17,7 @@ This is based on [Look at Cook](http://lookatcook.com) by Derek Eder and Nick Ro
 
 ## How to update this New York visualization
 
+#### 1. Update Data
 The csv inputs that may need to be updated going forward are:
 
 - the budget numbers (```data/budget_raw.csv```)
@@ -28,6 +29,7 @@ When updating either of the above csvs, run the ```cleanup.py``` script to gener
 python cleanup.py
 ```
 
+#### 2. Update settings
 The settings in ```js/settings.js``` that may need to be updated going forward are:
 - ```endYear``` (for example, if the last year in the budget is '2015-16', set the end year to 2016)
 - ```activeYear```
@@ -36,7 +38,13 @@ The settings in ```js/settings.js``` that may need to be updated going forward a
 - ```inflation_idx```
 - ```benchmark```
 
+#### 3. Preview
+To preview changes locally:
+```
+python -m SimpleHTTPServer
+```
 
+#### 4. Deploy
 To deploy, push the changes into the ```gh-pages``` branch:
 ```
 git push origin master
