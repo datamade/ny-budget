@@ -22,7 +22,13 @@ The csv inputs that may need to be updated going forward are:
 
 - the budget numbers (```data/budget_raw.csv```)
 - the budget descriptions (```data/descriptions.csv```)
- 
+
+```cleanup.py``` is a python script that requires pandas and xlrd. You can install them by running:
+
+```
+pip install -r requirements.txt
+```
+
 When updating either of the above csvs, run the ```cleanup.py``` script to generate the finished budget, ```budget_finished.csv```:
 
 ```
