@@ -94,3 +94,7 @@ You can also email info@datamade.us or tweet @DataMadeCo.
 * Fork the project.
 * Make your feature addition or bug fix.
 * Commit and send me a pull request. Bonus points for topic branches.
+
+## Copyright and Attribution
+
+Copyright (c) 2016 DataMade. Released under the [MIT License](https://github.com/datamade/ny-budget/blob/master/LICENSE).
