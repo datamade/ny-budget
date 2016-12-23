@@ -23,7 +23,7 @@ The csv inputs that may need to be updated going forward are:
 - the budget numbers (```data/budget_raw.csv```)
 - the budget descriptions (```data/descriptions.csv```)
 
-```cleanup.py``` is a python script that requires pandas and xlrd. You can install them by running:
+`cleanup.py` is a python script that requires pandas and xlrd. You can install them by running:
 
 ```
 pip install -r requirements.txt
@@ -46,13 +46,15 @@ The settings in ```js/settings.js``` that may need to be updated going forward a
 
 #### 3. Preview
 To preview changes locally:
+
 ```
 python -m SimpleHTTPServer
 ```
 
 #### 4. Deploy
 To deploy, push the changes into the ```gh-pages``` branch:
-```
+
+```bash
 git push origin master
 git push origin master:gh-pages
 ```
@@ -75,6 +77,11 @@ If you need to do any preparation on your raw data to get it into the finished f
 1. Put your finished budget csv file in the ```data/``` folder
   
 2. Next, set the configuration variables in ```js/settings.js```
+
+## Team
+
+* Cathy Deng, DataMade
+* Derek Eder, DataMade
 
 ## Errors / bugs
 
