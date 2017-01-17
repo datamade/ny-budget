@@ -11,7 +11,7 @@ estTitle  = 'Estimates';    // title for first series
 actualTitle = 'Actuals';    // title for second series
 
 mergeSeries = true;         // true if estimates & actuals span different years & can be merged into one line, otherwise false
-projectionStartYear = 2018; // if some numbers are projections into the future, set as year of first projection. otherwise, set null. it is assumed that estEndYear = endYear. this determines the chart x axis band
+projectionStartYear = 2017; // if some numbers are projections into the future, set as year of first projection. otherwise, set null. it is assumed that estEndYear = endYear. this determines the chart x axis band
 plotBandBuffer = -7;        // move the plot band start N months back, for styling
 
 
