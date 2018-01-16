@@ -2,7 +2,7 @@ var app = {};
 
 startYear   = 1995;  // first year of budget data
 endYear     = 2019;  // last year of budget data
-activeYear  = 2018;  // default year to select
+activeYear  = 2019;  // default year to select
 debugMode   = false; // change to true for debugging message in the javascript console
 municipalityName = 'State of New York'; // name of budget municipality 
 
