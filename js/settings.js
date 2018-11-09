@@ -24,7 +24,7 @@ inflation_idx = {
     2010: 215.8, 2011: 219.2, 2012: 226.5, 2013: 230.6, 2014: 233.8,
     2015: 236.7, 2016: 237.6, 2017: 241.5, 2018: 246.5, 2019: 252.6, 
     2020: 258.2, 2021: 264.3, 2022: 270.5, 2023: 276.7, 2024: 283.1, 
-    2025: 289.4
+    2025: 289.4 
 }
  
 enable_inflation_toggle = true; // by default, show inflation adjusted (real) numbers. toggle to show nominal (unadjusted) numbers
