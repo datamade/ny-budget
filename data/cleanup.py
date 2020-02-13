@@ -41,6 +41,9 @@ def add_descriptions():
     for breakdown_type in breakdown_types:
         desc_chunk = desc_all[ desc_all['Breakdown Type']==breakdown_type ]
         desc_chunk = desc_chunk[['Name', 'Description']]
+
+        # strip trailing whitespace
+        desc_chunk['Name'] = desc_chunk['Name'].map(lambda name: name.strip())
         desc_chunk.rename(columns={'Name': breakdown_type}, inplace=True)
 
         budget_data = budget_data.merge(desc_chunk, how='left', on=breakdown_type)
