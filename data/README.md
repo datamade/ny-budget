@@ -17,8 +17,10 @@ About once a quarter, we receive requests to update the data for the NY State bu
 6. If the budget includes a new year of data, the year settings will need to be updated in 1js/settings.js: `endYear`, `activeYear`, `projectionStartYear`, `benchmark`
 Example: https://github.com/datamade/ny-budget/commit/739d2e552fa01350489819fc75bb0ebe76a80424
 7. Run the application locally. It is a static HTML site, so you can use a number of local servers to do so.
-python 2: `python -m SimpleHTTPServer`
-python 3: `python -m http.server`
+ - python 2: `python -m SimpleHTTPServer`
+ - python 3: `python -m http.server`
 8. If all looks good, create a pull request and merge the changes into master.
 9. When the folks in NY give the green light, deploy the site by pushing the `master` branch into `deploy`
-`git push origin master:deploy`
+```
+git push origin master:deploy
+```
