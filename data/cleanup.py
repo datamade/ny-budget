@@ -5,7 +5,7 @@ import pandas as pd
 def cleanup():
     # no longer need to convert from excel
     # csv_from_excel('SpendingData.xlsx', 'SpendingData.csv')
-    f = open('budget_raw.csv', 'rU')
+    f = open('budget_raw.csv', 'r')
     reader = csv.DictReader(f)
     all_rows = []
     for row in reader:
@@ -24,7 +24,7 @@ def cleanup():
                 v = v*1000
             row[k] = v
         all_rows.append(row)
-    outp = open('budget_cleaned.csv', 'wb')
+    outp = open('budget_cleaned.csv', 'w')
     writer = csv.DictWriter(outp, row.keys(), quoting=csv.QUOTE_ALL)
     writer.writeheader()
     writer.writerows(all_rows)
