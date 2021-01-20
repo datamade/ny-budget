@@ -52,11 +52,13 @@ python -m SimpleHTTPServer
 ```
 
 #### 4. Deploy
-To deploy, push the changes into the ```gh-pages``` branch:
+The site is hosted on Netlify, so deploy previews are available if you make a pull request.
+
+To deploy to production, push the changes into the ```deploy``` branch:
 
 ```bash
 git push origin master
-git push origin master:gh-pages
+git push origin master:deploy
 ```
 
 ## How to adapt this to another budget
