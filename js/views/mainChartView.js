@@ -64,8 +64,8 @@ app.MainChartView = Backbone.View.extend({
 
         if (debugMode == true) {
             console.log('main chart data:')
-            console.log(actuals);
-            console.log(ests);
+            console.log(nominal_actuals);
+            console.log(nominal_ests);
         }
 
         if (isInflationAdjusted){
