@@ -2,7 +2,7 @@ var app = {};
 
 startYear   = 1995;  // first year of budget data
 endYear     = 2026;  // last year of budget data
-activeYear  = 2025;  // default year to select
+activeYear  = 2026;  // default year to select
 debugMode   = false; // change to true for debugging message in the javascript console
 municipalityName = 'State of New York'; // name of budget municipality
 
@@ -24,7 +24,7 @@ inflation_idx = {
     2010: 215.8, 2011: 219.2, 2012: 226.5, 2013: 230.6, 2014: 233.8,
     2015: 236.7, 2016: 237.6, 2017: 241.5, 2018: 246.5, 2019: 252.1,
     2020: 257.0, 2021: 260.1, 2022: 276.3, 2023: 296.7, 2024: 307.1,
-    2025: 315.6
+    2025: 315.8
 }
 
 enable_inflation_toggle = true; // by default, show inflation adjusted (real) numbers. toggle to show nominal (unadjusted) numbers
